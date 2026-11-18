@@ -76,6 +76,30 @@ button, input, textarea { font: inherit; color: inherit; }
 .mini b { font-family: var(--font-display); font-weight: 400; color: var(--gold); font-size: 1.15rem; }
 @media print { .mini { display: none !important; } }
 @media (min-width: 901px) { body.mini-on .side { top: 64px; max-height: calc(100vh - 80px); } }
+/* very narrow screens (Wix mobile embed is about 280–320px wide): nothing may stick out sideways */
+@media (max-width: 340px) {
+  .wrap, .intro { padding-left: 10px; padding-right: 10px; }
+  .card, .panel, .trip { padding: 14px; }
+  .dest-row { padding: 6px 6px 6px 8px; gap: 6px; }
+  .dest-row .nights { display: none; }
+  .dest-row .stepper button { width: 26px !important; } .dest-row .stepper input { width: 28px !important; }
+  .dest-row .check { font-size: .88rem; gap: 6px; } .dest-row { min-width: 0; }
+  .seg.c4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .opt { font-size: .8rem !important; }
+  .opt small { white-space: normal; font-size: .6rem !important; line-height: 1.2; }
+  .opt { padding-inline: 4px; }
+  .intro h1 { font-size: 1.5rem; }
+  .day { grid-template-columns: 34px minmax(0, 1fr) !important; gap: 8px !important; }
+  .form input, .form textarea { min-width: 0; width: 100%; box-sizing: border-box; }
+  .form > * { min-width: 0; }
+  .ask h2 { font-size: 1.3rem; } .contact, .ask p { overflow-wrap: anywhere; }
+  .addon { min-width: 0; } .addons .items { grid-template-columns: minmax(0, 1fr) !important; }
+  .results > *, .card { min-width: 0; max-width: 100%; box-sizing: border-box; }
+}
+html, body { max-width: 100%; overflow-x: hidden; }
+/* inside a frame taller than the screen (Wix embed), sticky columns can't work: the page flows normally so every option can be reached */
+html.tall-frame .side { position: static !important; max-height: none !important; }
+html.tall-frame .side .panel { overflow: visible !important; max-height: none !important; }
 .intro h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.7rem, 3.6vw, 2.5rem); }
 .intro p { color: var(--muted); max-width: 84ch; margin: 8px 0 0; }
 .trip { padding: 18px 20px; display: grid; gap: 14px; }
@@ -1168,6 +1192,12 @@ document.getElementById('room-rows').addEventListener('click', e => {
   roomPick = roomsNow().filter((_, i) => i !== +b.dataset.rx); renderRooms(); updateRequest();
 });
 document.getElementById('room-add').onclick = () => { roomPick = [...roomsNow().map(r => ({ ...r })), { type: 'DBL', qty: 1 }]; renderRooms(); updateRequest(); };
+// Embedded in another site (Wix): when the frame is taller than the screen, switch off the sticky left column
+if (window.self !== window.top) {
+  document.documentElement.classList.add('embedded');
+  const fitFrame = () => document.documentElement.classList.toggle('tall-frame', innerHeight > (screen.availHeight || 900) - 120);
+  fitFrame(); addEventListener('resize', fitFrame);
+}
 // Price: computed locally in the preview build, by the /api/quote server function on the website (rates stay on the server).
 async function getQuote(s) {
   if (typeof quoteFor === 'function') {
