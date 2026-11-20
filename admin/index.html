@@ -208,7 +208,7 @@ const STATUS = { new: '신규', land: '지상비 발송', quoted: '지상비 발
 const SEASON = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
 const MARKET = { 'Middle East': '중동', 'India': '인도', 'Other markets': '기타' };
 const nd = s => String(s).replace(/(\d+)N(\d+)D/, '$1박 $2일').replace(/ (\d+)N/g, ' $1박').replace(/Seoul/g, '서울').replace(/Jeju/g, '제주').replace(/Busan/g, '부산');
-const KERR = e => e.status === 401 ? '비밀번호 오류.' : e.status === 503 ? 'Netlify에 ADMIN_PASSWORD 미설정.' : '불러오기 실패. 잠시 후 다시 시도.';
+const KERR = e => e.status === 401 ? '비밀번호 오류.' : e.status === 503 ? 'Wix에 ADMIN_PASSWORD 미설정.' : '불러오기 실패. 잠시 후 다시 시도.';
 let key = '', rows = [], current = null, staff = [], settings = null;
 try { key = sessionStorage.getItem('hk-admin') || ''; } catch {}
 
@@ -268,9 +268,9 @@ async function open(id) {
     <div class="grid">
       ${line('바이어 담당자', `${esc(r.contact.name)}<br><a href="mailto:${esc(r.contact.email)}">${esc(r.contact.email)}</a>`)}
       ${line('여행 날짜', r.trip.arrival ? `${fmt(r.trip.arrival)} – ${fmt(r.trip.departure)}` : '미정')}
-      ${line('일정', `${r.trip.nights}박 ${r.trip.days}일<br>${esc(nd(' ' + r.trip.cities).trim())}`)}
+      ${line('일정', `${r.trip.nights}박 ${r.trip.days}일<br>${esc(nd(' ' + r.trip.cities).trim())}${r.trip.arrivalAirport ? `<br>입국 ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} · 출국 ${T_KO[r.trip.departureAirport] || '인천공항'}${Array.isArray(r.trip.route) && !r.trip.route.includes('seoul') ? ' · <b>서울 일정 없음</b>' : ''}` : ''}`)}
       ${line('그룹', `${o.pax}명 · ${esc(MARKET[o.market] || o.market)}`)}
-      ${line('스타일', `${esc(o.tier)} · ${THEME[o.theme] || o.theme} · ${SEASON[o.season] || o.season}<br>차량: ${esc(o.vehicle === 'Standard' ? '기본' : o.vehicle)}`)}
+      ${line('스타일', `${esc(o.tier)} · ${THEME[o.theme] || o.theme} · ${SEASON[o.season] || o.season}<br>차량: ${esc(vehicleName(r))}${typeof o.hanbok === 'boolean' && r.itinerary.some(d => d.stops.some(s => /Gyeongbokgung/i.test(s))) ? `<br>경복궁 한복: ${o.hanbok ? '대여 포함 (₩30,000)' : '없음'}` : ''}`)}
       ${line('사이트 견적가 (지상비)', `<span class="price">${usd(r.price.perPerson)}</span> 1인당<br>총액 ${usd(r.price.total)} (${r.price.bracket[0] === r.price.bracket[1] ? r.price.bracket[0] : r.price.bracket.join('–')}명 구간 요금)`)}
       ${line('호텔 등급', esc(r.hotel.join(' / ')) || '–')}
       ${line('객실 요청', esc((r.rooms || []).map(x => `${x.type} ${x.qty}실`).join(', ')) || '–')}
@@ -559,35 +559,62 @@ const BOOKABLE = [
   [/Rail Park|Rail Bike/i, '강촌 레일바이크 예약'], [/Spaland/i, '스파랜드 입장권'], [/Ice Festival|Ice Fishing/i, '화천 산천어축제 낚시 예약'],
   [/Trick Eye/i, '트릭아이 입장권'], [/Gondola/i, 'DMZ 곤돌라'], [/Hyundai Motor Studio/i, '현대모터스튜디오 예약'], [/Ski/i, '스키 강습 예약'],
 ];
+// vehicle class by group size (2026-11): 1–4 Staria + driving guide / 5–9 Solati + luggage van /
+// 10–13 mix (touring days: bus + guide, transfers: Solati + luggage van) / 14+ bus. County no longer used.
+const T_KO = { ICN: '인천공항', GMP: '김포공항', SEL_STN: '서울역', PUS: '김해공항', BUS_STN: '부산역', CJU: '제주공항' };
+const T_CITY = { ICN: 'seoul', GMP: 'seoul', SEL_STN: 'seoul', PUS: 'busan', BUS_STN: 'busan', CJU: 'jeju' };
+const CLS_KO = { drv: '스타리아 + 드라이빙가이드', drv7: '9인승 밴 + 드라이빙가이드', sol: '솔라티 + 짐차', mix: '투어일 대형버스 / 픽업·샌딩 솔라티 + 짐차', bus: '대형버스 (28·45인승)' };
+const clsOf = p => p <= 4 ? 'drv' : p <= 9 ? 'sol' : p <= 13 ? 'mix' : 'bus';
+const vclsOf = r => r.options.cls || clsOf(r.options.pax);
+const isMix = r => r.options.vehicle === 'Standard' && vclsOf(r) === 'mix';
+const hasLuggage = r => ['sol', 'mix'].includes(vclsOf(r)); // luggage van on arrival and departure only
 function vehicleName(r) {
   if (r.options.vehicle !== 'Standard') return r.options.vehicle;
-  const p = r.options.pax; return p <= 4 ? '스타리아 + 드라이빙가이드' : p <= 12 ? '솔라티' : p <= 18 ? '카운티' : '대형버스 (28·45인승)';
+  return CLS_KO[vclsOf(r)] || vclsOf(r);
 }
-const cityOf = d => /Busan|Gyeongju|Haeundae|Gamcheon|Spa Day/.test(d.title + d.route) ? 'busan' : /Jeju|Sunrise Peak|Waterfalls|Alpacas|Markets & Café|Beaches & Volcanic/.test(d.title + d.route) ? 'jeju' : 'seoul';
-// every day the vehicle company works, in order (one company usually covers the whole trip)
+const cityOf = d => d.kind === 'tour' && d.region ? d.region : /Busan|Gyeongju|Haeundae|Gamcheon|Spa Day/.test(d.title + d.route) ? 'busan' : /Jeju|Sunrise Peak|Waterfalls|Alpacas|Markets & Café|Beaches & Volcanic/.test(d.title + d.route) ? 'jeju' : 'seoul';
+// every day the vehicle company works, in order. type: tour / half (travel-day sightseeing) / transfer; free = done by the touring vehicle, not charged
 function vehicleSchedule(r) {
-  const pax = r.options.pax, lug = pax >= 5 && pax <= 12 && r.options.vehicle === 'Standard' ? ' + 짐차' : '', out = [];
-  const v = (i, text) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text });
+  const out = [], mix = isMix(r), lugOn = hasLuggage(r), last = r.itinerary.length - 1;
+  const v = (i, text, type, free) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text, type, free: !!free });
+  const tourBus = mix ? ' · 대형버스' : '', trVeh = mix ? ' · 솔라티' : '';
   r.itinerary.forEach((d, i) => {
-    const t = d.title;
-    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})`);
+    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})${tourBus}`, 'tour');
     if (d.kind !== 'transfer') return;
-    if ((d.adds || []).length) v(i, `이동일 관광: ${d.adds.join(', ')}`);
-    if (/Arrival/.test(t)) v(i, `인천공항 도착 픽업 → 서울 호텔${lug}`);
-    if (/Seoul to Jeju/.test(t)) { v(i, '서울 호텔 → 김포공항 샌딩'); v(i, '제주공항 픽업 → 제주 호텔'); }
-    if (/Jeju to Busan/.test(t)) { v(i, '제주 호텔 → 제주공항 샌딩'); v(i, '김해공항 픽업 → 부산 호텔'); }
-    if (/Seoul to Busan/.test(t)) { v(i, '서울 호텔 → 서울역 샌딩'); v(i, '부산역 픽업 → 부산 호텔'); }
-    if (/Departure/.test(t)) {
-      if (/Jeju/.test(d.route)) { v(i, '제주 호텔 → 제주공항 샌딩'); v(i, `김포공항 픽업 → 인천공항 샌딩${lug}`); }
-      else if (/Busan/.test(d.route)) { v(i, '부산 호텔 → 부산역 샌딩'); v(i, `서울역 픽업 → 인천공항 샌딩${lug}`); }
-      else v(i, `서울 호텔 → 인천공항 샌딩${lug}`);
-    }
+    if (!Array.isArray(d.transfers)) return oldTransfers(r, d, i, v, lugOn);
+    const paid = Array.isArray(d.paid) ? d.paid : d.transfers, adds = d.adds || [];
+    const half = () => { if (adds.length) v(i, `이동일 관광${d.tourCity ? ` (${CITY[d.tourCity]})` : ''}: ${d.tour ? d.tour + ' – ' : ''}${adds.join(', ')}${tourBus}`, 'half'); };
+    if (adds.length && d.tourCity && d.tourCity === d.from) half(); // touring before leaving the city
+    d.transfers.forEach((t, k) => {
+      const c = CITY[T_CITY[t]] || '', free = !paid.includes(t);
+      let text;
+      if (i === 0) text = `${T_KO[t]} 도착 픽업 → ${c} 호텔`;
+      else if (i === last) text = t === 'ICN' && k > 0 ? `${T_KO[{ CJU: 'GMP', BUS_STN: 'SEL_STN', PUS: 'GMP' }[d.transfers[k - 1]]] || '김포공항'} 픽업 → 인천공항 샌딩` : `${c} 호텔 → ${T_KO[t]} 샌딩`;
+      else text = k === 0 ? `${CITY[d.from] || c} 호텔 → ${T_KO[t]} 샌딩` : `${T_KO[t]} 픽업 → ${CITY[d.to] || c} 호텔`;
+      const lug = lugOn && ((i === 0 && k === 0) || (i === last && k === d.transfers.length - 1)) ? ' + 짐차' : '';
+      v(i, text + (free ? ' (이동일 관광 차량이 진행 · 별도 요금 없음)' : trVeh + lug), 'transfer', free);
+    });
+    if (adds.length && !(d.tourCity && d.tourCity === d.from)) half();
   });
   return out;
 }
+// requests saved before 2026-11-20 have no airport / station codes: always Seoul first, arrival and departure at Incheon
+function oldTransfers(r, d, i, v, lugOn) {
+  const t = d.title, lug = lugOn ? ' + 짐차' : '';
+  if ((d.adds || []).length) v(i, `이동일 관광: ${d.adds.join(', ')}`, 'half');
+  if (/Arrival/.test(t)) v(i, `인천공항 도착 픽업 → 서울 호텔${lug}`, 'transfer');
+  if (/Seoul to Jeju/.test(t)) { v(i, '서울 호텔 → 김포공항 샌딩', 'transfer'); v(i, '제주공항 픽업 → 제주 호텔', 'transfer'); }
+  if (/Jeju to Busan/.test(t)) { v(i, '제주 호텔 → 제주공항 샌딩', 'transfer'); v(i, '김해공항 픽업 → 부산 호텔', 'transfer'); }
+  if (/Seoul to Busan/.test(t)) { v(i, '서울 호텔 → 서울역 샌딩', 'transfer'); v(i, '부산역 픽업 → 부산 호텔', 'transfer'); }
+  if (/Departure/.test(t)) {
+    if (/Jeju/.test(d.route)) { v(i, '제주 호텔 → 제주공항 샌딩', 'transfer'); v(i, `김포공항 픽업 → 인천공항 샌딩${lug}`, 'transfer'); }
+    else if (/Busan/.test(d.route)) { v(i, '부산 호텔 → 부산역 샌딩', 'transfer'); v(i, `서울역 픽업 → 인천공항 샌딩${lug}`, 'transfer'); }
+    else v(i, `서울 호텔 → 인천공항 샌딩${lug}`, 'transfer');
+  }
+}
 function vehicleText(r) {
   const s = vehicleSchedule(r);
-  return [`[하킴트래블코리아] 차량 수배 요청`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${r.options.pax}명 + 가이드`, `* 차량: ${vehicleName(r)}`,
+  return [`[하킴트래블코리아] 차량 수배 요청`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${r.options.pax}명 + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : []),
     `* 기간: ${r.trip.arrival ? `${koDate(r.trip.arrival)} – ${koDate(r.trip.departure)}` : '날짜 미정'} (${r.trip.nights}박 ${r.trip.days}일)`, '', '[일정]',
     ...s.map(x => `${x.date ? koDate(x.date) : 'Day ' + x.day} (D${x.day}) ${x.text}`), '', '시간·픽업 장소는 확정 후 다시 전달드리겠습니다.', '감사합니다.'].join('\n');
 }
@@ -596,22 +623,26 @@ function buildOps(r) {
   const add = (cat, d, item, detail = '') => ops.push({ cat, date: d, item, detail, vendor: '', status: 'todo', ref: '' });
   const driving = pax <= 4 && r.options.vehicle === 'Standard';
   // vehicles: one line for the whole trip; the day-by-day plan is in the copy/print view
-  const vs = vehicleSchedule(r), tourN = vs.filter(x => x.text.includes('투어 종일')).length;
-  add('vehicle', date(0), `전 일정 차량: ${vehicleName(r)}`, `${pax}명 · 투어 ${tourN}일 · 픽업·샌딩 ${vs.length - tourN}회${pax >= 5 && pax <= 12 && r.options.vehicle === 'Standard' ? ' · 짐차 2회' : ''}`);
+  const vs = vehicleSchedule(r), tourN = vs.filter(x => x.type === 'tour').length, halfN = vs.filter(x => x.type === 'half').length;
+  const trN = vs.filter(x => x.type === 'transfer' && !x.free).length, freeN = vs.filter(x => x.free).length;
+  const tourTxt = `투어 ${tourN}일${halfN ? ` · 이동일 관광 ${halfN}일` : ''}`, trTxt = `픽업·샌딩 ${trN}회${freeN ? ` (이동일 관광 차량 진행 ${freeN}회 별도)` : ''}`, lugTxt = hasLuggage(r) ? ' · 짐차 2회 (도착·출국)' : '';
+  if (isMix(r)) {
+    add('vehicle', date(0), '투어 차량: 대형버스', `${pax}명 · ${tourTxt}`);
+    add('vehicle', date(0), '픽업·샌딩 차량: 솔라티 + 짐차', `${pax}명 · ${trTxt}${lugTxt}`);
+  } else add('vehicle', date(0), `전 일정 차량: ${vehicleName(r)}`, `${pax}명 · ${tourTxt} · ${trTxt}${lugTxt}`);
   // guides: one line per city block of touring days
   const byCity = {};
-  r.itinerary.forEach((d, i) => { if (d.kind === 'tour') (byCity[cityOf(d)] = byCity[cityOf(d)] || []).push(i); });
+  r.itinerary.forEach((d, i) => { const c = d.kind === 'tour' ? cityOf(d) : (d.adds || []).length ? d.tourCity || cityOf(d) : ''; if (c) (byCity[c] = byCity[c] || []).push(i); });
   for (const [c, idx] of Object.entries(byCity)) add('guide', date(idx[0]), `${CITY[c]} ${driving ? '드라이빙 가이드' : '영어 가이드'}`, `${idx.length}일 (Day ${idx.map(i => i + 1).join(', ')})`);
   // flights and KTX
   const kt = r.options.tier === 'Luxury' ? '특실' : '일반실';
   r.itinerary.forEach((d, i) => {
     if (d.kind !== 'transfer') return;
-    const t = d.title;
-    if (/Seoul to Jeju/.test(t)) add('transport', date(i), '국내선 김포 → 제주', `${pax}명`);
-    if (/Jeju to Busan/.test(t)) add('transport', date(i), '국내선 제주 → 김해', `${pax}명`);
-    if (/Seoul to Busan/.test(t)) add('transport', date(i), `KTX 서울 → 부산 (${kt})`, `${pax}명`);
-    if (/Departure/.test(t) && /Jeju/.test(d.route)) add('transport', date(i), '국내선 제주 → 김포', `${pax}명`);
-    if (/Departure/.test(t) && /Busan/.test(d.route)) add('transport', date(i), `KTX 부산 → 서울 (${kt})`, `${pax}명`);
+    const m = d.title.match(/^(Seoul|Jeju|Busan) to (Seoul|Jeju|Busan)$/);
+    const k = m ? `${m[1]}>${m[2]}`.toLowerCase() : /Departure/.test(d.title) ? (/Jeju/.test(d.route) ? 'jeju>seoul' : /Busan/.test(d.route) ? 'busan>seoul' : '') : '';
+    const TR = { 'seoul>jeju': '국내선 김포 → 제주', 'jeju>seoul': '국내선 제주 → 김포', 'jeju>busan': '국내선 제주 → 김해', 'busan>jeju': '국내선 김해 → 제주',
+      'seoul>busan': `KTX 서울 → 부산 (${kt})`, 'busan>seoul': `KTX 부산 → 서울 (${kt})` };
+    if (TR[k]) add('transport', date(i), TR[k], `${pax}명`);
   });
   // bookings found in the itinerary, plus the client's own requests
   r.itinerary.forEach((d, i) => {
@@ -760,9 +791,9 @@ $('wf').addEventListener('click', e => {
 });
 $('wf').addEventListener('toggle', e => { if (e.target.id === 'w-cost') costOpen = e.target.open; }, true);
 
-// ---- rates page: overrides saved on the server (Blobs "hakeem-settings") and applied to every new quote
+// ---- rates page: overrides saved on the server (Wix CMS "HakeemSettings") and applied to every new quote
 let rDraft = null, rResetArmed = 0;
-const SLAB_NAME = ['1명 (스타리아·드라이빙가이드)', '2–4명 (스타리아·드라이빙가이드)', '5–8명 (솔라티)', '9–12명 (솔라티)', '13–18명 (카운티)', '19명 이상 (버스)'];
+const SLAB_NAME = ['1명 (스타리아·드라이빙가이드)', '2–4명 (스타리아·드라이빙가이드)', '5–9명 (솔라티 + 짐차)', '10–13명 (픽업·샌딩 솔라티 + 짐차 / 투어 대형버스)', '14–18명 (대형버스)', '19–25명 (대형버스)', '26–40명 (대형버스)'];
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   $('list').hidden = tab !== 'list'; $('rates').hidden = tab !== 'rates'; $('detail').style.display = 'none';
@@ -785,7 +816,7 @@ function drawRates() {
   $('rates').innerHTML = `
   <div class="card"><h3>기본</h3><div class="sub">환율과 생수·티슈 (1인·1투어일 기준, 가이드 포함 인원)</div>
     <div class="rgrid"><label>환율 (₩/US$)${rIn(['fx'], '')}</label><label>생수 1병${rIn(['water'])}</label><label>티슈${rIn(['tissue'])}</label><label>이동일 관광 (종일 대비 비율, 1 = 종일과 동일)${rIn(['halfDay'], '')}</label></div></div>
-  <div class="card"><h3>인원 구간별 차량·가이드·마진</h3><div class="sub">마진은 1인당 USD, 나머지는 원화. 픽업·샌딩은 편도 1회, 차량·가이드는 투어 1일, 짐차는 1회 (5–12명만)</div>
+  <div class="card"><h3>인원 구간별 차량·가이드·마진</h3><div class="sub">마진은 1인당 USD, 나머지는 원화. 픽업·샌딩은 편도 1회, 차량·가이드는 투어 1일, 짐차는 1회 (5–13명, 도착·출국 2회).<br>10–13명 행: 픽업·샌딩 칸 = 솔라티 요금, 차량 1일 칸 = 대형버스 요금</div>
     <table><tr><th>구간</th><th>1인 마진 (US$)</th><th>픽업·샌딩 1회</th><th>차량 1일</th><th>가이드 1일</th><th>짐차 1회</th></tr>
     ${D.slabs.map((s, i) => `<tr><td>${SLAB_NAME[i] || ''}</td>${['margin', 'transfer', 'day', 'guide', 'luggage'].map(k => `<td><label>${rIn(['slabs', i, k], k === 'margin' ? '$' : '₩')}</label></td>`).join('')}</tr>`).join('')}</table></div>
   <div class="card"><h3>식사 · 교통</h3><div class="sub">식사는 1인 1회, 항공·KTX는 1인 편도</div>
