@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Design Your Korea Tour · Hakeem Travel Korea</title>
-<meta name="description" content="Build a private Korea tour: day-by-day itinerary and an instant land fee per person.">
+<meta name="description" content="Build a private Korea tour: day-by-day itinerary, then request your quotation.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Hakeem Travel Korea">
 <meta property="og:title" content="Design Your Korea Tour · Hakeem Travel Korea">
-<meta property="og:description" content="Build a private Korea tour: day-by-day itinerary and an instant land fee per person.">
+<meta property="og:description" content="Build a private Korea tour: day-by-day itinerary, then request your quotation.">
 <meta property="og:image" content="https://coalrla.github.io/hakeem-tour-builder/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://coalrla.github.io/hakeem-tour-builder/">
@@ -184,7 +184,8 @@ html.tall-frame .side .panel { overflow: visible !important; max-height: none !i
 .price .amt { font-family: var(--font-display); font-weight: 600; font-size: 2.7rem; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
 .price .amt sup { font-size: 1rem; margin-right: 2px; }
 .price .per { font-size: .85rem; color: var(--muted); }
-.price .tot { font-size: .9rem; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.price .ask-amt { font-size: 2.1rem; }
+.price .ask-btn { display: inline-block; margin-top: 10px; text-decoration: none; }
 .note-card { font-size: .82rem; color: var(--muted); padding: 14px 22px; }
 
 .slabs h3, .sec-h { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
@@ -269,6 +270,9 @@ html.tall-frame .side .panel { overflow: visible !important; max-height: none !i
 @media print { .mv { display: none !important; } }
 .lotte-opt { display: inline-flex; align-items: center; gap: 8px; margin: 2px 0 6px; font-size: .86rem; font-weight: 600; color: var(--brand); cursor: pointer; }
 .lotte-opt input { accent-color: var(--brand); }
+.meal-opt { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0 0 6px; }
+.meal-opt > span { font-size: .78rem; font-weight: 700; color: var(--muted, #777); text-transform: uppercase; letter-spacing: .04em; }
+@media print { .meal-opt { display: none !important; } }
 @media print { .lotte-opt { display: none !important; } }
 .swap-hint { margin: -4px 0 10px; font-size: .84rem; color: var(--muted); }
 .linkbtn { border: 0; background: none; color: var(--brand); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0 0 0 6px; }
@@ -362,7 +366,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 <section class="intro">
   <div class="intro-txt">
   <h1>Design Your Korea Tour</h1>
-  <p>Choose the season, group size, style and cities.<br>Get a day-by-day itinerary and an instant land fee per person.<br>Hotels are quoted separately.</p>
+  <p>Choose the season, group size, style and cities.<br>Get a day-by-day itinerary and send it to us for your quotation.<br>Hotels are quoted separately.</p>
   </div>
 </section>
 <div class="mini" id="mini" hidden><span id="mini-t"></span><b id="mini-p"></b></div>
@@ -454,12 +458,19 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
     </div>
 
     <div class="field">
+      <span class="label">Luggage</span>
+      <label class="lotte-opt" id="lug-opt"><input type="checkbox" id="lug-on"> Extra luggage</label>
+      <span class="hint" id="lug-hint">Adds a luggage van for arrival and departure. Standard is one large suitcase per person.</span>
+    </div>
+
+    <div class="field">
       <span class="label" id="l-meals">Meals</span>
       <div class="seg c2" role="group" aria-labelledby="l-meals" data-multi="meals">
         <button type="button" class="opt" data-v="lunch">Lunch</button>
         <button type="button" class="opt" data-v="dinner">Dinner</button>
       </div>
-      <span class="hint" id="meal-hint">At local restaurants on touring days and travel days between cities</span>
+      <span class="hint" id="meal-count"></span>
+      <span class="hint" id="meal-hint">At local restaurants on touring days and travel days between cities (arrival and departure days can be added in the itinerary). Preferred cuisine (e.g. halal, Indian, vegetarian) can be arranged on request.</span>
     </div>
   </form>
   </aside>
@@ -472,23 +483,18 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
         <div class="chips" id="q-chips"></div>
       </div>
       <div class="price">
-        <div class="from">Estimated land fee</div>
-        <div class="amt" id="q-pp"></div>
-        <div class="per">per person</div>
-        <div class="br" id="q-br"></div>
-        <div class="tot" id="q-total"></div>
+        <div class="from">Your quotation</div>
+        <div class="amt ask-amt">On request</div>
+        <div class="per">Prepared by our tour team for your group and dates</div>
+        <a class="btn ask-btn" href="#ask">Request a quotation</a>
       </div>
     </section>
-  <section class="card slabs">
-      <h3>Price per person by group size</h3>
-      <div class="slab-grid" id="slabs"></div>
-  </section>
 
     <section class="card print-only" id="print-info"></section>
 
     <section class="card">
       <div class="sec-h">Day-by-day itinerary</div>
-      <p class="swap-hint">Want something different? Use <b>Change</b> to swap any day for another tour in the same city, or add your own places to any day. Added places are not included in the price and will be confirmed in your formal quotation. <button type="button" id="swap-reset" class="linkbtn" hidden>Reset to suggested itinerary</button></p>
+      <p class="swap-hint">Want something different? Use <b>Change</b> to swap any day for another tour in the same city, or add your own places to any day. Added places will be confirmed in your quotation. <button type="button" id="swap-reset" class="linkbtn" hidden>Reset to suggested itinerary</button></p>
       <p class="legend" id="legend" hidden></p>
       <div class="days" id="days"></div>
     </section>
@@ -510,17 +516,17 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
         </ul>
       </div>
     </section>
-    <section class="card note-card"><span id="note-ex">Excludes hotels and meals.</span><br>Based on one large suitcase per person. An extra luggage van can be arranged on request.<br><span id="note-meal">Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.</span><br>Prices are estimates in US dollars, based on private touring for your group, and are confirmed when we send your formal quotation.</section>
+    <section class="card note-card"><span id="note-ex">Excludes hotels and meals.</span><br><span id="note-lug">Based on one large suitcase per person. An extra luggage van can be added under Luggage.</span><br><span id="note-meal">Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.</span><br>All touring is private for your group. Prices are sent in your formal quotation.</section>
 
     <section class="card addons">
       <div class="sec-h">Add-on experiences</div>
-      <p class="legend" style="margin:0 0 12px">Not included in the price above. Tick what interests your guests and we will quote it with your formal quotation.</p>
+      <p class="legend" style="margin:0 0 12px">Tick what interests your guests. We book them all; beauty and medical services are paid by your guests at the venue.</p>
       <div id="addons"></div>
     </section>
 
     <section class="card ask" id="ask">
       <h2>Request a formal quotation</h2>
-      <p class="contact" style="margin:0">Send us this itinerary and our tour team will reply with hotel options and a confirmed price, usually within one working day.</p>
+      <p class="contact" style="margin:0">Send us this itinerary and our tour team will reply with your quotation and hotel options, usually within one working day.</p>
       <div class="form">
         <label>Your name<input id="f-name" autocomplete="name"></label>
         <label>Company / agency<input id="f-co" autocomplete="organization"></label>
@@ -559,26 +565,50 @@ function hkFetch(path, method, body, key) {
 }
 
 /* ===== Hakeem Travel Korea — tour builder itinerary engine =====
-   All money values in KRW unless noted. Edit CONFIG to update rates.
-   Sources: 2026 sample package (10N11D v5) group-size price sheets, quotation template Sights sheet,
-   Limousine Service 2026 tariff (vehicle upgrades). Items marked "est." are not in those files. */
+   Rates are kept on the server (the admin page loads them after login); this copy has the itinerary rules only. */
 const CONFIG = {
-  slabs: [{ max: 1, cls: 'drv' }, { max: 4, cls: 'drv' }, { max: 9, cls: 'sol' }, { max: 13, cls: 'mix' }, { max: 18, cls: 'bus' }, { max: 25, cls: 'bus' }, { max: Infinity, cls: 'bus' }],
-  brackets: [[1, 1], [2, 4], [5, 9], [10, 13], [14, 18], [19, 25], [26, 40]],
-  budgetMaxAdmission: 20000,
-  budgetFreeDayFrom: 3,
+  fx: 1250, roundTo: 5,
+  vehicles: { staria: {}, solati: {}, bus: {} }, guide: 0, luggage: 0, luggageTrips: 2, margins: [[2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [40, 0]], hanbokUSD: 0, addons: { perfume: 0, cooking: 0 },
+  // Vehicle plan by group size: [up to N pax, transfers, touring days, luggage van]. Other markets use the India plan;
+  // the buyer can ask for extra luggage (sel.luggage) and gets the luggage van on arrival and departure.
+  plans: {
+    mideast: [[3, 'staria', 'staria', 0], [5, 'solati', 'staria', 0], [6, 'solati', 'solati', 0], [10, 'solati', 'solati', 1], [20, 'bus', 'bus', 0], [40, 'bus', 'bus', 1]],
+    india: [[4, 'staria', 'staria', 0], [5, 'solati', 'staria', 0], [8, 'solati', 'solati', 0], [10, 'solati', 'solati', 1], [12, 'bus', 'bus', 1], [40, 'bus', 'bus', 0]],
+  },
+  // Price brackets: each is priced at its smallest group size. Cut where the vehicle plan or the margin changes.
+  brackets: [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 8], [9, 10], [11, 12], [13, 20], [21, 40]],
+  // add-ons Hakeem books and pays (priced in the land fee); beauty and medical add-ons are booked by us and paid by the guests
+  addonPaid: { perfume: 'Perfume Workshop', cooking: 'Korean Cooking Class' },
+  budgetMaxAdmission: 20000,      // Budget: skip stops whose admission is above this (KRW)
+  budgetFreeDayFrom: 3,           // Budget: the last touring day in a city is a free day when that city has this many touring days
+  water: 0, tissue: 0, halfDay: 1, meals: { lunch: 0, dinner: 0 },
   tickets: { flight: 0, ktx: 0, ktx1st: 0 },
   upgrades: { g90: { label: 'Genesis G90 luxury sedan', short: 'Genesis G90', maxPax: 3 }, sclass: { label: 'Mercedes S-Class VVIP sedan', short: 'S-Class', maxPax: 3 }, sprinter: { label: 'Mercedes Sprinter VVIP van', short: 'Sprinter VVIP', maxPax: 7 } },
+  upgradeBase: {},
 };
-const slabFor = p => CONFIG.slabs.find(x => p <= x.max);
-const vehicleClass = p => slabFor(p).cls;
-const isDriving = c => c === 'drv' || c === 'drv7';
-const VEHICLE_LABEL = { drv: 'Private van (Staria) with English-speaking driving guide', drv7: 'Private 9-seat van with English-speaking driving guide, plus luggage van on arrival and departure', sol: 'Private minibus (Solati) with driver + English-speaking guide', mix: 'Private bus with driver + English-speaking guide on touring days, minibus (Solati) for transfers', bus: 'Private bus (28 or 45-seater) with driver + English-speaking guide' };
 
-/* Per-person admission (KRW) — Sights sheet */
+// ---- vehicle plan (2026-11-20 table): by group size and market
+const planMarket = m => m === 'mideast' ? 'mideast' : 'india';
+function planFor(pax, market, luggage) {
+  const row = CONFIG.plans[planMarket(market)].find(r => pax <= r[0]) || CONFIG.plans.india[CONFIG.plans.india.length - 1];
+  return { pickup: row[1], tour: row[2], luggage: !!row[3] || !!luggage, extraLuggage: !row[3] && !!luggage };
+}
+const isDriving = p => p.tour === 'staria';
+const marginFor = pax => (CONFIG.margins.find(([n]) => pax <= n) || CONFIG.margins[CONFIG.margins.length - 1])[1];
+const VEH_EN = { staria: 'van (Staria)', solati: 'minibus (Solati)', bus: 'bus (28 or 45-seater)' };
+const VEH_KO = { staria: '스타리아', solati: '솔라티', bus: '대형버스' };
+function vehicleLabel(p) {
+  const tour = p.tour === 'staria' ? 'Private van (Staria) with English-speaking driving guide' : `Private ${VEH_EN[p.tour]} with driver + English-speaking guide`;
+  return tour + (p.pickup !== p.tour ? `, ${VEH_EN[p.pickup]} for airport and station transfers` : '') + (p.luggage ? ', plus luggage van on arrival and departure' : '');
+}
+const vehicleKo = p => p.pickup === p.tour ? `${VEH_KO[p.tour]}${p.tour === 'staria' ? ' + 드라이빙가이드' : ''}${p.luggage ? ' + 짐차' : ''}`
+  : `픽업·샌딩 ${VEH_KO[p.pickup]}${p.luggage ? ' + 짐차' : ''} / 투어 ${VEH_KO[p.tour]}${p.tour === 'staria' ? ' + 드라이빙가이드' : ''}`;
+const vehicleShort = p => p.pickup === p.tour ? ({ staria: 'Staria van', solati: 'Solati minibus', bus: 'Bus' })[p.tour] : `${({ staria: 'Staria', solati: 'Solati', bus: 'Bus' })[p.tour]} + ${({ staria: 'Staria', solati: 'Solati', bus: 'Bus' })[p.pickup]} transfers`;
+
+/* Admissions are kept on the server. 99999 marks the stops above the Budget limit (used by the Budget filter only). */
 const SIGHTS = {
   "GYEONGBOKGUNG PALACE": 0,
-  "GYEONGBOKGUNG PALACE (INCLUDING: HANBOK RENTAL)": 99999, // in hanbok the palace is free: this is the rental
+  "GYEONGBOKGUNG PALACE (INCLUDING: HANBOK RENTAL)": 0, // priced as the palace ticket; the hanbok rental is charged as CONFIG.hanbokUSD per person
   "NATIONAL FOLK MUSEUM OF KOREA": 0, "BUKCHON HANOK VILLAGE": 0, "INSADONG ANTIQUE ALLEY": 0,
   "N SEOUL TOWER (INCLUDING: CABLE CAR, EXCLUDING: OBSERVATORY)": 0,
   "N SEOUL TOWER (INCLUDING: CABLE CAR, OBSERVATORY)": 99999,
@@ -803,6 +833,8 @@ const MIN_STOPS = 4;
 const TIER_RANK = { B: 0, R: 1, L: 2 };
 const HANBOK_KEY = 'GYEONGBOKGUNG PALACE (INCLUDING: HANBOK RENTAL)';
 const hanbokOf = sel => typeof sel.hanbok === 'boolean' ? sel.hanbok : sel.tier === 'L';
+const mealKey = (d, m) => (d.slot || 't:' + d.title) + '|' + m; // a meal on one day, for sel.mealOff / sel.mealOn
+const mealEdge = d => d.kind === 'transfer' && (d.title === 'Departure' || d.title.startsWith('Arrival')); // arrival / departure day
 const REGION_NAME = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
 
 /* Source market rules: must = always included (if the city has enough days), never = excluded. */
@@ -891,7 +923,7 @@ function resolveStops(m, sel) {
     const lotteOn = typeof sel.lotte === 'boolean' ? sel.lotte : sel.concept === 'romantic';
     if (o.lotte && !lotteOn) continue;
     if (o.notLotte && lotteOn) continue;
-    // Hanbok rental at Gyeongbokgung: on by default for Luxury, otherwise the client's choice. Palace entry is free in hanbok, so the stop is priced at the rental.
+    // Hanbok rental at Gyeongbokgung: on by default for Luxury, otherwise the client's choice. The stop keeps the palace ticket price; the rental is charged as CONFIG.hanbokUSD per person.
     const hanbokOn = hanbokOf(sel);
     if (o.c && !o.c.includes(sel.concept)) continue;
     if (o.seasons && !o.seasons.includes(sel.season)) continue;
@@ -1060,7 +1092,9 @@ function buildItinerary(sel) {
   days.push(dep);
   const meals = (Array.isArray(sel.meals) ? sel.meals : []).filter(m => m === 'lunch' || m === 'dinner');
   // meals on touring days and travel days between cities (not the arrival day, free days or the departure day)
-  days.forEach(d => { d.meals = d.kind === 'tour' || (d.kind === 'transfer' && d.title !== 'Departure' && !d.title.startsWith('Arrival')) ? meals : []; });
+  // meals are on by default on touring days and travel days between cities (untick: sel.mealOff);
+  // arrival and departure days are off by default and can be ticked (sel.mealOn)
+  days.forEach(d => { d.mealSlots = d.kind === 'tour' || d.kind === 'transfer' ? meals : []; d.meals = d.mealSlots.filter(m => mealEdge(d) ? !!(sel.mealOn || {})[mealKey(d, m)] : !(sel.mealOff || {})[mealKey(d, m)]); });
   return days;
 }
 
@@ -1087,13 +1121,14 @@ const bracketFor = pax => CONFIG.brackets.find(([a, b]) => pax >= a && pax <= b)
 const bracketLabel = ([a, b]) => a === b ? `${a} pax` : `${a}–${b} pax`;
 
 
+
 </script>
 <script>
 const CITY_NAME = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
 const SEASON_NAME = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
 const TIER_NAME = { B: 'Budget', R: 'Regular', L: 'Luxury' };
 const CONCEPT_NAME = { classic: 'Classic Korea', family: 'Family', romantic: 'Couple', beauty: 'K-Beauty', wellness: 'Wellness', tech: 'Tech & Innovation', education: 'Education' };
-const sel = { market: 'other', country: '', meals: [], moveTour: {}, vehicle: 'std', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3, swaps: {}, lotte: null, hanbok: null };
+const sel = { market: 'other', country: '', meals: [], moveTour: {}, vehicle: 'std', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3, swaps: {}, lotte: null, hanbok: null, mealOff: {}, mealOn: {}, luggage: false, addons: [] };
 (function initSeason() { const m = new Date().getMonth(); sel.season = m >= 2 && m <= 4 ? 'spring' : m <= 7 && m >= 5 ? 'summer' : m >= 8 && m <= 10 ? 'autumn' : 'winter'; })();
 
 const SMALL = new Set(['AND', 'OF', 'THE', 'AT', 'TO', 'IN', 'BY', 'WITH', 'FOR']);
@@ -1119,15 +1154,15 @@ const ADDONS = [
   { g: 'Winter specials', sub: 'December to February', seasons: ['winter'], items: [
     { id: 'ski', name: 'Ski Day', d: 'One-day class with a pro instructor; skis, boots and poles included. About 2 hours from Seoul.' },
     { id: 'hwacheon', name: 'Hwacheon Ice Festival', d: 'Ice fishing for trout, grilled on the spot, plus ice sledding. January only.', skip: 'HWACHEON' } ] },
-  { g: 'Beauty', themes: ['beauty', 'wellness'], items: [
+  { g: 'Beauty', sub: 'we book · you pay at the venue', themes: ['beauty', 'wellness'], items: [
     { id: 'color', name: 'Personal Color Analysis', d: 'One-on-one draping to find your best shades.', skip: 'PERSONAL COLOR' },
     { id: 'nail', name: 'Nail Art & Hair Styling', d: 'Seoul-style nails and a salon blow-out.' },
     { id: 'scalp', name: 'Hair Spa & Scalp Care', d: 'Scalp check, deep cleanse and massage.' } ] },
   { g: 'Make & taste', items: [
-    { id: 'perfume', name: 'Perfume Workshop', d: 'Blend your own scent and take the bottle home.' },
-    { id: 'cooking', name: 'Korean Cooking Class', d: 'Cook bibimbap and japchae with a local chef.', skip: 'COOKING CLASS' },
+    { id: 'perfume', name: 'Perfume Workshop', d: 'Blend your own scent and take the bottle home. Booked by us and included in your quotation.' },
+    { id: 'cooking', name: 'Korean Cooking Class', d: 'Cook bibimbap and japchae with a local chef. Booked by us and included in your quotation.', skip: 'COOKING CLASS' },
     { id: 'strawberry', name: 'Strawberry & Jam Making', d: 'Pick strawberries and make your own jam.', seasons: ['winter', 'spring'] } ] },
-  { g: 'Medical', sub: 'with our medical tour team', items: [
+  { g: 'Medical', sub: 'with our medical tour team · we book, you pay at the clinic', items: [
     { id: 'clinic', name: 'Dermatology & Plastic Surgery', d: 'Consultations at partner clinics, planned around your trip.' },
     { id: 'checkup', name: 'Health Check-up', d: 'A full screening at a partner hospital.' } ] },
 ];
@@ -1142,6 +1177,7 @@ function renderAddons(days) {
   const groups = visibleAddons(days);
   const shown = new Set(groups.flatMap(g => g.items.map(x => x.id)));
   [...addonPick].forEach(id => { if (!shown.has(id)) addonPick.delete(id); });
+  sel.addons = [...addonPick];
   document.getElementById('addons').innerHTML = groups.map(g => `<div class="grp"><div class="gh">${g.g}${g.sub ? `<small>${g.sub}</small>` : ''}</div><div class="items">${
     g.items.map(x => `<label class="addon"><input type="checkbox" data-addon="${x.id}"${addonPick.has(x.id) ? ' checked' : ''}><div><b>${x.name}</b><span>${x.d}</span></div></label>`).join('')}</div></div>`).join('');
 }
@@ -1195,7 +1231,13 @@ cIn.addEventListener('blur', () => {
   cPick(exact ? exact[1] : hits.length === 1 ? hits[0][1] : sel.country);
 });
 function guestsLabel() { const c = COUNTRIES.find(x => x[1] === sel.country); return c ? c[0] : ''; }
-function mealWords() { const s = sel.meals.join(' and '); return s && s[0].toUpperCase() + s.slice(1); }
+const mealCount = m => (lastDays || []).reduce((a, d) => a + ((d.meals || []).includes(m) ? 1 : 0), 0);
+function mealWords() { const s = sel.meals.map(m => `${m} ×${mealCount(m)}`).join(' and '); return s && s[0].toUpperCase() + s.slice(1); }
+// meal ticks on each day of the itinerary
+function mealOpt(d) {
+  if (!d.mealSlots || !d.mealSlots.length) return '';
+  return `<div class="meal-opt"><span>Meals</span>${d.mealSlots.map(m => `<label class="lotte-opt"><input type="checkbox" data-meal="${esc(mealKey(d, m))}"${mealEdge(d) ? ' data-edge="1"' : ''}${d.meals.includes(m) ? ' checked' : ''}> ${m === 'lunch' ? 'Lunch' : 'Dinner'}</label>`).join('')}</div>`;
+}
 // Rooms: room types + counts for the hotel quote. Follows the group size (twin sharing) until the buyer edits it.
 const ROOM_TYPES = [['SGL', 'Single (1 PAX, 1 Queen size bed)', 1], ['TWN', 'Twin (2 PAX, 2 Single size beds)', 2], ['DBL', 'Double (2 PAX, 1 Queen size bed)', 2], ['TRP', 'Triple (3 PAX, 3 Single size bed)', 3], ['FAM', 'Family (3 PAX, 1 Queen size bed + 1 Single size bed)', 3]];
 const EXTRA_BED = 'Extra Bed (1 PAX, 1 Extra bed)';
@@ -1229,17 +1271,10 @@ if (window.self !== window.top) {
   const fitFrame = () => document.documentElement.classList.toggle('tall-frame', innerHeight > (screen.availHeight || 900) - 120);
   fitFrame(); addEventListener('resize', fitFrame);
 }
-// Price: computed locally in the preview build, by the /api/quote server function on the website (rates stay on the server).
-async function getQuote(s) {
-  if (typeof quoteFor === 'function') {
-    const days = buildItinerary(s), q = quoteFor(days, s.pax, s.vehicle);
-    const up = q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade] : null;
-    const slabs = CONFIG.brackets.filter(([a]) => !up || a <= up.maxPax).map(br => ({ bracket: br, perPerson: priceFor(days, br[0], up ? s.vehicle : 'std').perPerson }));
-    return { perPerson: q.perPerson, total: q.total, bracket: q.bracket, cls: q.cls, upgrade: q.upgrade, guidedDays: q.guidedDays, slabs };
-  }
-  const r = await hkFetch('/api/quote', 'POST', s);
-  if (!r.ok) throw new Error('quote ' + r.status);
-  return r.json();
+// Prices are not shown on this page: the quote card lists what is included, worked out from the itinerary.
+function localQuote(days) {
+  const up = sel.vehicle !== 'std' && upgradeOK(sel.vehicle, sel.pax) ? sel.vehicle : 'std';
+  return { plan: planFor(sel.pax, sel.market, sel.luggage), upgrade: up, guidedDays: days.filter(d => d.kind === 'tour').length };
 }
 let lastDays = null, lastQ = null, renderSeq = 0;
 function render() {
@@ -1251,20 +1286,10 @@ function render() {
   document.getElementById('q-title').textContent = `${nights} nights / ${days.length} days · ${cities.join(' → ')}`;
   document.getElementById('q-route').textContent = [SEASON_NAME[sel.season], TIER_NAME[sel.tier], CONCEPT_NAME[sel.concept], guestsLabel(), `${sel.pax} traveler${sel.pax > 1 ? 's' : ''}`].filter(Boolean).join(' · ');
   renderDays(days);
+  document.getElementById('meal-count').textContent = sel.meals.length ? `${mealWords()} · tick or untick days in the itinerary` : '';
   updateDateHint(days);
   renderAddons(days);
-  const seq = ++renderSeq;
-  document.querySelector('.quote').classList.add('loading');
-  getQuote({ ...sel }).then(q => {
-    if (seq !== renderSeq) return;
-    document.querySelector('.quote').classList.remove('loading');
-    renderPrice(days, q);
-  }).catch(() => {
-    if (seq !== renderSeq) return;
-    document.querySelector('.quote').classList.remove('loading');
-    document.getElementById('q-pp').textContent = 'On request';
-    document.getElementById('q-total').textContent = 'Price could not be loaded. Please send us your request.';
-  });
+  renderPrice(days, localQuote(days));
 }
 
 const hasTicket = (days, w) => days.some(d => (d.tickets || []).some(([n]) => n.includes(w)));
@@ -1272,27 +1297,26 @@ function transportWords(days) { const f = hasTicket(days, 'flight'), k = hasTick
 function renderPrice(days, q) {
   lastQ = q;
   const up = q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade] : null;
-  document.getElementById('q-chips').innerHTML = [up ? `Chauffeur-driven ${up.label} + English-speaking guide` : VEHICLE_LABEL[q.cls], `${q.guidedDays} guided touring days`, transportWords(days) ? `${transportWords(days)} included` : null, sel.meals.length ? `${mealWords()} included` : null]
+  document.getElementById('q-chips').innerHTML = [up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false }), q.plan.luggage ? 'Luggage van' : null, `${q.guidedDays} guided touring days`, transportWords(days) ? `${transportWords(days)} included` : null, sel.meals.length ? `${mealWords()} included` : null]
     .filter(Boolean).map(t => `<span class="chip">${t}</span>`).join('');
-  document.getElementById('q-pp').innerHTML = `<sup>US$</sup>${q.perPerson.toLocaleString('en-US')}`;
-  document.getElementById('q-total').textContent = `Total for ${sel.pax}: US$ ${q.total.toLocaleString('en-US')}`;
-  document.getElementById('q-br').textContent = `Group rate for ${bracketLabel(q.bracket)}`;
   document.getElementById('mini-t').textContent = `${document.getElementById('q-title').textContent} · ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}`;
-  document.getElementById('mini-p').textContent = `US$${q.perPerson.toLocaleString('en-US')} per person · total US$${q.total.toLocaleString('en-US')}`;
-  document.getElementById('veh-hint').textContent = up ? `Chauffeur-driven ${up.label} + English-speaking guide` : VEHICLE_LABEL[q.cls];
-  document.getElementById('slabs').innerHTML = q.slabs.map(s =>
-    `<div class="slab${s.bracket[0] === q.bracket[0] ? ' on' : ''}"><span>${bracketLabel(s.bracket)}</span><b>${usd(s.perPerson)}</b></div>`).join('');
+  document.getElementById('mini-p').textContent = 'Quotation on request';
+  document.getElementById('veh-hint').textContent = up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false });
+  const lug = document.getElementById('lug-on'), planLug = planFor(sel.pax, sel.market, false).luggage;
+  lug.checked = planLug || sel.luggage; lug.disabled = planLug;
+  document.getElementById('lug-hint').textContent = planLug ? 'A luggage van is already included for your group size.' : 'Adds a luggage van for arrival and departure. Standard is one large suitcase per person.';
   const incl = [
     up ? `Chauffeur-driven ${up.label} for all touring days and transfers` : null,
-    up ? 'English-speaking guide on every touring day' : isDriving(q.cls) ? 'English-speaking driving guide in a private van on touring days' : 'English-speaking guide on every touring day',
-    up ? null : isDriving(q.cls) ? 'Private airport, station and hotel transfers with driver' : q.cls === 'mix' ? 'Private bus with driver on touring days, private minibus (Solati) for airport, station and hotel transfers' : `Private ${({ sol: 'minibus', bus: 'bus' })[q.cls]} with driver for all touring days and transfers`,
+    up ? 'English-speaking guide on every touring day' : isDriving(q.plan) ? 'English-speaking driving guide in a private van on touring days' : 'English-speaking guide on every touring day',
+    up ? null : isDriving(q.plan) ? 'Private airport, station and hotel transfers with driver' : q.plan.pickup !== q.plan.tour ? `Private ${VEH_EN[q.plan.tour]} with driver on touring days, private ${VEH_EN[q.plan.pickup]} for airport, station and hotel transfers` : `Private ${VEH_EN[q.plan.tour]} with driver for all touring days and transfers`,
     'Admission fees for the sights listed in the itinerary',
     hasTicket(days, 'flight') ? 'Domestic flight(s) in economy class with 15 kg checked baggage' : null,
     hasTicket(days, 'KTX') ? `KTX bullet train in ${sel.tier === 'L' ? 'first' : 'standard'} class` : null,
-    !up && (q.cls === 'sol' || q.cls === 'mix') ? 'Luggage van for your airport arrival and departure transfers' : null,
-    sel.meals.length ? `${mealWords()} at local restaurants on touring days and travel days between cities` : null,
+    q.plan.luggage ? 'Luggage van for your airport arrival and departure transfers' : null,
+    sel.meals.length ? `${mealWords()} at local restaurants, on the days ticked in the itinerary` : null,
   ].filter(Boolean);
   document.getElementById('note-ex').textContent = sel.meals.length === 2 ? 'Excludes hotels.' : sel.meals.length ? `Excludes hotels and ${sel.meals.includes('lunch') ? 'dinner' : 'lunch'}.` : 'Excludes hotels and meals.';
+  document.getElementById('note-lug').textContent = q.plan.luggage ? 'A luggage van is included for arrival and departure.' : 'Based on one large suitcase per person. An extra luggage van can be added under Luggage.';
   document.getElementById('note-meal').textContent = sel.meals.length ? 'Halal, vegetarian, vegan or Jain meals can be arranged: tell us in the request form.' : 'Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.';
   document.getElementById('incl').innerHTML = incl.map(t => `<li>${t}</li>`).join('');
   updateRequest();
@@ -1331,6 +1355,8 @@ function swapSelect(d, days) {
 document.addEventListener('change', e => {
   if (e.target.id === 'lotte-on') { sel.lotte = e.target.checked; render(); return; }
   if (e.target.id === 'hanbok-on') { sel.hanbok = e.target.checked; render(); return; }
+  if (e.target.id === 'lug-on') { sel.luggage = e.target.checked; render(); return; }
+  if (e.target.dataset.meal) { const k = e.target.dataset.meal, f = e.target.dataset.edge ? 'mealOn' : 'mealOff', on = e.target.dataset.edge ? e.target.checked : !e.target.checked; sel[f] ||= {}; if (on) sel[f][k] = true; else delete sel[f][k]; render(); return; }
   if (e.target.dataset.mvOn) { const k = e.target.dataset.mvOn; if (e.target.checked) { const [f, to] = k.split('>'); const o = moveTourOptions(f, to, sel).find(x => !moveTourTaken(f, to, x.value, sel)); if (o) sel.moveTour[k] = o.value; } else delete sel.moveTour[k]; render(); return; }
   if (e.target.dataset.mv) { sel.moveTour[e.target.dataset.mv] = e.target.value; render(); return; }
   const s = e.target.closest('select[data-slot]'); if (!s) return;
@@ -1378,7 +1404,7 @@ function renderDays(days) {
       ? d.stops.map(s => `<li class="${[s.theme && 'theme', s.seasonal && 'seasonal'].filter(Boolean).join(' ')}">${pretty(s.key)}${s.theme && !d.themeDay ? `<span class="tt">${CONCEPT_NAME[sel.concept]}</span>` : ''}${s.seasonal && !d.seasonDay ? `<span class="st">${SEASON_NAME[sel.season].split(' ')[0]}</span>` : ''}${s.note ? `<em>${s.note}</em>` : ''}</li>`).join('')
       : moveLines(d).join('');
     return `<article class="day${d.kind !== 'tour' ? ' move' : ''}"><div class="dn">Day<b>${i + 1}</b></div><div>
-      <div class="dh"><h4>${d.title}${tag}${d.swapped ? '<span class="tag chg">Changed</span>' : ''}</h4>${swapSelect(d, days)}${movePanel(d)}</div><div class="rt">${d.route || ''}</div>${d.blurb ? `<p class="bl">${d.blurb}</p>` : ''}${d.lotteOpt ? `<label class="lotte-opt"><input type="checkbox" id="lotte-on"${d.stops.some(s => s.key === 'LOTTE WORLD THEME PARK') ? ' checked' : ''}> Add Lotte World theme park (rides & parades, about half a day)</label>` : ''}${d.hanbokOpt ? `<label class="lotte-opt"><input type="checkbox" id="hanbok-on"${d.stops.some(s => s.key === HANBOK_KEY) ? ' checked' : ''}> Wear hanbok at Gyeongbokgung Palace (hanbok rental added · palace entry free in hanbok)</label>` : ''}<ul>${items}${reqItems(d)}</ul>${reqInput(d)}</div></article>`;
+      <div class="dh"><h4>${d.title}${tag}${d.swapped ? '<span class="tag chg">Changed</span>' : ''}</h4>${swapSelect(d, days)}${movePanel(d)}</div><div class="rt">${d.route || ''}</div>${d.blurb ? `<p class="bl">${d.blurb}</p>` : ''}${d.lotteOpt ? `<label class="lotte-opt"><input type="checkbox" id="lotte-on"${d.stops.some(s => s.key === 'LOTTE WORLD THEME PARK') ? ' checked' : ''}> Add Lotte World theme park (rides & parades, about half a day)</label>` : ''}${d.hanbokOpt ? `<label class="lotte-opt"><input type="checkbox" id="hanbok-on"${d.stops.some(s => s.key === HANBOK_KEY) ? ' checked' : ''}> Wear hanbok at Gyeongbokgung Palace</label>` : ''}${mealOpt(d)}<ul>${items}${reqItems(d)}</ul>${reqInput(d)}</div></article>`;
   }).join('');
 
 }
@@ -1392,12 +1418,12 @@ function requestText(days, q) {
     `Vehicle: ${q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : 'Standard'}`,
     `Group: ${sel.pax} pax · Guests from: ${guestsLabel() || '-'} · Theme: ${CONCEPT_NAME[sel.concept]} · ${TIER_NAME[sel.tier]} · ${SEASON_NAME[sel.season]}`,
     `Cities: ${routeOf(sel).map(c => `${CITY_NAME[c]} ${sel['n' + CITY_NAME[c]]}N`).join(' → ')} (${days.length - 1}N${days.length}D)`,
-    `Estimated land fee on website: US$ ${q.perPerson.toLocaleString('en-US')} per person, ${bracketLabel(q.bracket)} rate (hotel excluded)`, '',
+    `Luggage: ${q.plan.luggage ? (q.plan.extraLuggage ? 'Extra luggage (luggage van requested)' : 'Luggage van included') : 'One large suitcase per person'}`, '',
     'Itinerary:',
     ...days.map((d, i) => `Day ${i + 1}: ${d.title}${d.swapped ? ' (changed by client)' : ''}${d.kind === 'tour' ? ' – ' + d.stops.map(s => pretty(s.key)).join(', ') : (d.adds || []).length ? ' – tour: ' + d.adds.map(a => pretty(a.key)).join(', ') : ''}${(dayReq[reqKey(d)] || []).length ? `\n   + Client request: ${dayReq[reqKey(d)].join('; ')}` : ''}`),
   ];
   const ad = pickedAddonNames();
-  if (ad.length) lines.push('', 'Add-on experiences (please quote): ' + ad.join(', '));
+  if (ad.length) lines.push('', 'Add-on experiences: ' + ad.join(', '));
   const picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
   lines.push('', `Hotel category: ${picked('f-hotel').join(' / ') || '-'}`, `Rooms: ${roomsText()}`, `Meals included: ${mealWords() || 'None (land only)'}`, `Dietary requirements: ${picked('f-diet').map(x => x === 'Other' ? `Other: ${v('f-diet-other') || '(not specified)'}` : x).join(', ') || '-'}`);
   if (v('f-notes')) lines.push('', 'Notes: ' + v('f-notes'));
@@ -1430,7 +1456,7 @@ function syncButtons() {
   if (sel.tier !== 'L' || !upgradeOK(sel.vehicle, sel.pax)) sel.vehicle = 'std';
   document.getElementById('veh-field').hidden = sel.tier !== 'L';
   document.querySelectorAll('[data-key="vehicle"] .opt').forEach(b => b.disabled = !upgradeOK(b.dataset.v, sel.pax));
-  document.getElementById('veh-std').textContent = sel.pax <= 4 ? 'Staria van' : sel.pax <= 9 ? 'Solati minibus' : sel.pax <= 13 ? 'Bus + minibus' : 'Bus';
+  document.getElementById('veh-std').textContent = vehicleShort(planFor(sel.pax, sel.market, false));
   document.querySelectorAll('.seg').forEach(g => g.querySelectorAll('.opt').forEach(b => b.setAttribute('aria-pressed', String(g.dataset.multi ? sel[g.dataset.multi].includes(b.dataset.v) : sel[g.dataset.key] === b.dataset.v))));
   if (document.activeElement !== cIn) cIn.value = cName(sel.country);
   document.getElementById('pax').value = sel.pax;
@@ -1469,7 +1495,7 @@ document.querySelectorAll('[data-ord]').forEach(b => b.addEventListener('click',
   [o[i], o[j]] = [o[j], o[i]]; syncButtons(); render();
   const nb = document.querySelector(`[data-ord="${b.dataset.ord}"][data-d="${b.dataset.d}"]`); if (nb && !nb.disabled) nb.focus();
 }));
-document.getElementById('addons').addEventListener('change', e => { const id = e.target.dataset.addon; if (!id) return; e.target.checked ? addonPick.add(id) : addonPick.delete(id); updateRequest(); });
+document.getElementById('addons').addEventListener('change', e => { const id = e.target.dataset.addon; if (!id) return; e.target.checked ? addonPick.add(id) : addonPick.delete(id); sel.addons = [...addonPick]; updateRequest(); });
 // ---- English calendar for the arrival date (the browser's own date picker follows the visitor's language)
 (function () {
   const hidden = document.getElementById('f-dates'), show = document.getElementById('f-date-show'), dp = document.getElementById('dp');
@@ -1516,7 +1542,7 @@ document.getElementById('send-btn').onclick = async () => {
   const v = id => document.getElementById(id).value.trim();
   const picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
   if (!v('f-name') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('f-mail'))) { st.textContent = 'Please add your name and a valid email address.'; return; }
-  if (typeof quoteFor === 'function') { st.textContent = 'Preview only: requests can be sent once the website is live.'; return; }
+  if (window.HK_PREVIEW) { st.textContent = 'Preview only: requests are sent from the live page (hakeemtravel.com/tour-builder).'; return; }
   const payload = { sel, contact: { name: v('f-name'), company: v('f-co'), email: v('f-mail') }, arrival: document.getElementById('f-dates').value,
     hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
     addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website') };
@@ -1546,10 +1572,10 @@ document.getElementById('pdf-btn').onclick = () => {
     ['Add-on experiences', pickedAddonNames().join(', ')],
     ['Notes', v('f-notes')],
   ].filter(([, x]) => x);
-  document.getElementById('print-info').innerHTML = `<div class="sec-h">Request details</div><table>${rows.map(([k, x]) => `<tr><th>${k}</th><td>${esc(x)}</td></tr>`).join('')}</table><p class="pi-date">Generated on ${fmtDate(new Date())} · Prices are estimates and are confirmed in our formal quotation.</p>`;
+  document.getElementById('print-info').innerHTML = `<div class="sec-h">Request details</div><table>${rows.map(([k, x]) => `<tr><th>${k}</th><td>${esc(x)}</td></tr>`).join('')}</table><p class="pi-date">Generated on ${fmtDate(new Date())} · Prices are sent in our formal quotation.</p>`;
   try { window.print(); } catch { document.getElementById('status').textContent = 'Printing is blocked here. Please open the page in your browser and try again.'; }
 };
-// compact price bar at the top once the quote card has scrolled out of view
+// compact summary bar at the top once the quote card has scrolled out of view
 if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { document.getElementById('mini').hidden = e.isIntersecting; document.body.classList.toggle('mini-on', !e.isIntersecting); }).observe(document.querySelector('.quote'));
 syncButtons(); render();
 </script>

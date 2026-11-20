@@ -123,6 +123,40 @@ tbody tr:hover { background: var(--brand-soft); }
 .sum b { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-size: 1.25rem; color: var(--gold); font-weight: 400; }
 .hint { font-size: .8rem; color: var(--muted); }
 .saved { font-size: .82rem; color: var(--ok); }
+.btn.sm { padding: 3px 9px; font-size: .8rem; }
+.hinfo { font-size: .78rem; line-height: 1.45; }
+.hinfo b { font-weight: 600; color: var(--ink); }
+ul.bst small.pm { display: block; font-size: .75rem; color: var(--gold); font-weight: 400; }
+#dir .bar .tab { border: 1px solid var(--line); }
+.dirt td { font-size: .82rem; vertical-align: top; max-width: 320px; }
+.btn:disabled { opacity: .35; cursor: default; }
+.linkbtn { border: 0; background: none; color: var(--brand); cursor: pointer; font: inherit; font-size: .8rem; text-decoration: underline; padding: 0; }
+#builder .bopts { margin-bottom: 14px; }
+#builder .bopts .row { margin-bottom: 8px; }
+#builder label.bc { display: flex; align-items: center; gap: 6px; font-size: .9rem; color: var(--ink); }
+#builder label.bc input[type=number] { width: 54px; }
+#builder .bchk { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: .88rem; }
+#builder .bchk label { display: flex; align-items: center; gap: 5px; color: var(--ink); font-size: .88rem; font-weight: 500; }
+.bgrid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+@media (max-width: 1000px) { .bgrid { grid-template-columns: minmax(0, 1fr); } }
+.bprice { position: sticky; top: 12px; }
+.bprice h4 { margin: 14px 0 4px; font-size: .85rem; }
+.bprice tr.on td { background: var(--gold-soft); font-weight: 700; }
+.bprice details { margin-top: 12px; font-size: .85rem; }
+.bdh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.bdh h4 { margin-right: auto; }
+.bdh select { border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; font-size: .82rem; max-width: 260px; }
+.bmv { display: inline-flex; gap: 2px; }
+ul.bst { list-style: none; padding: 0; margin: 6px 0; }
+ul.bst li { display: grid; grid-template-columns: minmax(0, 1fr) auto 24px; gap: 8px; align-items: center; padding: 3px 0; border-bottom: 1px dashed var(--line); font-size: .9rem; }
+ul.bst li.ln { display: block; color: var(--muted); font-size: .82rem; border: 0; }
+ul.bst li.add span:first-child { color: var(--brand); font-weight: 600; }
+ul.bst li em { font-style: normal; font-size: .72rem; color: var(--gold); }
+ul.bst .rx { border: 0; background: none; color: var(--muted); cursor: pointer; }
+.badd { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
+.badd input { border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; min-width: 260px; flex: 1; }
+.bnew { display: flex; gap: 6px; align-items: center; font-size: .82rem; color: var(--muted); }
+.bnew input { border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; }
 /* buyer quotation (printed) */
 #qsheet { display: none; }
 #qsheet .qh { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--brand); padding-bottom: 10px; margin-bottom: 16px; }
@@ -151,7 +185,7 @@ body.printing-quote #qsheet { display: block; }
 </style>
 </head>
 <body>
-<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="rates">단가 관리</button></nav><span class="sp"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
+<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button></nav><span class="sp"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
 <main>
   <form id="login" class="card" onsubmit="return false">
     <b>하킴 직원 전용</b>
@@ -176,6 +210,8 @@ body.printing-quote #qsheet { display: block; }
   </section>
 
   <section id="rates" hidden></section>
+  <section id="builder" hidden></section>
+  <section id="dir" hidden></section>
 
   <section id="detail">
     <div class="dtop">
@@ -183,6 +219,7 @@ body.printing-quote #qsheet { display: block; }
       <span class="sp" style="flex:1"></span>
       <label>하킴 담당 <select id="das"></select></label>
       <label>상태 <select id="dst"><option value="new">신규</option><option value="land">지상비 발송</option><option value="hotel">호텔 견적 발송</option><option value="booked">예약 확정</option><option value="closed">종료</option></select></label>
+      <button class="btn ghost" id="to-builder">투어 빌더에서 열기</button>
       <a class="btn ghost" id="reply" href="#">이메일 답장</a>
       <button class="btn" onclick="window.print()">PDF 저장</button>
     </div>
@@ -191,6 +228,705 @@ body.printing-quote #qsheet { display: block; }
   </section>
 </main>
 <div id="qsheet"></div>
+<script>
+/* ===== Hakeem Travel Korea — tour builder itinerary engine =====
+   Rates are kept on the server (the admin page loads them after login); this copy has the itinerary rules only. */
+const CONFIG = {
+  fx: 1250, roundTo: 5,
+  vehicles: { staria: {}, solati: {}, bus: {} }, guide: 0, luggage: 0, luggageTrips: 2, margins: [[2, 0], [4, 0], [6, 0], [8, 0], [10, 0], [40, 0]], hanbokUSD: 0, addons: { perfume: 0, cooking: 0 },
+  // Vehicle plan by group size: [up to N pax, transfers, touring days, luggage van]. Other markets use the India plan;
+  // the buyer can ask for extra luggage (sel.luggage) and gets the luggage van on arrival and departure.
+  plans: {
+    mideast: [[3, 'staria', 'staria', 0], [5, 'solati', 'staria', 0], [6, 'solati', 'solati', 0], [10, 'solati', 'solati', 1], [20, 'bus', 'bus', 0], [40, 'bus', 'bus', 1]],
+    india: [[4, 'staria', 'staria', 0], [5, 'solati', 'staria', 0], [8, 'solati', 'solati', 0], [10, 'solati', 'solati', 1], [12, 'bus', 'bus', 1], [40, 'bus', 'bus', 0]],
+  },
+  // Price brackets: each is priced at its smallest group size. Cut where the vehicle plan or the margin changes.
+  brackets: [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 8], [9, 10], [11, 12], [13, 20], [21, 40]],
+  // add-ons Hakeem books and pays (priced in the land fee); beauty and medical add-ons are booked by us and paid by the guests
+  addonPaid: { perfume: 'Perfume Workshop', cooking: 'Korean Cooking Class' },
+  budgetMaxAdmission: 20000,      // Budget: skip stops whose admission is above this (KRW)
+  budgetFreeDayFrom: 3,           // Budget: the last touring day in a city is a free day when that city has this many touring days
+  water: 0, tissue: 0, halfDay: 1, meals: { lunch: 0, dinner: 0 },
+  tickets: { flight: 0, ktx: 0, ktx1st: 0 },
+  upgrades: { g90: { label: 'Genesis G90 luxury sedan', short: 'Genesis G90', maxPax: 3 }, sclass: { label: 'Mercedes S-Class VVIP sedan', short: 'S-Class', maxPax: 3 }, sprinter: { label: 'Mercedes Sprinter VVIP van', short: 'Sprinter VVIP', maxPax: 7 } },
+  upgradeBase: {},
+};
+
+// ---- vehicle plan (2026-11-20 table): by group size and market
+const planMarket = m => m === 'mideast' ? 'mideast' : 'india';
+function planFor(pax, market, luggage) {
+  const row = CONFIG.plans[planMarket(market)].find(r => pax <= r[0]) || CONFIG.plans.india[CONFIG.plans.india.length - 1];
+  return { pickup: row[1], tour: row[2], luggage: !!row[3] || !!luggage, extraLuggage: !row[3] && !!luggage };
+}
+const isDriving = p => p.tour === 'staria';
+const marginFor = pax => (CONFIG.margins.find(([n]) => pax <= n) || CONFIG.margins[CONFIG.margins.length - 1])[1];
+const VEH_EN = { staria: 'van (Staria)', solati: 'minibus (Solati)', bus: 'bus (28 or 45-seater)' };
+const VEH_KO = { staria: '스타리아', solati: '솔라티', bus: '대형버스' };
+function vehicleLabel(p) {
+  const tour = p.tour === 'staria' ? 'Private van (Staria) with English-speaking driving guide' : `Private ${VEH_EN[p.tour]} with driver + English-speaking guide`;
+  return tour + (p.pickup !== p.tour ? `, ${VEH_EN[p.pickup]} for airport and station transfers` : '') + (p.luggage ? ', plus luggage van on arrival and departure' : '');
+}
+const vehicleKo = p => p.pickup === p.tour ? `${VEH_KO[p.tour]}${p.tour === 'staria' ? ' + 드라이빙가이드' : ''}${p.luggage ? ' + 짐차' : ''}`
+  : `픽업·샌딩 ${VEH_KO[p.pickup]}${p.luggage ? ' + 짐차' : ''} / 투어 ${VEH_KO[p.tour]}${p.tour === 'staria' ? ' + 드라이빙가이드' : ''}`;
+const vehicleShort = p => p.pickup === p.tour ? ({ staria: 'Staria van', solati: 'Solati minibus', bus: 'Bus' })[p.tour] : `${({ staria: 'Staria', solati: 'Solati', bus: 'Bus' })[p.tour]} + ${({ staria: 'Staria', solati: 'Solati', bus: 'Bus' })[p.pickup]} transfers`;
+
+/* Admissions come from the server after login (applyRates). 99999 marks stops above the Budget limit until then. */
+const SIGHTS = {
+  "GYEONGBOKGUNG PALACE": 0,
+  "GYEONGBOKGUNG PALACE (INCLUDING: HANBOK RENTAL)": 0, // priced as the palace ticket; the hanbok rental is charged as CONFIG.hanbokUSD per person
+  "NATIONAL FOLK MUSEUM OF KOREA": 0, "BUKCHON HANOK VILLAGE": 0, "INSADONG ANTIQUE ALLEY": 0,
+  "N SEOUL TOWER (INCLUDING: CABLE CAR, EXCLUDING: OBSERVATORY)": 0,
+  "N SEOUL TOWER (INCLUDING: CABLE CAR, OBSERVATORY)": 99999,
+  "COEX (GANGNAM STYLE STATUE & STARFIELD LIBRARY)": 0, "BONGEUNSA (TEMPLE)": 0, "SEOKCHON LAKE": 0,
+  "SEONGSU-DONG CAFÉ STREET": 0, "HAN RIVER CRUISE": 99999, "LOTTE WORLD MALL (INCLUDING: SEOUL SKY OBSERVATORY)": 99999,
+  "THE HYUNDAI SEOUL": 0, "SAMSUNG INNOVATION MUSEUM": 0, "AHNLAB, PANGYO TECHNO VALLEY": 0, "SEOUL ROBOT & AI MUSEUM": 0, "BANPO HAN RIVER PARK": 0, "JEONNONG-RO CHERRY BLOSSOM STREET": 0, "SEOGWIPO OLLE MARKET": 0, "GASIRI NOKSAN-RO (CHERRY BLOSSOM & CANOLA FLOWER ROAD)": 0, "DALMAJI ROAD": 0, "IKSEON-DONG HANOK STREET": 0, "LOTTE WORLD MALL": 0,
+  "DMZ PEACE TOUR": 0, "IMJINGAK PEACE NURI PARK": 0, "THE 3RD INFILTRATION TUNNEL": 0, "DORASAN OBSERVATORY": 0,
+  "DMZ GONDOLA": 0, "MYEONGDONG SHOPPING STREET": 0, "NAMDAEMUN MARKET": 0, "HYUNDAI MOTOR STUDIO GOYANG": 0,
+  "GANGCHON RAIL PARK": 0, "NAMI ISLAND": 0, "GARDEN OF MORNING CALM": 0, "PETITE FRANCE & ITALIAN VILLAGE": 0,
+  "EVERLAND THEME PARK (INCLUDING: ONE DAY PASS)": 99999, "CARRIBBEAN BAY WATER PARK": 99999,
+  "KOREAN FOLK VILLAGE": 0, "SUWON HWASEONG FORTRESS": 0, "STARFIELD SUWON": 0, "HAENGGUNG-DONG CAFÉ STREET": 0,
+  "K BEAUTY STORE": 0, "HYBE INSIGHT": 0, "HONGDAE FASHION STREET": 0, "TRICK EYE MUSEUM (HONGDAE)": 0,
+  "K-POP DANCE ACADEMY (ONE DAY SESSION)": 99999, "IMAGE HO COLOR ANALYSE (PERSONAL COLOR TREATMENT)": 99999,
+  "ITAEWON STREET": 0, "THE WAR MEMORIAL MUSEUM OF KOREA": 0,
+  "NATIONAL MUSEUM OF KOREA": 0, "GWANGJANG MARKET": 0, "HANSIK KOREAN COOKING CLASS": 99999,
+  "LOTTE WORLD THEME PARK": 99999, "LOTTE WORLD MALL (INCLUDING: LOTTE AQUARIUM)": 0,
+  "YEOUIDO HAN RIVER PARK": 0, "BANPO BRIDGE RAINBOW FOUNTAIN SHOW": 0,
+  "CHANGDEOKGUNG PALACE (INCLUDING: SECRET GARDEN)": 0, "HANEUL PARK (PINK MUHLY)": 0, "NAMSANGOL HANOK VILLAGE": 0, "SEOUL FOREST": 0,
+  "HYUNDAI PREMIUM OUTLET - GIMPO BRANCH": 0, "RICE FLOWER'S FARMER (GOCHUJANG+STONE MILL COFFEE+BIBIMBAB)": 99999, "AEGIBONG PEACE ECOPARK": 0,
+  "HWACHEON SANCHEONEO ICE FESTIVAL (ICE FISHING)": 0, "SOYANGGANG SKYWALK": 0, "GRILLED TROUT TASTING": 0, "ICE SLEDDING & ICE SCULPTURE PLAZA": 0, // est.: festival ticket and skywalk fee (returned partly as local vouchers)
+  "DONGDAEMUN DESIGN PLAZA (DDP)": 0, "KOREA TRADITIONAL TEA EXPERIENCE": 99999, "KOREAN TEMPLE FOOD": 0, "SARYEONI FOREST": 0, "CHUIDASEON TEA MEDITATION (SEONGSAN)": 99999,
+  // Jeju
+  "SEONGSAN SUNRISE PEAK": 0, "SEOPJIKOJI (BEACH LINE)": 0, "MANJANGGUL CAVE": 0, "JEJU HAENYEO MUSEUM": 0, "WOLJEONGRI BEACH": 0, "BIJARIM FOREST": 0,
+  "CHEONJIYEON WATERFALLS": 0, "JEONGBANG WATERFALL": 0, "JUSANGJEOLLI LAVA CLIFF": 0, "TRADITIONAL KOREAN ROWBOAT EXPERIENCE": 0,
+  "O'SULLOC GREEN TEA PLANTATION": 0, "ARTE MUSEUM JEJU (IMMERSIVE MEDIA ART EXHIBITION HALL)": 0, "SNOOPY GARDEN": 0,
+  "CAMELLIA HILL": 0, "HALLIM PARK": 0, "DRAGON HEAD COAST": 0,
+  "TANGERIN PICKING EXPERIENCE": 0, "DOCHIDOL ALPACA RANCH": 0, "DYNAMIC MAZE JEJU": 99999, "9.81 PARK": 99999,
+  "JEJU FOLK VILLAGE": 0, "DONGMUN MARKET": 0, "IHO-TEWOO BEACH": 0, "AEWOL CAFÉ STREET": 0, "THE CLIFF CAFÉ": 0,
+  "HAMDEOK BEACH": 0, "SAEBYEOL OREUM": 0, "1100 ALTITUDE WETLAND": 0, "HUEREE NATURE LIFE PARK": 0,
+  // Busan
+  "HAEDONG YONGGUNGSA TEMPLE": 0, "HAEUNDAE BLUE LINE PARK (COASTAL TRAIN)": 99999, "HAEUNDAE BEACH TRAIN": 0, "HAEUNDAE BLUE LINE PARK (SKY CAPSULE)": 0,
+  "DONGBAEKSEOM ISLAND": 0, "HAEUNDAE BEACH & NURIMARU APEC HOUSE": 0, "BUSAN X THE SKY": 99999, "GWANGALLI BEACH FOR NIGHT VIEW": 0,
+  "THE BAY 101 YACHT": 99999, "GAMCHEON CULTURAL VILLAGE": 0, "SONGDO CABLE CAR & SUSPENSION BRIDGE": 0,
+  "SONGDO AIR-CRUISE(CABLE CAR)": 99999, "BIFF SQUARE & GUKJE MARKET": 0, "BULGUKSA TEMPLE": 0, "SEOKGURAM GROTTO": 0, "CHEONMACHONG TOMB (DAEREUNGWON ANCIENT TOMBS)": 0, "CHEOMSEONGDAE OBSERVATORY": 0, "HWANGNIDAN-GIL": 0, "DONGGUNG PALACE & WOLJI POND": 0, "BOMUN LAKE FOR CHERRY BLOSSOM": 0, "GYEONGJU GYOCHON TRADITIONAL VILLAGE": 0, "BUSAN CHRISTMAS TREE FESTIVAL (GWANGBOK-RO)": 0, "JAGALCHI FISH MARKET": 0, "HUINNYEOUL CULTURE VILLAGE": 0,
+  "BUSAN TOWER (OBSERVATORY)": 0, "SEALIFE BUSAN AQUARIUM": 99999, "SKYLINE LUGE (2 TIMES)": 99999, "SKYLINE LUGE (3 TIMES)": 99999,
+  "SHINSEGAE SPALAND CENTUM CITY": 99999, "SHINSEGAE CENTUM CITY DEPARTMENT STORE": 0, "MUSEUM 1 BUSAN": 0, "JEONPO CAFÉ STREET": 0,
+  "ARTE MUSEUM BUSAN (IMMERSIVE MEDIA ART EXHIBITION HALL)": 99999,
+};
+const SIGHTS_BASE = { ...SIGHTS }; // list prices: the Budget filter uses these, so rate edits on the server change prices but not itineraries
+
+/* Day modules.
+   s = stops: [key, minTier, opts]; minTier B (all) / R (Regular+) / L (Luxury only)
+   opts.v = tier variant keys {B,R,L, "R:beauty":...}; opts.c = only for these tour themes; opts.note
+   area: city | gyeonggi.  seasons: limit (omit = all year).  core = always preferred.  w = concept weights */
+const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
+const MODULES = {
+  seoul: [
+    // ---- Seoul city tours, in the order they are used (CITY_SEQ) ----
+    { id: 'jongno', area: 'city', base: true, w: {},
+      title: 'Royal Palace & Hanok Village',
+      blurb: 'Gyeongbokgung Palace and the folk museum, the hanok lanes of Bukchon and Insadong, then shopping in Myeongdong.',
+      s: [['GYEONGBOKGUNG PALACE', 'B', { hanbok: true, budgetOK: true, note: 'Closed Tuesdays. Changdeokgung Palace is visited instead.', noHl: true }],
+          ['NATIONAL FOLK MUSEUM OF KOREA', 'B'], ['BUKCHON HANOK VILLAGE', 'B'],
+          ['KOREAN TEMPLE FOOD', 'B', { c: ['wellness'], note: 'Plant-based temple cuisine near Jogyesa Temple.' }],
+          ['INSADONG ANTIQUE ALLEY', 'B'], ['KOREA TRADITIONAL TEA EXPERIENCE', 'R', { c: ['wellness'], note: 'Traditional tea ceremony in Insadong.' }],
+          ['K BEAUTY STORE', 'B', { c: ['beauty'] }],
+          ['DONGDAEMUN DESIGN PLAZA (DDP)', 'B', { c: ['tech', 'education'], note: 'Zaha Hadid’s landmark, with design and media exhibitions.' }],
+          ['MYEONGDONG SHOPPING STREET', 'B']] },
+    { id: 'jamsil', area: 'city', w: {},
+      title: 'Lotte World Tower & Gangnam',
+      blurb: 'Lotte World Tower and a walk around Seokchon Lake, then Starfield Library at COEX and Bongeunsa Temple.',
+      blurbs: { romantic: 'Lotte World Tower and a day of rides at Lotte World, a walk around Seokchon Lake, then Starfield Library at COEX.' },
+      s: [['LOTTE WORLD MALL', 'B', { v: { B: 'LOTTE WORLD MALL', R: 'LOTTE WORLD MALL', 'R:family': 'LOTTE WORLD MALL (INCLUDING: LOTTE AQUARIUM)', 'R:education': 'LOTTE WORLD MALL (INCLUDING: LOTTE AQUARIUM)', L: 'LOTTE WORLD MALL (INCLUDING: SEOUL SKY OBSERVATORY)' } }],
+          ['LOTTE WORLD THEME PARK', 'B', { lotte: true, hl: ['romantic'], budgetOK: true, note: 'Rides, parades and the Magic Island castle, next to Lotte World Tower.' }],
+          ['SEOKCHON LAKE', 'B', { notes: { spring: 'Cherry blossom spot (early April).' } }],
+          ['COEX (GANGNAM STYLE STATUE & STARFIELD LIBRARY)', 'B'], ['BONGEUNSA (TEMPLE)', 'B', { hl: ['wellness'], notLotte: true }],
+          ['IMAGE HO COLOR ANALYSE (PERSONAL COLOR TREATMENT)', 'L', { c: ['beauty'] }],
+          ['SEOUL FOREST', 'B', { c: ['wellness', 'beauty'], noHl: true }], ['SEONGSU-DONG CAFÉ STREET', 'B', { c: ['beauty'] }],
+          ['BANPO HAN RIVER PARK', 'B', { seasons: ['spring'] }]] },
+    { id: 'yeouido', area: 'city', w: {},
+      title: 'Han River & Hongdae',
+      blurb: 'Yeouido Han River Park and The Hyundai Seoul, a cruise on the Han River, then the street life of Hongdae.',
+      // Business groups whose stay has no DMZ day (e.g. Middle East) visit Hyundai Motorstudio here; otherwise it is skipped as a repeat.
+      s: [['HYUNDAI MOTOR STUDIO GOYANG', 'B', { c: ['tech'], note: 'Interactive mobility and tech exhibition in Goyang, on the way to Yeouido.' }],
+          ['NATIONAL MUSEUM OF KOREA', 'B', { c: ['education'] }],
+          ['YEOUIDO HAN RIVER PARK', 'B', { notes: { spring: 'Yeouido’s cherry blossom avenue is in bloom in early April.' } }], ['THE HYUNDAI SEOUL', 'B'],
+          ['HAN RIVER CRUISE', 'R'], ['HONGDAE FASHION STREET', 'B'], ['TRICK EYE MUSEUM (HONGDAE)', 'R', { c: ['family', 'education'] }],
+          ['K-POP DANCE ACADEMY (ONE DAY SESSION)', 'L', { c: ['education', 'beauty'] }]] },
+    { id: 'seongsu', area: 'city', w: {},
+      title: 'Trendy Seongsu & Seoul Forest',
+      titles: { beauty: 'K-Beauty & Trendy Seongsu' },
+      blurb: 'Seoul Forest, the pop-up stores and cafés of Seongsu-dong and K-beauty shopping.',
+      s: [['SEOUL FOREST', 'B'], ['SEONGSU-DONG CAFÉ STREET', 'B'], ['K BEAUTY STORE', 'B'],
+          ['IMAGE HO COLOR ANALYSE (PERSONAL COLOR TREATMENT)', 'L'], ['HAN RIVER CRUISE', 'R']] },
+    { id: 'itaewon', area: 'city', w: {},
+      title: 'National Museum & Itaewon',
+      titles: { education: 'National Museum & Itaewon' },
+      blurb: 'The National Museum of Korea and the War Memorial, then Itaewon’s international streets and halal eateries.',
+      blurbs: { education: 'A full morning at the National Museum of Korea, then Itaewon’s international streets.' },
+      s: [['NATIONAL MUSEUM OF KOREA', 'B'], ['THE WAR MEMORIAL MUSEUM OF KOREA', 'B', { notConcept: ['education'] }], ['ITAEWON STREET', 'B'],
+          ['HANSIK KOREAN COOKING CLASS', 'L']] },
+    { id: 'techday', area: 'gyeonggi', w: {},
+      title: 'Samsung & Suwon Fortress',
+      blurb: 'The Samsung Innovation Museum in Suwon, home of Samsung Electronics, then the UNESCO-listed Hwaseong Fortress, the cafés of Haenggung-dong and Starfield Suwon.',
+      s: [['SAMSUNG INNOVATION MUSEUM', 'B', { note: 'Advance reservation required.' }], ['SUWON HWASEONG FORTRESS', 'B'],
+          ['HAENGGUNG-DONG CAFÉ STREET', 'B'], ['STARFIELD SUWON', 'B', { note: 'Home of the Starfield Library Suwon.' }]] },
+    { id: 'wellnessday', area: 'city', w: {},
+      title: 'Temple Food, Tea & Forest',
+      blurb: 'A quiet morning at Bongeunsa Temple with a vegetarian temple food experience, a traditional tea ceremony and a walk in Seoul Forest.',
+      s: [['BONGEUNSA (TEMPLE)', 'B'], ['KOREAN TEMPLE FOOD', 'B', { note: 'Plant-based temple cuisine experience.' }],
+          ['KOREA TRADITIONAL TEA EXPERIENCE', 'R'], ['SEOUL FOREST', 'B']] },
+    // ---- extra city tours (used after the numbered ones, longer stays only) ----
+    { id: 'autumn', area: 'city', seasons: ['autumn'], seasonBoost: { autumn: 3 }, w: { romantic: 2, beauty: 2 },
+      title: 'Autumn Palace Gardens',
+      blurb: 'Changdeokgung’s Secret Garden in autumn colour, Namsangol Hanok Village and the pink muhly of Haneul Park.',
+      s: [['CHANGDEOKGUNG PALACE (INCLUDING: SECRET GARDEN)', 'B'], ['NAMSANGOL HANOK VILLAGE', 'B'], ['HANEUL PARK (PINK MUHLY)', 'B']] },
+    { id: 'kculture', area: 'city', w: { beauty: 2, education: 2 },
+      title: 'N Seoul Tower & K-Pop',
+      blurb: 'The cable car up to N Seoul Tower, HYBE Insight for K-pop fans and an evening in Myeongdong.',
+      s: [['N SEOUL TOWER', 'B', { v: { B: 'N SEOUL TOWER (INCLUDING: CABLE CAR, EXCLUDING: OBSERVATORY)', L: 'N SEOUL TOWER (INCLUDING: CABLE CAR, OBSERVATORY)' } }], ['HYBE INSIGHT', 'B'], ['MYEONGDONG SHOPPING STREET', 'B']] },
+    { id: 'lotte', area: 'city', w: { family: 3, education: 1 },
+      title: 'Lotte World Theme Park',
+      blurb: 'A full day of indoor and outdoor rides at Lotte World. Works in any weather.',
+      s: [['LOTTE WORLD THEME PARK', 'B']] },
+    // ---- day trips (one per stay; India: both from 4 touring days) ----
+    { id: 'dmz', area: 'gyeonggi', core: 2, w: { romantic: 1, family: 1, beauty: 1, education: 2, tech: 4 },
+      title: 'DMZ Border Tour',
+      blurb: 'The border between the two Koreas: Imjingak, the 3rd Infiltration Tunnel and Dorasan Observatory. Passport required.',
+      // Goyang stops on the way (as in the 2026 sample packages): K-beauty for ladies, Han River cruise for Luxury, Hyundai Motorstudio for tech groups
+      goyang: { title: 'DMZ Border Tour', blurb: 'Stops in Goyang on the way north, then the border between the two Koreas: Imjingak, the 3rd Infiltration Tunnel and Dorasan Observatory. Passport required.' },
+      s: [['K BEAUTY STORE', 'B', { c: ['beauty'], goyang: true }], ['HAN RIVER CRUISE', 'L', { goyang: true }],
+          ['HYUNDAI MOTOR STUDIO GOYANG', 'B', { c: ['tech'], goyang: true, note: 'Interactive mobility and tech exhibition.' }],
+          ['DMZ PEACE TOUR', 'B', { note: 'Joined (SIC) tour: the DMZ section is run by a licensed operator together with other travellers.' }], ['IMJINGAK PEACE NURI PARK', 'B'], ['DMZ GONDOLA', 'R'], ['THE 3RD INFILTRATION TUNNEL', 'B', { note: 'If booked less than a month before travel, the 3rd Tunnel may be unavailable and another site will be visited instead.' }], ['DORASAN OBSERVATORY', 'B']] },
+    { id: 'nami', area: 'gyeonggi', core: 1.5, seasons: ['spring', 'summer', 'autumn'], seasonBoost: { autumn: 3, spring: 1 }, w: { romantic: 2, family: 3, beauty: 2, education: 2 },
+      title: 'Nami Island & Rail Bike',
+      blurb: 'Ride a rail bike along the old Gyeongchun railway line, then take the ferry to Nami Island and walk its tree-lined paths. We leave Nami before 4 pm, ahead of the afternoon crowds.',
+      seasonTitles: { spring: 'Nami Island & Cherry Blossoms' },
+      seasonBlurbs: { spring: 'Take the ferry to Nami Island and walk its tree-lined paths, then stop at Yeouido’s cherry blossom avenue on the way back to Seoul. We leave Nami before 4 pm, ahead of the afternoon crowds.' },
+      s: [['GANGCHON RAIL PARK', 'B', { hl: ['romantic'], seasons: ['summer', 'autumn'], noSeasonHl: true }], ['NAMI ISLAND', 'B'], ['GARDEN OF MORNING CALM', 'R'],
+          ['YEOUIDO HAN RIVER PARK', 'B', { seasons: ['spring'], note: 'Cherry blossom spot on the way back (early April).' }],
+          ['HYUNDAI MOTOR STUDIO GOYANG', 'B', { c: ['tech'], goyang: true, note: 'Interactive mobility and tech exhibition, on the way back to Seoul.' }]] },
+    { id: 'namiwinter', area: 'gyeonggi', core: 1.5, seasons: ['winter'], seasonBoost: { winter: 3 }, w: { romantic: 3, family: 3, beauty: 3, education: 2 },
+      title: 'Snowy Nami Island & Winter Lights',
+      blurb: 'Snowy Nami Island, the storybook Petite France and the Lighting Festival at the Garden of Morning Calm.',
+      s: [['NAMI ISLAND', 'B'], ['PETITE FRANCE & ITALIAN VILLAGE', 'R'], ['GARDEN OF MORNING CALM', 'B', { note: 'Lighting Festival runs Dec–Mar.' }],
+          ['HYUNDAI MOTOR STUDIO GOYANG', 'B', { c: ['tech'], goyang: true, note: 'Interactive mobility and tech exhibition, on the way back to Seoul.' }]] },
+    // ---- kept for reference, never added automatically (NO_AUTO) ----
+    { id: 'hwacheon', area: 'gyeonggi', core: 1.5, seasons: ['winter'], seasonBoost: { winter: 3 }, w: { romantic: 2, family: 3, beauty: 2, education: 2 },
+      title: 'Ice Fishing Festival',
+      blurb: 'Ice fishing for trout on the frozen river, grilled on the spot, then sledding and the ice sculpture plaza, and the Soyanggang Skywalk on the way back.',
+      s: [['HWACHEON SANCHEONEO ICE FESTIVAL (ICE FISHING)', 'B', { note: 'Held in January (dates vary each year). Outside festival dates we visit Nami Island instead.' }],
+          ['GRILLED TROUT TASTING', 'B'], ['ICE SLEDDING & ICE SCULPTURE PLAZA', 'B'], ['SOYANGGANG SKYWALK', 'B']] },
+    { id: 'everland', area: 'gyeonggi', w: {}, title: 'Everland Theme Park', blurb: 'A full day at Korea’s largest theme park, with rides, the safari and seasonal festivals.', s: [['EVERLAND THEME PARK (INCLUDING: ONE DAY PASS)', 'B']] },
+    { id: 'summerwater', area: 'gyeonggi', seasons: ['summer'], w: {}, title: 'Caribbean Bay Water Park', blurb: 'Wave pools and slides at Everland’s water park.', s: [['CARRIBBEAN BAY WATER PARK', 'B']] },
+    { id: 'folk', area: 'gyeonggi', w: {}, title: 'Folk Village & Suwon Fortress', blurb: 'Traditional life at the Korean Folk Village and the walls of Hwaseong Fortress.', s: [['KOREAN FOLK VILLAGE', 'B'], ['SUWON HWASEONG FORTRESS', 'B'], ['STARFIELD SUWON', 'B']] },
+    { id: 'shopping', area: 'gyeonggi', w: {}, title: 'Farm Lunch & Outlet Shopping', blurb: 'A Gimpo rice farm, Aegibong and the Hyundai outlet.', s: [['RICE FLOWER\'S FARMER (GOCHUJANG+STONE MILL COFFEE+BIBIMBAB)', 'R'], ['AEGIBONG PEACE ECOPARK', 'B'], ['HYUNDAI PREMIUM OUTLET - GIMPO BRANCH', 'B']] },
+  ],
+  jeju: [
+    // Day 1 / Day 2 follow the Winter Packages 2026–27 route; extras are for longer stays.
+    { id: 'east', w: {},
+      title: 'Sunrise Peak & Lava Cave',
+      blurb: 'Tangerine picking in season, the Manjanggul lava tube and Bijarim Forest, then Seongsan Ilchulbong and the Seopjikoji headland.',
+      s: [['TANGERIN PICKING EXPERIENCE', 'B', { seasons: ['autumn', 'winter'] }],
+          ['GASIRI NOKSAN-RO (CHERRY BLOSSOM & CANOLA FLOWER ROAD)', 'B', { seasons: ['spring'], note: 'Cherry blossom and canola flower road.' }],
+          ['MANJANGGUL CAVE', 'B'], ['BIJARIM FOREST', 'B', { notConcept: ['wellness'] }], ['SARYEONI FOREST', 'B', { c: ['wellness'], note: 'Forest-bathing walk on a cedar trail.' }], ['JEJU HAENYEO MUSEUM', 'B', { notConcept: ['classic'] }],
+          ['SEONGSAN SUNRISE PEAK', 'B', { note: 'Summit closed the first Monday of each month; the free coastal trail is used instead.' }],
+          ['CHUIDASEON TEA MEDITATION (SEONGSAN)', 'B', { c: ['wellness'], note: 'Tea and meditation programme facing Seongsan Ilchulbong.' }],
+          ['SEOPJIKOJI (BEACH LINE)', 'B', { notes: { spring: 'Canola flower spot.' } }], ['WOLJEONGRI BEACH', 'B', { seasons: ['spring', 'summer'] }]] },
+    { id: 'southwest', w: {},
+      title: 'Waterfalls & Green Tea Fields',
+      blurb: 'Jeongbang Waterfall dropping into the sea, the basalt columns of Jusangjeolli, garden walks, O’sulloc tea fields and ARTE Museum.',
+      s: [['JEONNONG-RO CHERRY BLOSSOM STREET', 'B', { seasons: ['spring'], note: 'Cherry blossom spot (late March to early April).' }], ['SEOGWIPO OLLE MARKET', 'B', { seasons: ['spring'], noSeasonHl: true }],
+          ['CHEONJIYEON WATERFALLS', 'B', { seasons: ['spring'], noSeasonHl: true }], ['JEONGBANG WATERFALL', 'B', { seasons: ['summer', 'autumn', 'winter'] }], ['JUSANGJEOLLI LAVA CLIFF', 'B'],
+          ['CAMELLIA HILL', 'B', { seasons: ['winter'] }], ['HALLIM PARK', 'B', { seasons: ['summer', 'autumn'], noSeasonHl: true }],
+          ['O\'SULLOC GREEN TEA PLANTATION', 'B'], ['ARTE MUSEUM JEJU (IMMERSIVE MEDIA ART EXHIBITION HALL)', 'R']] },
+    { id: 'handson', w: { family: 3, education: 3, romantic: 1, beauty: 2 },
+      title: 'Alpacas, Mazes & Karts',
+      blurb: 'Meet the alpacas at Dochidol, race through the Dynamic Maze and try the gravity karts at 9.81 Park.',
+      s: [['DOCHIDOL ALPACA RANCH', 'B'], ['DYNAMIC MAZE JEJU', 'B'], ['9.81 PARK', 'L', { c: ['family', 'education'] }]] },
+    { id: 'culture', w: { romantic: 2, family: 2, beauty: 3, education: 2 },
+      title: 'Markets & Café Coast',
+      blurb: 'Island life at Jeju Folk Village, Dongmun Market, the Aewol café coast and sunset at Iho Tewoo.',
+      s: [['JEJU FOLK VILLAGE', 'B'], ['DONGMUN MARKET', 'B'], ['AEWOL CAFÉ STREET', 'B'], ['THE CLIFF CAFÉ', 'R'], ['IHO-TEWOO BEACH', 'B']] },
+    { id: 'jejusummer', seasons: ['summer'], seasonBoost: { summer: 2 }, w: { romantic: 2, family: 2, beauty: 2, education: 2 },
+      title: 'Beaches & Volcanic Hills',
+      blurb: 'Hamdeok’s turquoise water, a gentle volcanic cone walk and the 1100 Highland wetland.',
+      s: [['HAMDEOK BEACH', 'B'], ['SAEBYEOL OREUM', 'B'], ['1100 ALTITUDE WETLAND', 'B']] },
+  ],
+  busan: [
+    { id: 'eastcoast', w: {},
+      title: 'Seaside Temple & Haeundae',
+      blurb: 'Haedong Yonggungsa, the temple on the rocks, with time to explore. Then the Blue Line Park coastal train, a yacht cruise and Gwangalli Bridge lit up at night.',
+      s: [['HAEDONG YONGGUNGSA TEMPLE', 'B'], ['HAEUNDAE BLUE LINE PARK', 'B', { v: { B: 'HAEUNDAE BLUE LINE PARK (COASTAL TRAIN)', R: 'HAEUNDAE BLUE LINE PARK (COASTAL TRAIN)', L: 'HAEUNDAE BLUE LINE PARK (COASTAL TRAIN)' }, budgetOK: true }],
+          ['HAEUNDAE BEACH & NURIMARU APEC HOUSE', 'B'], ['SHINSEGAE SPALAND CENTUM CITY', 'B', { c: ['wellness'] }],
+          ['DALMAJI ROAD', 'B', { seasons: ['spring'], note: 'Cherry blossom spot (early April).' }],
+          ['THE BAY 101 YACHT', 'R', { seasons: ['spring', 'summer', 'autumn'], hl: ['romantic'] }], ['GWANGALLI BEACH FOR NIGHT VIEW', 'B']] },
+    { id: 'oldbusan', w: {},
+      title: 'Gamcheon Village & Old Busan',
+      blurb: 'The Songdo cable car over the sea, Gamcheon Culture Village while the shops are open, then BIFF Square and Gukje Market.',
+      s: [['SONGDO CABLE CAR', 'B', { v: { B: 'SONGDO CABLE CAR & SUSPENSION BRIDGE', L: 'SONGDO AIR-CRUISE(CABLE CAR)' } }], ['GAMCHEON CULTURAL VILLAGE', 'B'],
+          ['JAGALCHI FISH MARKET', 'B', { seasons: ['spring'], noSeasonHl: true }], ['BIFF SQUARE & GUKJE MARKET', 'B'], ['BUSAN CHRISTMAS TREE FESTIVAL (GWANGBOK-RO)', 'B', { seasons: ['winter'], note: 'Christmas Tree Festival lights, mid-December to early January.' }]] },
+    { id: 'gyeongju', w: {},
+      title: 'Gyeongju, the Ancient Capital',
+      blurb: 'Korea’s “museum without walls”: Bulguksa Temple and Seokguram Grotto (both UNESCO), the royal tombs and Cheomseongdae, then Donggung Palace and Wolji Pond lit up at dusk.',
+      s: [['BOMUN LAKE FOR CHERRY BLOSSOM', 'B', { seasons: ['spring'], note: 'Cherry blossom spot (early April).' }],
+          ['BULGUKSA TEMPLE', 'B'], ['SEOKGURAM GROTTO', 'B'], ['CHEONMACHONG TOMB (DAEREUNGWON ANCIENT TOMBS)', 'B'], ['CHEOMSEONGDAE OBSERVATORY', 'B'],
+          ['GYEONGJU GYOCHON TRADITIONAL VILLAGE', 'B'], ['HWANGNIDAN-GIL', 'B'], ['DONGGUNG PALACE & WOLJI POND', 'B']] },
+    { id: 'busanfun', w: { family: 4, education: 3, romantic: 1, beauty: 1 },
+      title: 'Luge & Aquarium',
+      blurb: 'Race down the Skyline Luge at Gijang, then SEA LIFE Busan Aquarium on Haeundae Beach.',
+      s: [['SKYLINE LUGE', 'B', { v: { B: 'SKYLINE LUGE (2 TIMES)', R: 'SKYLINE LUGE (2 TIMES)', L: 'SKYLINE LUGE (3 TIMES)' } }], ['SEALIFE BUSAN AQUARIUM', 'B'], ['ARTE MUSEUM BUSAN (IMMERSIVE MEDIA ART EXHIBITION HALL)', 'L']] },
+    { id: 'wellness', only: ['romantic', 'beauty', 'wellness'], w: { romantic: 3, beauty: 4, wellness: 5 },
+      title: 'Spa Day at Centum City',
+      blurb: 'Hot springs at Shinsegae Spaland (separate areas for men and women), Museum One and the world’s largest department store at Centum City.',
+      s: [['SHINSEGAE SPALAND CENTUM CITY', 'B'], ['SHINSEGAE CENTUM CITY DEPARTMENT STORE', 'B'], ['MUSEUM 1 BUSAN', 'R'], ['JEONPO CAFÉ STREET', 'B']] },
+  ],
+};
+
+/* Target guests per stop, from the Elite Travel site-inspection itinerary (Nov 2026).
+   Listed stops are kept only for these Traveling-as choices; unlisted stops suit everyone.
+   Business / Other see every stop. A day never drops below MIN_STOPS: skipped stops are added back in order. */
+const F = 'family', C = 'romantic', W = 'beauty', S = 'education';
+const TARGETS = {
+  'JEJU HAENYEO MUSEUM': [S],
+  'HAEUNDAE BEACH & NURIMARU APEC HOUSE': [S],
+  'K BEAUTY STORE': [W, F], 'NATIONAL FOLK MUSEUM OF KOREA': [S], 'NATIONAL MUSEUM OF KOREA': [S], 'THE WAR MEMORIAL MUSEUM OF KOREA': [S],
+  'THE HYUNDAI SEOUL': [W], 'LOTTE WORLD THEME PARK': [C, F], 'EVERLAND THEME PARK (INCLUDING: ONE DAY PASS)': [F],
+};
+const TARGETED = [F, C, W, S, 'wellness'];
+const MIN_STOPS = 4;
+
+const TIER_RANK = { B: 0, R: 1, L: 2 };
+const HANBOK_KEY = 'GYEONGBOKGUNG PALACE (INCLUDING: HANBOK RENTAL)';
+const hanbokOf = sel => typeof sel.hanbok === 'boolean' ? sel.hanbok : sel.tier === 'L';
+const mealKey = (d, m) => (d.slot || 't:' + d.title) + '|' + m; // a meal on one day, for sel.mealOff / sel.mealOn
+const mealEdge = d => d.kind === 'transfer' && (d.title === 'Departure' || d.title.startsWith('Arrival')); // arrival / departure day
+const REGION_NAME = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
+
+/* Source market rules: must = always included (if the city has enough days), never = excluded. */
+const MARKETS = {
+  mideast:  { label: 'Middle East', must: ['nami', 'hwacheon'], never: ['dmz'] },
+  india:    { label: 'India', must: ['dmz', 'nami', 'hwacheon'], never: [] },
+  other:    { label: 'Other markets', must: [], never: [] },
+};
+
+// Guests' country (ISO 3166 alpha-3) → market rules. Middle East and India change the itinerary; others use the default.
+const COUNTRIES = [["Afghanistan","AFG"],["Albania","ALB"],["Algeria","DZA"],["American Samoa","ASM"],["Andorra","AND"],["Angola","AGO"],["Anguilla","AIA"],["Antigua and Barbuda","ATG"],["Argentina","ARG"],["Armenia","ARM"],["Aruba","ABW"],["Australia","AUS"],["Austria","AUT"],["Azerbaijan","AZE"],["Bahamas","BHS"],["Bahrain","BHR"],["Bangladesh","BGD"],["Barbados","BRB"],["Belarus","BLR"],["Belgium","BEL"],["Belize","BLZ"],["Benin","BEN"],["Bermuda","BMU"],["Bhutan","BTN"],["Bolivia","BOL"],["Bonaire, Sint Eustatius and Saba","BES"],["Bosnia and Herzegovina","BIH"],["Botswana","BWA"],["Brazil","BRA"],["British Virgin Islands","VGB"],["Brunei","BRN"],["Bulgaria","BGR"],["Burkina Faso","BFA"],["Burundi","BDI"],["Cabo Verde","CPV"],["Cambodia","KHM"],["Cameroon","CMR"],["Canada","CAN"],["Cayman Islands","CYM"],["Central African Republic","CAF"],["Chad","TCD"],["Chile","CHL"],["China","CHN"],["Christmas Island","CXR"],["Cocos Islands","CCK"],["Colombia","COL"],["Comoros","COM"],["Congo","COG"],["Cook Islands","COK"],["Costa Rica","CRI"],["Croatia","HRV"],["Cuba","CUB"],["Curaçao","CUW"],["Cyprus","CYP"],["Czech Republic","CZE"],["Côte d'Ivoire","CIV"],["DR Congo","COD"],["Denmark","DNK"],["Djibouti","DJI"],["Dominica","DMA"],["Dominican Republic","DOM"],["Ecuador","ECU"],["Egypt","EGY"],["El Salvador","SLV"],["Equatorial Guinea","GNQ"],["Eritrea","ERI"],["Estonia","EST"],["Eswatini","SWZ"],["Ethiopia","ETH"],["Falkland Islands","FLK"],["Faroe Islands","FRO"],["Fiji","FJI"],["Finland","FIN"],["France","FRA"],["French Guiana","GUF"],["French Polynesia","PYF"],["Gabon","GAB"],["Gambia","GMB"],["Georgia","GEO"],["Germany","DEU"],["Ghana","GHA"],["Gibraltar","GIB"],["Greece","GRC"],["Greenland","GRL"],["Grenada","GRD"],["Guadeloupe","GLP"],["Guam","GUM"],["Guatemala","GTM"],["Guernsey","GGY"],["Guinea","GIN"],["Guinea-Bissau","GNB"],["Guyana","GUY"],["Haiti","HTI"],["Honduras","HND"],["Hong Kong","HKG"],["Hungary","HUN"],["Iceland","ISL"],["India","IND"],["Indonesia","IDN"],["Iran","IRN"],["Iraq","IRQ"],["Ireland","IRL"],["Isle of Man","IMN"],["Israel","ISR"],["Italy","ITA"],["Jamaica","JAM"],["Japan","JPN"],["Jersey","JEY"],["Jordan","JOR"],["Kazakhstan","KAZ"],["Kenya","KEN"],["Kiribati","KIR"],["Kuwait","KWT"],["Kyrgyzstan","KGZ"],["Laos","LAO"],["Latvia","LVA"],["Lebanon","LBN"],["Lesotho","LSO"],["Liberia","LBR"],["Libya","LBY"],["Liechtenstein","LIE"],["Lithuania","LTU"],["Luxembourg","LUX"],["Macao","MAC"],["Madagascar","MDG"],["Malawi","MWI"],["Malaysia","MYS"],["Maldives","MDV"],["Mali","MLI"],["Malta","MLT"],["Marshall Islands","MHL"],["Martinique","MTQ"],["Mauritania","MRT"],["Mauritius","MUS"],["Mayotte","MYT"],["Mexico","MEX"],["Micronesia","FSM"],["Moldova","MDA"],["Monaco","MCO"],["Mongolia","MNG"],["Montenegro","MNE"],["Montserrat","MSR"],["Morocco","MAR"],["Mozambique","MOZ"],["Myanmar","MMR"],["Namibia","NAM"],["Nauru","NRU"],["Nepal","NPL"],["Netherlands","NLD"],["New Caledonia","NCL"],["New Zealand","NZL"],["Nicaragua","NIC"],["Niger","NER"],["Nigeria","NGA"],["Niue","NIU"],["Norfolk Island","NFK"],["North Macedonia","MKD"],["Northern Mariana Islands","MNP"],["Norway","NOR"],["Oman","OMN"],["Pakistan","PAK"],["Palau","PLW"],["Palestine","PSE"],["Panama","PAN"],["Papua New Guinea","PNG"],["Paraguay","PRY"],["Peru","PER"],["Philippines","PHL"],["Pitcairn","PCN"],["Poland","POL"],["Portugal","PRT"],["Puerto Rico","PRI"],["Qatar","QAT"],["Romania","ROU"],["Russia","RUS"],["Rwanda","RWA"],["Réunion","REU"],["Saint Barthélemy","BLM"],["Saint Helena","SHN"],["Saint Kitts and Nevis","KNA"],["Saint Lucia","LCA"],["Saint Martin","MAF"],["Saint Pierre and Miquelon","SPM"],["Saint Vincent and the Grenadines","VCT"],["Samoa","WSM"],["San Marino","SMR"],["Sao Tome and Principe","STP"],["Saudi Arabia","SAU"],["Senegal","SEN"],["Serbia","SRB"],["Seychelles","SYC"],["Sierra Leone","SLE"],["Singapore","SGP"],["Sint Maarten","SXM"],["Slovakia","SVK"],["Slovenia","SVN"],["Solomon Islands","SLB"],["Somalia","SOM"],["South Africa","ZAF"],["South Sudan","SSD"],["Spain","ESP"],["Sri Lanka","LKA"],["Sudan","SDN"],["Suriname","SUR"],["Svalbard and Jan Mayen","SJM"],["Sweden","SWE"],["Switzerland","CHE"],["Syria","SYR"],["Taiwan","TWN"],["Tajikistan","TJK"],["Tanzania","TZA"],["Thailand","THA"],["Timor-Leste","TLS"],["Togo","TGO"],["Tokelau","TKL"],["Tonga","TON"],["Trinidad and Tobago","TTO"],["Tunisia","TUN"],["Turkey","TUR"],["Turkmenistan","TKM"],["Turks and Caicos Islands","TCA"],["Tuvalu","TUV"],["U.S. Virgin Islands","VIR"],["Uganda","UGA"],["Ukraine","UKR"],["United Arab Emirates","ARE"],["United Kingdom","GBR"],["United States","USA"],["Uruguay","URY"],["Uzbekistan","UZB"],["Vanuatu","VUT"],["Vatican City","VAT"],["Venezuela","VEN"],["Vietnam","VNM"],["Wallis and Futuna","WLF"],["Yemen","YEM"],["Zambia","ZMB"],["Zimbabwe","ZWE"],["Åland Islands","ALA"]];
+const COUNTRY_MARKET = { SAU: 'mideast', ARE: 'mideast', QAT: 'mideast', KWT: 'mideast', BHR: 'mideast', OMN: 'mideast', JOR: 'mideast', EGY: 'mideast', IRQ: 'mideast', LBN: 'mideast', YEM: 'mideast', PSE: 'mideast', SYR: 'mideast', IND: 'india' };
+const marketOf = code => COUNTRY_MARKET[code] || 'other';
+
+const CONCEPT_MUST = { tech: ['techday', 'dmz'] };
+// Seoul city tours by Tour theme: Classic/Romantic = Jongno, Jamsil + COEX, Yeouido + Hongdae. Other themes put their theme day second.
+const FREE_TIPS = {
+  seoul: 'Easy by subway: Myeongdong, Hongdae, Seongsu or a Han River park',
+  jeju: 'Easy by taxi or bus: Dongmun Market, Aewol seaside cafés or Iho Tewoo Beach',
+  busan: 'Easy by subway: Haeundae Beach, Seomyeon or Nampo-dong and Gukje Market',
+};
+const REGION_SEQ = { jeju: ['east', 'southwest'], busan: ['eastcoast', 'oldbusan', 'gyeongju'] }; // Busan 4+ nights: day 3 is Gyeongju
+const CITY_SEQ = {
+  // Full-day theme days only (Everland, Suwon/Pangyo tech day). Other themes are woven into the regular city days.
+  default:  ['jongno', 'jamsil', 'yeouido'],
+  family:   ['jongno', 'everland', 'jamsil', 'yeouido'],
+  tech:     ['jongno', 'techday', 'yeouido', 'jamsil'],
+  education: ['jongno', 'yeouido', 'jamsil'], // Yeouido day carries the National Museum
+};
+
+const DAY_TRIPS = ['dmz', 'nami', 'hwacheon'];      // winter: Hwacheon Ice Festival replaces Nami Island (namiwinter kept in data)          // Seoul: out-of-city days chosen from these only
+const NO_AUTO = ['lotte', 'summerwater', 'folk', 'shopping', 'namiwinter', 'busanfun']; // busanfun: luge left out for safety // kept in data, never added automatically
+
+// Day tours a client may swap in, per city (one whole day at a time). 'free' = free day.
+const SWAPPABLE = {
+  seoul: ['jongno', 'jamsil', 'yeouido', 'seongsu', 'itaewon', 'kculture', 'autumn', 'nami', 'namiwinter', 'hwacheon', 'dmz', 'everland', 'techday', 'folk'],
+  jeju: ['east', 'southwest', 'handson', 'culture', 'jejusummer'],
+  busan: ['eastcoast', 'oldbusan', 'gyeongju', 'wellness'],
+};
+function swapOptions(region, sel) {
+  return SWAPPABLE[region].map(id => MODULES[region].find(m => m.id === id))
+    .filter(m => m && (!m.seasons || m.seasons.includes(sel.season)))
+    .map(m => ({ id: m.id, title: (m.titles && m.titles[sel.concept]) || (m.seasonTitles && m.seasonTitles[sel.season]) || m.title, out: region === 'seoul' && m.area === 'gyeonggi' }));
+}
+function swapModule(region, id, sel) {
+  if (id === 'free') return null;
+  if (!SWAPPABLE[region] || !SWAPPABLE[region].includes(id)) return undefined;
+  const m = MODULES[region].find(x => x.id === id);
+  return m && (!m.seasons || m.seasons.includes(sel.season)) ? m : undefined;
+}
+
+function pickModules(region, n, sel) {
+  const mk = MARKETS[sel.market] || MARKETS.other;
+  const must = [...mk.must, ...(CONCEPT_MUST[sel.concept] || [])];
+  const pool = MODULES[region].filter(m => (!m.seasons || m.seasons.includes(sel.season)) && (!m.only || m.only.includes(sel.concept)) && !mk.never.includes(m.id) && !NO_AUTO.includes(m.id) && (m.id !== 'techday' || sel.concept === 'tech') && m.id !== 'wellnessday' && (m.id !== 'everland' || sel.concept === 'family'));
+  const score = m => (m.core || 0) + (m.w[sel.concept] || 0) + ((m.seasonBoost || {})[sel.season] || 0) + (must.includes(m.id) ? 10 : 0) + (m.base ? 20 : 0);
+  const rank = list => list.map((m, i) => ({ m, i, sc: score(m) })).sort((a, b) => b.sc - a.sc || a.i - b.i).map(x => x.m);
+  if (region !== 'seoul') {
+    // Jeju / Busan: Day 1 and Day 2 routes from the winter packages, then extras by score.
+    const seq = REGION_SEQ[region].map(id => pool.find(m => m.id === id)).filter(Boolean);
+    return [...seq, ...rank(pool.filter(m => !seq.includes(m)))].slice(0, n);
+  }
+  // Seoul: numbered city tours in a fixed order (CITY_SEQ), plus one day trip (Nami or DMZ) once there are 2+ touring days.
+  // India gets both Nami and DMZ from 4 touring days. Longer stays add extra city tours by score.
+  const trips = rank(pool.filter(m => DAY_TRIPS.includes(m.id)));
+  // Themes with their own Seoul day (Family, K-Beauty, Wellness, Tech, Education) keep it over the day trip when Seoul has only 2 touring days.
+  const themed = ['family', 'tech'].includes(sel.concept);
+  const nTrips = n < 2 || (themed && n < 3) ? 0 : Math.min(trips.length, sel.market === 'india' && n >= 4 ? 2 : 1);
+  const seq = (CITY_SEQ[sel.concept] || CITY_SEQ.default).map(id => pool.find(m => m.id === id)).filter(Boolean);
+  const extras = rank(pool.filter(m => !DAY_TRIPS.includes(m.id) && !seq.includes(m)));
+  const city = [...seq, ...extras].slice(0, n - nTrips);
+  const t = trips.slice(0, nTrips);
+  const out = [...city.slice(0, 1), ...t, ...city.slice(1)];
+  while (out.length < n && extras.length) { const m = extras.find(x => !out.includes(x)); if (!m) break; out.push(m); }
+  return out;
+}
+
+function resolveStops(m, sel) {
+  const out = [], skipped = [];
+  const fullDayTheme = ['everland', 'techday'].includes(m.id);
+  for (const [key, min, o = {}] of m.s) {
+    if (TIER_RANK[sel.tier] < TIER_RANK[min]) continue;
+    // Budget: only free or low-cost admissions (theme-day anchors such as Everland are kept)
+    if (sel.tier === 'B' && !fullDayTheme && !o.budgetOK) { const k0 = o.v ? (o.v.B || o.v.R) : key; if ((SIGHTS_BASE[k0] ?? SIGHTS[k0] ?? 0) > CONFIG.budgetMaxAdmission) continue; }
+    // Lotte World theme park on the Jamsil day: on by default for Couple, otherwise the client's choice
+    const lotteOn = typeof sel.lotte === 'boolean' ? sel.lotte : sel.concept === 'romantic';
+    if (o.lotte && !lotteOn) continue;
+    if (o.notLotte && lotteOn) continue;
+    // Hanbok rental at Gyeongbokgung: on by default for Luxury, otherwise the client's choice. The stop keeps the palace ticket price; the rental is charged as CONFIG.hanbokUSD per person.
+    const hanbokOn = hanbokOf(sel);
+    if (o.c && !o.c.includes(sel.concept)) continue;
+    if (o.seasons && !o.seasons.includes(sel.season)) continue;
+    if (o.notConcept && o.notConcept.includes(sel.concept)) continue;
+    let k = key, themeHit = false;
+    if (o.hanbok && hanbokOn) k = HANBOK_KEY;
+    if (o.v) { const tv = o.v[`${sel.tier}:${sel.concept}`]; themeHit = !!tv && tv !== (o.v[sel.tier] || o.v.R || o.v.B); k = tv || o.v[sel.tier] || o.v.R || o.v.B; }
+    if (!(k in SIGHTS)) throw new Error('Unknown sight: ' + k);
+    const tg = TARGETS[key] || TARGETS[k];
+    // theme: this stop is here (or upgraded) because of the chosen Tour theme
+    const theme = sel.concept !== 'classic' && !o.noHl && (themeHit || (o.c && o.c.includes(sel.concept)) || (o.hl && o.hl.includes(sel.concept)) || (tg && tg.includes(sel.concept)));
+    // seasonal: a stop that is only here in this season (cherry blossom, Christmas lights, tangerines…)
+    const seasonal = !o.noSeasonHl && ((m.seasons && m.seasons.length === 1) || (o.seasons && o.seasons.length <= 2) || !!(o.notes && o.notes[sel.season]));
+    const stop = { key: k, price: SIGHTS[k], note: (o.notes && o.notes[sel.season]) || o.note, goyang: !!o.goyang, theme, seasonal, i: out.length + skipped.length };
+    if (tg && TARGETED.includes(sel.concept) && !tg.includes(sel.concept)) skipped.push(stop); else out.push(stop);
+  }
+  while (out.length < MIN_STOPS && skipped.length) out.push(skipped.shift());
+  out.sort((a, b) => a.i - b.i);
+  return out;
+}
+
+// Sightseeing on city travel days, near the airport or station: one half-day course, in the city left or the city reached.
+// A stop picked here is taken out of the touring days (a touring day left with no stops becomes a free day).
+const MOVE_SIGHTS = { // in visiting order from the airport / station; reversed when touring before leaving the city
+  seoul: [['NAMDAEMUN MARKET'], ['MYEONGDONG SHOPPING STREET'], ['N SEOUL TOWER', { v: { B: 'N SEOUL TOWER (INCLUDING: CABLE CAR, EXCLUDING: OBSERVATORY)', L: 'N SEOUL TOWER (INCLUDING: CABLE CAR, OBSERVATORY)' } }], ['NAMSANGOL HANOK VILLAGE']],
+  jeju: [['MANJANGGUL CAVE'], ['WOLJEONGRI BEACH', { seasons: ['spring', 'summer'] }], ['BIJARIM FOREST'],
+    ['GASIRI NOKSAN-RO (CHERRY BLOSSOM & CANOLA FLOWER ROAD)', { seasons: ['spring'] }], ['SEONGSAN SUNRISE PEAK'], ['SEOPJIKOJI (BEACH LINE)']],
+  busan: [['GAMCHEON CULTURAL VILLAGE'], ['SONGDO CABLE CAR', { v: { B: 'SONGDO CABLE CAR & SUSPENSION BRIDGE', L: 'SONGDO AIR-CRUISE(CABLE CAR)' } }], ['JAGALCHI FISH MARKET'], ['BIFF SQUARE & GUKJE MARKET'],
+    ['BUSAN CHRISTMAS TREE FESTIVAL (GWANGBOK-RO)', { seasons: ['winter'] }]],
+};
+const MOVE_MAX = 3;
+const FLOAT_STOPS = ['TANGERIN PICKING EXPERIENCE']; // daytime stops that move to another day of the city when their tour day is replaced
+function moveOptions(from, to, sel) {
+  return [from, to].flatMap(city => (MOVE_SIGHTS[city] || []).filter(([, o = {}]) => !o.seasons || o.seasons.includes(sel.season)).map(([id, o = {}]) => {
+    const key = o.v ? (sel.tier === 'L' ? o.v.L : o.v.B) : id;
+    return { id, key, city, when: city === from ? 'before' : 'after', seasonal: !!o.seasons, note: o.note || '', price: SIGHTS[key] || 0 };
+  }));
+}
+// Travel-day tours: the buyer ticks "tour on this day" and picks a tour, like on other days:
+// the travel-day course near the airport / station, or one of the city's own tours (city tours only, no far day trips).
+const MOVE_COURSE_TITLE = { seoul: 'Namsan & Myeongdong', jeju: 'Jeju East Coast', busan: 'Gamcheon & Old Busan' };
+const MOVE_SKIP = ['gyeongju'];
+function moveTourOptions(from, to, sel) {
+  return [from, to].flatMap(city => [{ city, id: 'course', title: MOVE_COURSE_TITLE[city] },
+    ...swapOptions(city, sel).filter(o => !o.out && !MOVE_SKIP.includes(o.id)).map(o => ({ city, id: o.id, title: o.title }))]
+    .map(o => ({ ...o, when: city === from ? 'before' : 'after', value: `${o.city}:${o.id}` })));
+}
+// Cities in the buyer's order (sel.order); Seoul can be left out. At least one city.
+const CITY_ORDER = ['seoul', 'jeju', 'busan'];
+function routeOf(sel) {
+  const ord = Array.isArray(sel.order) && sel.order.length === 3 && CITY_ORDER.every(c => sel.order.includes(c)) ? sel.order : CITY_ORDER;
+  const r = ord.filter(c => c === 'seoul' ? sel.seoul !== false : !!sel[c]);
+  return r.length ? r : ['seoul'];
+}
+const moveRoute = sel => routeOf(sel);
+function moveTourRaw(sel, k) {
+  const t = sel.moveTour && sel.moveTour[k];
+  if (t) return t;
+  const c = sel.moveCity && sel.moveCity[k]; return c ? `${c}:course` : ''; // older saved selections
+}
+// a tour already picked on an earlier travel day cannot be picked again
+function moveTourTaken(from, to, value, sel) {
+  const route = moveRoute(sel);
+  for (let k = 0; k + 1 < route.length; k++) {
+    if (route[k] === from && route[k + 1] === to) return false;
+    const v = moveTourRaw(sel, `${route[k]}>${route[k + 1]}`);
+    if (v && v === value && moveTourOptions(route[k], route[k + 1], sel).some(o => o.value === v)) return true;
+  }
+  return false;
+}
+function moveTourPick(from, to, sel) {
+  const v = moveTourRaw(sel, `${from}>${to}`);
+  const o = v && moveTourOptions(from, to, sel).find(x => x.value === v);
+  return o && !moveTourTaken(from, to, v, sel) ? o : null;
+}
+function movePicks(from, to, sel) {
+  const p = moveTourPick(from, to, sel);
+  if (!p) return [];
+  if (p.id === 'course') {
+    const os = moveOptions(from, to, sel).filter(o => o.city === p.city);
+    return p.when === 'before' ? os.reverse() : os;
+  }
+  const m = MODULES[p.city].find(x => x.id === p.id);
+  return resolveStops(m, sel).filter(s => !FLOAT_STOPS.includes(s.key)).map(s => ({ id: s.key, key: s.key, city: p.city, when: p.when, seasonal: !!s.seasonal, note: s.note || '', price: s.price || 0 }));
+}
+function buildItinerary(sel) {
+  const route = routeOf(sel);
+  const nights = { seoul: sel.nSeoul, jeju: sel.nJeju, busan: sel.nBusan };
+  const lux = sel.tier === 'L';
+  const days = [];
+  const ARR = { seoul: ['Incheon', 'Incheon International Airport', 'ICN'], busan: ['Gimhae', 'Gimhae International Airport', 'PUS'], jeju: ['Jeju Airport', 'Jeju International Airport', 'CJU'] }[route[0]];
+  days.push({ kind: 'transfer', region: route[0], title: `Arrival in ${REGION_NAME[route[0]]}`, route: `${ARR[0]} → ${REGION_NAME[route[0]]}`,
+    lines: [`Arrive at ${ARR[1]}`, `Meet your driver and transfer to your hotel in ${REGION_NAME[route[0]]}`, 'Hotel check-in and rest'],
+    transfers: [ARR[2]], tickets: [] });
+  const seen = new Set(); // the same paid stop is not repeated on another day
+  const reserved = { seoul: new Set(), jeju: new Set(), busan: new Set() }, movePlan = {}; // city tours moved to a travel day
+  route.forEach((r, idx) => { if (!route[idx + 1]) return;
+    const picks = movePicks(r, route[idx + 1], sel).filter(o => !seen.has(o.key)); // travel-day picks come first
+    movePlan[`${r}>${route[idx + 1]}`] = picks; picks.forEach(o => seen.add(o.key));
+    const p = moveTourPick(r, route[idx + 1], sel); if (p && p.id !== 'course') reserved[p.city].add(p.id); });
+  route.forEach((r, idx) => {
+    const tourDays = nights[r] - 1;
+    const mods = pickModules(r, tourDays, sel);
+    // Budget saves on guide and vehicle costs: the last touring day in each city becomes a free day (when the city has 3+ touring days).
+    if (sel.tier === 'B' && tourDays >= CONFIG.budgetFreeDayFrom) mods[tourDays - 1] = null;
+    // Client swaps: { 'seoul:2': 'dmz', 'busan:1': 'free', ... } (index = touring day within the city)
+    const changed = new Set();
+    for (let i = 0; i < tourDays; i++) {
+      const want = sel.swaps && sel.swaps[`${r}:${i}`];
+      if (!want) continue;
+      const m = swapModule(r, want, sel);
+      if (m === undefined || (m && (reserved[r].has(m.id) || mods.some((x, j) => j !== i && x && x.id === m.id)))) continue; // unknown, out of season, already used or on a travel day
+      if ((m ? m.id : 'free') !== (mods[i] ? mods[i].id : 'free')) { mods[i] = m; changed.add(i); }
+    }
+    // a day whose sights all went to the travel-day tour is dropped; the city's other days move up and the next unused tour fills the last day
+    {
+      const solid = x => !seen.has(x.key) && !FLOAT_STOPS.includes(x.key);
+      const gone = mods.map((m, i) => !!m && (reserved[r].has(m.id) || (!changed.has(i) && !resolveStops(m, sel).some(solid))));
+      if (gone.some(Boolean)) {
+        const keep = mods.map((m, i) => ({ m, ch: changed.has(i) })).filter((_, i) => !gone[i]);
+        const pool = pickModules(r, tourDays + 8, sel).filter(x => !mods.includes(x) && !reserved[r].has(x.id) && resolveStops(x, sel).some(solid));
+        while (keep.length < tourDays) keep.push({ m: pool.shift() || null, ch: false });
+        mods.splice(0, mods.length, ...keep.map(k => k.m)); changed.clear(); keep.forEach((k, i) => { if (k.ch) changed.add(i); });
+      }
+    }
+    for (let i = 0; i < tourDays; i++) {
+      let m = mods[i]; const slot = `${r}:${i}`, swapped = changed.has(i);
+      // a day whose sights all went to the travel-day tour takes the next unused tour of the city instead
+
+      if (!m) { days.push({ kind: 'free', region: r, slot, moduleId: 'free', swapped, title: `Free day in ${REGION_NAME[r]}`, lines: ['At leisure, without guide or vehicle', FREE_TIPS[r], 'A guided day can be added on request'], transfers: [], tickets: [] }); continue; }
+      const area = r === 'seoul' ? 'seoul_' + m.area : r;
+      const themeDay = ['everland', 'techday'].includes(m.id) && !!CITY_SEQ[sel.concept] && CITY_SEQ[sel.concept][1] === m.id;
+      const stops = resolveStops(m, sel).filter(x => !seen.has(x.key));
+      if (!stops.length) { days.push({ kind: 'free', region: r, slot, moduleId: 'free', swapped, emptied: true, title: `Free day in ${REGION_NAME[r]}`, lines: ['This day’s sights were moved to your travel day', FREE_TIPS[r], 'A guided day can be added on request'], transfers: [], tickets: [] }); continue; }
+      if (themeDay) stops.forEach(x => { x.theme = true; });
+      stops.forEach(x => seen.add(x.key));
+      const gy = m.goyang && stops.some(x => x.goyang);
+      days.push({ kind: 'tour', region: r, slot, moduleId: m.id, swapped, lotteOpt: m.id === 'jamsil' && !(sel.tier === 'B' && false), hanbokOpt: stops.some(x => x.key === 'GYEONGBOKGUNG PALACE' || x.key === HANBOK_KEY), area, themeDay, seasonDay: !!(m.seasons && m.seasons.length === 1), title: gy ? m.goyang.title : (m.titles && m.titles[sel.concept]) || (m.seasonTitles && m.seasonTitles[sel.season]) || m.title, blurb: gy ? m.goyang.blurb : (m.id === 'jamsil' && stops.some(x => x.key === 'LOTTE WORLD THEME PARK') ? m.blurbs.romantic : null) || (m.blurbs && m.blurbs[sel.concept]) || (m.seasonBlurbs && m.seasonBlurbs[sel.season]) || m.blurb, outOfSeoul: r === 'seoul' && m.area === 'gyeonggi', sic: m.id === 'dmz', stops, transfers: [], tickets: [],
+        route: m.id === 'gyeongju' ? 'Busan → Gyeongju → Busan' : r === 'seoul' && m.area === 'gyeonggi' ? `Seoul → ${({ techday: 'Suwon', nami: stops.some(x => x.goyang) ? 'Gapyeong → Goyang' : 'Gapyeong', namiwinter: stops.some(x => x.goyang) ? 'Gapyeong → Goyang' : 'Gapyeong', hwacheon: 'Hwacheon → Chuncheon', dmz: gy ? 'Goyang → DMZ' : 'DMZ', shopping: 'Gimpo', everland: 'Yongin', summerwater: 'Yongin', folk: 'Yongin · Suwon' })[m.id] || 'Gyeonggi'} → Seoul` : REGION_NAME[r] });
+    }
+    // a daytime stop whose tour day was replaced (tangerine picking) joins the city's first touring day
+    if (route.some((c, k) => route[k + 1] && movePicks(c, route[k + 1], sel).some(o => o.city === r))) {
+      const cityDays = days.filter(d => d.region === r && d.kind === 'tour');
+      for (const fk of FLOAT_STOPS) {
+        if (seen.has(fk) || !cityDays.length) continue;
+        const src = MODULES[r].flatMap(mm => mm.s).find(s => s[0] === fk); if (!src) continue;
+        const o = src[2] || {}; if (o.seasons && !o.seasons.includes(sel.season)) continue;
+        cityDays[0].stops.unshift({ key: fk, price: SIGHTS[fk], note: o.note, seasonal: !!o.seasons, i: -1 }); seen.add(fk);
+      }
+    }
+    const next = route[idx + 1];
+    if (next) {
+      const t = moveDay(r, next, lux);
+      t.moveKey = `${r}>${next}`; t.moveFrom = r; t.moveTo = next;
+      t.adds = (movePlan[`${r}>${next}`] || []).map(o => ({ key: o.key, id: o.id, city: o.city, when: o.when, seasonal: o.seasonal, note: o.note, price: o.price }));
+      { const p = moveTourPick(r, next, sel); if (p && t.adds.length) { t.moveTour = p.value; t.moveTitle = p.title; } }
+      days.push(t);
+    }
+  });
+  const last = route[route.length - 1];
+  const dep = { kind: 'transfer', region: last, title: 'Departure', transfers: [], tickets: [] };
+  if (last === 'seoul') { dep.route = 'Seoul → Incheon'; dep.lines = ['Hotel check-out', 'Transfer to Incheon International Airport']; dep.transfers = ['ICN']; }
+  if (last === 'jeju') { dep.route = 'Jeju → Seoul → Incheon'; dep.lines = ['Hotel check-out, transfer to Jeju Airport', 'Flight to Seoul Gimpo (economy class)', 'Transfer to Incheon International Airport']; dep.transfers = ['CJU', 'ICN']; dep.tickets = [['Domestic flight Jeju–Gimpo', CONFIG.tickets.flight]]; }
+  if (last === 'busan') { dep.route = 'Busan → Seoul → Incheon'; dep.lines = ['Hotel check-out, transfer to Busan Station', `KTX bullet train to Seoul (${lux ? 'first' : 'standard'} class)`, 'Transfer to Incheon International Airport'];
+    dep.transfers = ['BUS_STN', 'ICN']; dep.tickets = [[`KTX Busan–Seoul (${lux ? '1st' : 'standard'} class)`, lux ? CONFIG.tickets.ktx1st : CONFIG.tickets.ktx]]; }
+  days.push(dep);
+  const meals = (Array.isArray(sel.meals) ? sel.meals : []).filter(m => m === 'lunch' || m === 'dinner');
+  // meals on touring days and travel days between cities (not the arrival day, free days or the departure day)
+  // meals are on by default on touring days and travel days between cities (untick: sel.mealOff);
+  // arrival and departure days are off by default and can be ticked (sel.mealOn)
+  days.forEach(d => { d.mealSlots = d.kind === 'tour' || d.kind === 'transfer' ? meals : []; d.meals = d.mealSlots.filter(m => mealEdge(d) ? !!(sel.mealOn || {})[mealKey(d, m)] : !(sel.mealOff || {})[mealKey(d, m)]); });
+  return days;
+}
+
+function moveDay(from, to, lux) {
+  const d = { kind: 'transfer', region: to, title: `${REGION_NAME[from]} to ${REGION_NAME[to]}`, route: `${REGION_NAME[from]} → ${REGION_NAME[to]}`, transfers: [], tickets: [] };
+  if (from === 'seoul' && to === 'jeju') { d.lines = ['Hotel check-out, transfer to Gimpo Airport', 'Flight to Jeju (economy class, 15 kg checked baggage)', 'Transfer to your hotel, check-in', 'Free time to settle in']; d.transfers = ['GMP', 'CJU']; d.tickets = [['Domestic flight Gimpo–Jeju', CONFIG.tickets.flight]]; }
+  if (from === 'seoul' && to === 'busan') { d.lines = ['Hotel check-out, transfer to Seoul Station', `KTX bullet train to Busan (${lux ? 'first' : 'standard'} class)`, 'Transfer to your hotel, check-in', 'Free time to settle in']; d.transfers = ['SEL_STN', 'BUS_STN']; d.tickets = [[`KTX Seoul–Busan (${lux ? '1st' : 'standard'} class)`, lux ? CONFIG.tickets.ktx1st : CONFIG.tickets.ktx]]; }
+  if (from === 'jeju' && to === 'busan') { d.lines = ['Hotel check-out, transfer to Jeju Airport', 'Flight to Busan Gimhae (economy class, 15 kg checked baggage)', 'Transfer to your hotel, check-in. Gimhae has extra security checks, so allow time.', 'Free time to settle in']; d.transfers = ['CJU', 'PUS']; d.tickets = [['Domestic flight Jeju–Busan', CONFIG.tickets.flight]]; }
+  if (from === 'jeju' && to === 'seoul') { d.lines = ['Hotel check-out, transfer to Jeju Airport', 'Flight to Seoul Gimpo (economy class, 15 kg checked baggage)', 'Transfer to your hotel, check-in', 'Free time to settle in']; d.transfers = ['CJU', 'GMP']; d.tickets = [['Domestic flight Jeju–Gimpo', CONFIG.tickets.flight]]; }
+  if (from === 'busan' && to === 'seoul') { d.lines = ['Hotel check-out, transfer to Busan Station', `KTX bullet train to Seoul (${lux ? 'first' : 'standard'} class)`, 'Transfer to your hotel, check-in', 'Free time to settle in']; d.transfers = ['BUS_STN', 'SEL_STN']; d.tickets = [[`KTX Busan–Seoul (${lux ? '1st' : 'standard'} class)`, lux ? CONFIG.tickets.ktx1st : CONFIG.tickets.ktx]]; }
+  if (from === 'busan' && to === 'jeju') { d.lines = ['Hotel check-out, transfer to Gimhae Airport (extra security checks, so allow time)', 'Flight to Jeju (economy class, 15 kg checked baggage)', 'Transfer to your hotel, check-in', 'Free time to settle in']; d.transfers = ['PUS', 'CJU']; d.tickets = [['Domestic flight Busan–Jeju', CONFIG.tickets.flight]]; }
+  return d;
+}
+
+const mround = (x, m) => Math.round(x / m) * m;
+
+const upgradeOK = (u, pax) => !u || u === 'std' || pax <= CONFIG.upgrades[u].maxPax;
+const regionOf = a => a.startsWith('seoul') ? 'seoul' : a;
+const pointRegion = { ICN: 'seoul', GMP: 'seoul', SEL_STN: 'seoul', PUS: 'busan', BUS_STN: 'busan', CJU: 'jeju' };
+
+// On a travel day with a tour, the touring vehicle also does the airport / station run in the city where the tour is: that transfer is not charged again.
+const paidTransfers = d => d.adds && d.adds.length ? d.transfers.filter(t => pointRegion[t] !== d.adds[0].city) : d.transfers;
+const bracketFor = pax => CONFIG.brackets.find(([a, b]) => pax >= a && pax <= b);
+const bracketLabel = ([a, b]) => a === b ? `${a} pax` : `${a}–${b} pax`;
+
+// ---- prices (server and admin page only; the buyer page has no rates)
+// pax = the group size the price is worked out for (a bracket's smallest group). sel gives market, extra luggage, vehicle upgrade.
+function priceFor(days, pax, sel) {
+  const p = planFor(pax, sel.market, sel.luggage), V = CONFIG.vehicles, guide = isDriving(p) ? 0 : CONFIG.guide;
+  let common = p.luggage ? CONFIG.luggage * CONFIG.luggageTrips : 0, personal = 0, guidedDays = 0, halfDays = 0, hanbok = 0;
+  for (const d of days) {
+    common += paidTransfers(d).length * V[p.pickup].transfer;
+    for (const [, x] of d.tickets || []) personal += x;
+    for (const m of d.meals || []) personal += CONFIG.meals[m] || 0;
+    if (d.adds && d.adds.length) { // vehicle + guide for travel-day sightseeing
+      halfDays++;
+      common += (V[p.tour].day + guide) * CONFIG.halfDay;
+      for (const a of d.adds) { personal += a.price || 0; if (a.key === HANBOK_KEY) hanbok++; }
+    }
+    if (d.kind === 'tour') {
+      guidedDays++;
+      common += V[p.tour].day + guide;
+      for (const s of d.stops) { personal += s.price || 0; if (s.key === HANBOK_KEY) hanbok++; }
+    }
+  }
+  common += (guidedDays + halfDays) * (pax + 1) * (CONFIG.water + CONFIG.tissue);
+  for (const a of sel.addons || []) if (a in CONFIG.addonPaid) personal += CONFIG.addons[a] || 0; // add-ons we book and pay
+  const margin = marginFor(pax);
+  let supplementUSD = hanbok * CONFIG.hanbokUSD * pax; // hanbok rental: exactly hanbokUSD per person (a multiple of roundTo, so rounding keeps it whole)
+  const up = sel.vehicle && sel.vehicle !== 'std' && upgradeOK(sel.vehicle, pax) ? CONFIG.upgrades[sel.vehicle] : null;
+  if (up) {
+    const base = CONFIG.upgradeBase[p.tour === 'staria' ? 'staria' : 'solati'];
+    for (const d of days) {
+      for (const t of paidTransfers(d)) supplementUSD += up.t[t] - base.t[t];
+      if (d.kind === 'tour') { const r = regionOf(d.area || d.region); supplementUSD += up.day[r] - base.day[r]; }
+      if (d.adds && d.adds.length) { const r = d.adds[0].city; supplementUSD += (up.day[r] - base.day[r]) * CONFIG.halfDay; }
+    }
+  }
+  const pp = mround(common / CONFIG.fx / pax + personal / CONFIG.fx + margin + supplementUSD / pax, CONFIG.roundTo);
+  return { pax, plan: p, upgrade: up ? sel.vehicle : 'std', perPerson: pp, total: pp * pax, commonKRW: common, personalKRW: personal, margin, guidedDays, halfDays, hanbok, supplementUSD };
+}
+// Bracket price: per-person rate of the bracket's smallest group, charged for the actual group size.
+function quoteFor(days, sel) {
+  const br = bracketFor(sel.pax) || CONFIG.brackets[CONFIG.brackets.length - 1];
+  const r = priceFor(days, br[0], sel);
+  return { ...r, pax: sel.pax, bracket: br, total: r.perPerson * sel.pax, plan: planFor(sel.pax, sel.market, sel.luggage) };
+}
+const bracketTable = (days, sel) => CONFIG.brackets.filter(([a]) => !sel.vehicle || sel.vehicle === 'std' || upgradeOK(sel.vehicle, a))
+  .map(br => ({ bracket: br, perPerson: priceFor(days, br[0], sel).perPerson, plan: planFor(br[0], sel.market, sel.luggage) }));
+
+// ---- cost sheet (admin only): the same sums as priceFor, item by item, at the bracket's smallest group
+const T_KO = { ICN: '인천공항', GMP: '김포공항', SEL_STN: '서울역', PUS: '김해공항', BUS_STN: '부산역', CJU: '제주공항' };
+const PRETTY = k => k.toLowerCase().replace(/(^|[\s(&/-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bDmz\b/g, 'DMZ').replace(/\bCoex\b/g, 'COEX').replace(/\bDdp\b/g, 'DDP').replace(/\bApec\b/g, 'APEC').replace(/\bBiff\b/g, 'BIFF');
+function costBreakdown(days, sel) {
+  const q = quoteFor(days, sel), base = q.bracket[0], p = planFor(base, sel.market, sel.luggage), V = CONFIG.vehicles, guide = isDriving(p) ? 0 : CONFIG.guide;
+  const common = [], personal = [], supp = [];
+  const tours = days.map((d, i) => ({ d, i })).filter(x => x.d.kind === 'tour');
+  const transfers = days.flatMap((d, i) => paidTransfers(d).map(t => ({ t, day: i + 1 })));
+  const freeT = days.flatMap((d, i) => (d.transfers || []).filter(t => !paidTransfers(d).includes(t)).map(t => `D${i + 1} ${T_KO[t] || t}`));
+  if (transfers.length) common.push({ item: `픽업·샌딩 ${transfers.length}회 (${VEH_KO[p.pickup]})`, detail: transfers.map(x => `D${x.day} ${T_KO[x.t] || x.t}`).join(', ') + (freeT.length ? ` · 이동일 관광 차량이 진행해 제외: ${freeT.join(', ')}` : ''), unit: V[p.pickup].transfer, qty: transfers.length });
+  if (tours.length) common.push({ item: `투어 차량 ${tours.length}일 (${VEH_KO[p.tour]}${isDriving(p) ? ' + 드라이빙가이드' : ''})`, detail: tours.map(x => 'D' + (x.i + 1)).join(', '), unit: V[p.tour].day, qty: tours.length });
+  if (tours.length && guide) common.push({ item: `가이드 ${tours.length}일`, detail: '영어 가이드', unit: guide, qty: tours.length });
+  const halfs = days.map((d, i) => ({ d, i })).filter(x => x.d.adds && x.d.adds.length);
+  if (halfs.length) {
+    common.push({ item: `이동일 관광 차량 ${halfs.length}일 (${VEH_KO[p.tour]})`, detail: halfs.map(x => 'D' + (x.i + 1)).join(', ') + ` · 종일의 ${Math.round(CONFIG.halfDay * 100)}%`, unit: V[p.tour].day * CONFIG.halfDay, qty: halfs.length });
+    if (guide) common.push({ item: `이동일 관광 가이드 ${halfs.length}일`, detail: '', unit: guide * CONFIG.halfDay, qty: halfs.length });
+  }
+  if (p.luggage) common.push({ item: `짐차 (도착·출국)${p.extraLuggage ? ' · 고객 요청' : ''}`, detail: '', unit: CONFIG.luggage, qty: CONFIG.luggageTrips });
+  if (tours.length + halfs.length) common.push({ item: '생수·티슈', detail: `(${base}명 + 가이드 1) × ${tours.length + halfs.length}일`, unit: CONFIG.water + CONFIG.tissue, qty: (base + 1) * (tours.length + halfs.length) });
+  days.forEach((d, i) => {
+    for (const [name, x] of d.tickets || []) personal.push({ day: i + 1, item: name, unit: x });
+    if (d.kind === 'tour') for (const s of d.stops) { if (s.price) personal.push({ day: i + 1, item: s.custom ? s.key : PRETTY(s.key), unit: s.price }); if (s.key === HANBOK_KEY) supp.push({ day: i + 1, item: `한복 대여 (1인 US$${CONFIG.hanbokUSD})`, usd: CONFIG.hanbokUSD * base }); }
+    for (const a of d.adds || []) { if (a.price) personal.push({ day: i + 1, item: PRETTY(a.key) + ' (이동일)', unit: a.price }); if (a.key === HANBOK_KEY) supp.push({ day: i + 1, item: `한복 대여 (1인 US$${CONFIG.hanbokUSD})`, usd: CONFIG.hanbokUSD * base }); }
+    for (const m of d.meals || []) personal.push({ day: i + 1, item: m === 'lunch' ? '점심 식사' : '저녁 식사', unit: CONFIG.meals[m] });
+  });
+  for (const a of sel.addons || []) if (a in CONFIG.addonPaid) personal.push({ day: 0, item: `추가 체험: ${CONFIG.addonPaid[a]} (하킴 예약·결제)`, unit: CONFIG.addons[a] || 0 });
+  if (q.upgrade !== 'std') {
+    const up = CONFIG.upgrades[q.upgrade], b = CONFIG.upgradeBase[p.tour === 'staria' ? 'staria' : 'solati'];
+    days.forEach((d, i) => {
+      for (const t of paidTransfers(d)) supp.push({ day: i + 1, item: `${T_KO[t] || t} 이동`, usd: up.t[t] - b.t[t] });
+      if (d.kind === 'tour') { const r = regionOf(d.area || d.region); supp.push({ day: i + 1, item: '투어 차량 1일', usd: up.day[r] - b.day[r] }); }
+      if (d.adds && d.adds.length) { const r = d.adds[0].city; supp.push({ day: i + 1, item: '이동일 관광 차량', usd: (up.day[r] - b.day[r]) * CONFIG.halfDay }); }
+    });
+  }
+  const commonKRW = common.reduce((a, x) => a + x.unit * x.qty, 0), personalKRW = personal.reduce((a, x) => a + x.unit, 0), suppUSD = supp.reduce((a, x) => a + x.usd, 0);
+  const parts = { common: commonKRW / CONFIG.fx / base, personal: personalKRW / CONFIG.fx, margin: marginFor(base), supp: suppUSD / base };
+  return { fx: CONFIG.fx, roundTo: CONFIG.roundTo, basePax: base, pax: sel.pax, bracket: q.bracket, plan: p,
+    vehicle: q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(p),
+    common, personal, supp, commonKRW, personalKRW, suppUSD, parts, raw: parts.common + parts.personal + parts.margin + parts.supp, perPerson: q.perPerson };
+}
+
+// ---- rates: engine defaults, overridden by what is saved on the admin page (Wix CMS HakeemSettings, key "rates")
+const RATES_VER = 3; // 2026-11-20: vehicle rates by vehicle type + margins by group size (older slab overrides are ignored)
+function rateDefaults() {
+  const sights = { ...SIGHTS }; delete sights[HANBOK_KEY]; // the hanbok stop follows the palace ticket; the rental is hanbokUSD
+  return JSON.parse(JSON.stringify({
+    fx: CONFIG.fx, halfDay: CONFIG.halfDay, water: CONFIG.water, tissue: CONFIG.tissue, meals: CONFIG.meals, tickets: CONFIG.tickets,
+    vehicles: CONFIG.vehicles, guide: CONFIG.guide, luggage: CONFIG.luggage, margins: CONFIG.margins.map(m => m[1]), hanbokUSD: CONFIG.hanbokUSD, addons: CONFIG.addons, sights,
+  }));
+}
+const MARGIN_STEPS = () => CONFIG.margins.map(m => m[0]);
+// old key -> new key (2026-11)
+const SIGHT_RENAMED = { 'GYEONGBOKGUNG PALACE (OPTIONAL : HANBOK RENTAL / US$ 20 PER PERSON)': 'GYEONGBOKGUNG PALACE' };
+// d = defaults (rateDefaults()), o = saved overrides, custom = sights added on the admin page { NAME: KRW }
+function applyRates(o, d, custom) {
+  o = o || {}; const cur = o.ratesVer === RATES_VER;
+  CONFIG.fx = o.fx ?? d.fx; CONFIG.halfDay = o.halfDay ?? d.halfDay; CONFIG.water = o.water ?? d.water; CONFIG.tissue = o.tissue ?? d.tissue;
+  CONFIG.meals = { ...d.meals, ...(o.meals || {}) }; CONFIG.tickets = { ...d.tickets, ...(o.tickets || {}) };
+  CONFIG.vehicles = {}; for (const v of Object.keys(d.vehicles)) CONFIG.vehicles[v] = { ...d.vehicles[v], ...(cur && o.vehicles && o.vehicles[v] || {}) };
+  CONFIG.guide = cur && o.guide !== undefined ? o.guide : d.guide; CONFIG.luggage = cur && o.luggage !== undefined ? o.luggage : d.luggage;
+  CONFIG.hanbokUSD = cur && o.hanbokUSD !== undefined ? o.hanbokUSD : d.hanbokUSD;
+  CONFIG.addons = { ...(d.addons || {}), ...(o.addons || {}) };
+  CONFIG.margins = MARGIN_STEPS().map((n, i) => [n, cur && Array.isArray(o.margins) && o.margins[i] !== undefined && o.margins[i] !== null ? o.margins[i] : d.margins[i]]);
+  for (const k of Object.keys(SIGHTS)) if (!(k in d.sights) && k !== HANBOK_KEY) delete SIGHTS[k]; // custom sights removed since
+  for (const [k, v] of Object.entries(custom || {})) SIGHTS[k] = v;
+  for (const k of Object.keys(d.sights)) SIGHTS[k] = d.sights[k];
+  for (const [k0, v] of Object.entries(o.sights || {})) { const k = SIGHT_RENAMED[k0] || k0; if (k in d.sights && !(k !== k0 && k in (o.sights || {}))) SIGHTS[k] = v; }
+  SIGHTS[HANBOK_KEY] = SIGHTS['GYEONGBOKGUNG PALACE'];
+}
+
+// ---- staff edits from the admin tour builder, applied on top of the engine's itinerary (admin page and server)
+// edits: { dayKey: { rm: [sight keys], add: [sight keys] } }, order: { city: [slot, slot, …] } (touring / free days inside a city)
+const dayKey = d => d.slot || 't:' + d.title;
+function applyEdits(days, sel, edits, order) {
+  edits = edits || {}; order = order || {};
+  for (const [city, ord] of Object.entries(order)) {
+    if (!Array.isArray(ord)) continue;
+    const idx = days.map((d, i) => d.region === city && d.slot ? i : -1).filter(i => i >= 0);
+    const list = idx.map(i => days[i]).sort((a, b) => ((ord.indexOf(a.slot) + 1) || 99) - ((ord.indexOf(b.slot) + 1) || 99));
+    idx.forEach((i, j) => { days[i] = list[j]; });
+  }
+  for (const d of days) {
+    const e = edits[dayKey(d)]; if (!e) continue;
+    const rm = e.rm || [], added = (e.add || []).filter(k => k in SIGHTS).map(k => ({ key: k, price: SIGHTS[k] ?? 0, added: true, custom: !(k in SIGHTS_BASE) }));
+    if (d.kind === 'tour') { d.stops = [...d.stops.filter(s => !rm.includes(s.key)), ...added]; if (rm.length || added.length) d.edited = true; }
+    else if (d.kind === 'free' && added.length) {
+      Object.assign(d, { kind: 'tour', stops: added, title: `Custom day in ${REGION_NAME[d.region]}`, area: d.region === 'seoul' ? 'seoul_city' : d.region, route: REGION_NAME[d.region], edited: true });
+      d.mealSlots = (sel.meals || []).slice(); d.meals = d.mealSlots.filter(m => !(sel.mealOff || {})[mealKey(d, m)]);
+    } else if (d.kind === 'transfer' && d.moveFrom) {
+      const city = (d.adds && d.adds[0] && d.adds[0].city) || d.moveFrom;
+      d.adds = [...(d.adds || []).filter(a => !rm.includes(a.key)), ...added.map(a => ({ ...a, city, when: city === d.moveFrom ? 'before' : 'after' }))];
+      if (rm.length || added.length) d.edited = true;
+    }
+  }
+  return days;
+}
+</script>
 <script>
 const HK_API = 'https://www.hakeemtravel.com/_functions/hk';
 // every server call goes to one Wix endpoint as a plain-text POST (no CORS preflight)
@@ -253,34 +989,35 @@ function exportCSV() {
 function draw() {
   const list = filtered(), f = $('fst').value;
   $('count').textContent = `전체 ${rows.length}건 중 ${list.length}건 · 신규 ${rows.filter(r => r.status === 'new').length}건`;
-  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b><br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
+  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.edited ? ' <span class="tag">수정</span>' : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
     : '<tr><td colspan="10" class="empty">견적 요청 없음.</td></tr>';
 }
 async function open(id) {
   current = await api('/api/admin/get?id=' + encodeURIComponent(id));
+  await loadDirectory();
   const r = current, o = r.options;
   $('dst').value = r.status; fillStaff(); $('das').value = r.assignee || '';
   $('reply').href = `mailto:${encodeURIComponent(r.contact.email)}?subject=${encodeURIComponent(`Your Korea tour quotation – ${r.trip.nights}N${r.trip.days}D – ${o.pax} pax`)}`;
   const line = (k, v) => v ? `<div><b>${k}</b>${v}</div>` : '';
   $('sheet').innerHTML = `
     <h2>${esc(r.contact.company || r.contact.name)}</h2>
-    <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수</div>
+    <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수${r.builder ? ` · <b style="color:var(--brand)">투어 빌더로 수정됨 ${fmtT(r.builder.savedAt)}${r.builder.by ? ' (' + esc(r.builder.by) + ')' : ''}</b>${r.original ? ` · 원래 ${r.original.trip.nights}박 ${r.original.options.pax}명 1인 ${usd(r.original.price.perPerson)}` : ''}` : ''}</div>
     <div class="grid">
       ${line('바이어 담당자', `${esc(r.contact.name)}<br><a href="mailto:${esc(r.contact.email)}">${esc(r.contact.email)}</a>`)}
       ${line('여행 날짜', r.trip.arrival ? `${fmt(r.trip.arrival)} – ${fmt(r.trip.departure)}` : '미정')}
       ${line('일정', `${r.trip.nights}박 ${r.trip.days}일<br>${esc(nd(' ' + r.trip.cities).trim())}${r.trip.arrivalAirport ? `<br>입국 ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} · 출국 ${T_KO[r.trip.departureAirport] || '인천공항'}${Array.isArray(r.trip.route) && !r.trip.route.includes('seoul') ? ' · <b>서울 일정 없음</b>' : ''}` : ''}`)}
       ${line('그룹', `${o.pax}명 · ${esc(MARKET[o.market] || o.market)}`)}
-      ${line('스타일', `${esc(o.tier)} · ${THEME[o.theme] || o.theme} · ${SEASON[o.season] || o.season}<br>차량: ${esc(vehicleName(r))}${typeof o.hanbok === 'boolean' && r.itinerary.some(d => d.stops.some(s => /Gyeongbokgung/i.test(s))) ? `<br>경복궁 한복: ${o.hanbok ? '대여 포함 (₩30,000)' : '없음'}` : ''}`)}
+      ${line('스타일', `${esc(o.tier)} · ${THEME[o.theme] || o.theme} · ${SEASON[o.season] || o.season}<br>차량: ${esc(vehicleName(r))}${typeof o.hanbok === 'boolean' && r.itinerary.some(d => d.stops.some(s => /Gyeongbokgung/i.test(s))) ? `<br>경복궁 한복: ${o.hanbok ? '대여 포함 (1인 +US$20)' : '없음'}` : ''}`)}
       ${line('사이트 견적가 (지상비)', `<span class="price">${usd(r.price.perPerson)}</span> 1인당<br>총액 ${usd(r.price.total)} (${r.price.bracket[0] === r.price.bracket[1] ? r.price.bracket[0] : r.price.bracket.join('–')}명 구간 요금)`)}
       ${line('호텔 등급', esc(r.hotel.join(' / ')) || '–')}
       ${line('객실 요청', esc((r.rooms || []).map(x => `${x.type} ${x.qty}실`).join(', ')) || '–')}
-      ${line('식사', esc(r.meals.map(m => ({ Lunch: '점심', Dinner: '저녁' })[m] || m).join(', ')) || '없음 (지상비만)')}
+      ${line('식사', esc(r.meals.map(m => (({ Lunch: '점심', Dinner: '저녁' })[m] || m) + (r.mealCount ? ` ${r.mealCount[m.toLowerCase()]}회` : '')).join(', ')) || '없음 (지상비만)')}${r.options.luggage ? line('짐', '짐 추가 요청 (짐차)') : ''}
       ${line('식이 제한', esc([...r.diet, r.dietOther && '기타: ' + r.dietOther].filter(Boolean).join(', ')) || '–')}
       ${line('추가 체험', esc(r.addons.join(', ')) || '–')}
     </div>
     ${r.notes ? `<div><b class="sub">메모</b><div class="notes">${esc(r.notes)}</div></div>` : ''}
     <h3 style="margin:24px 0 4px">일정표</h3>
-    ${r.itinerary.map(d => `<div class="day"><div class="n">${d.day}</div><div><h4>${esc(d.title)}${d.swapped ? '<span class="tag">고객 변경</span>' : ''}</h4><div class="rt">${esc(d.route)}</div>
+    ${r.itinerary.map(d => `<div class="day"><div class="n">${d.day}</div><div><h4>${esc(d.title)}${d.swapped ? '<span class="tag">고객 변경</span>' : ''}${d.edited ? '<span class="tag">직원 수정</span>' : ''}</h4><div class="rt">${esc(d.route)}</div>
       <ul>${d.stops.map(s => `<li>${esc(s)}</li>`).join('')}${d.tour ? `<li class="rq"><b>이동일 투어: ${esc(d.tour)}</b></li>` : ''}${(d.adds || []).map(s => `<li class="rq">이동일 관광: ${esc(s)}</li>`).join('')}${d.requests.map(s => `<li class="rq">고객 요청: ${esc(s)}</li>`).join('')}</ul></div></div>`).join('')}`;
   renderWorkflow();
   $('list').hidden = true; $('detail').style.display = 'block'; window.scrollTo(0, 0);
@@ -349,10 +1086,11 @@ function drawWorkflow() {
     <div class="hsec ask"><div class="hs-h">호텔 문의 <span>예약실에 보낼 조건</span></div>
       <div class="hl1">
         <label>도시<select data-f="city">${Object.keys(CITY).map(c => `<option value="${c}"${h.city === c ? ' selected' : ''}>${CITY[c]}</option>`).join('')}</select></label>
-        <label>호텔명<input data-f="name" value="${esc(h.name)}" placeholder="호텔명"></label>
+        <label>호텔명<input data-f="name" list="dl-hotel-${h.city}" value="${esc(h.name)}" placeholder="호텔명 (목록에서 선택)"></label>
         <label>담당자<input data-f="manager" value="${esc(h.manager)}" placeholder="담당자"></label>
         <label>예약실 이메일<input data-f="email" value="${esc(h.email)}" placeholder="reservation@hotel.com"></label>
       </div>
+      <div class="hint hinfo" data-hinfo="${i}">${hotelInfo(h)}</div>
       <div class="hl2">
         <label>체크인<input data-f="checkIn" type="date" value="${h.checkIn}"></label>
         <label>체크아웃<input data-f="checkOut" type="date" value="${h.checkOut}"></label>
@@ -392,7 +1130,7 @@ function drawWorkflow() {
       ${L.sentAt ? '<button class="btn ghost" id="w-qsent">발송 완료 취소</button>' : '<button class="btn" id="w-qsent">발송 완료로 표시</button>'}
     </div>
   </div>
-  <div class="step"><h3>② 호텔 확인 → 호텔 견적 ${wf.hotelSentAt ? `<span class="done">발송 ${fmtT(wf.hotelSentAt)}</span>` : ''}</h3>
+  ${hotelDatalists()}<div class="step"><h3>② 호텔 확인 → 호텔 견적 ${wf.hotelSentAt ? `<span class="done">발송 ${fmtT(wf.hotelSentAt)}</span>` : ''}</h3>
     <div class="row">
       <label>손님 국적 코드 (메일 제목용)<input id="w-cty" value="${esc(wf.country)}" placeholder="KWT, SAU, UAE…" maxlength="3" style="width:110px;text-transform:uppercase"></label>
       <label>환율 (₩/US$)<input id="w-hfx" type="number" min="500" step="10" value="${wf.hotelFx || 1250}" style="width:100px"></label>
@@ -513,8 +1251,11 @@ $('wf').addEventListener('input', e => {
     if (f === 'net' && r.net > 0) { r.rate = sellRate(r.net); tr.querySelector(`[data-r="${j}"][data-rf="rate"]`).value = r.rate; }
   }
   else if (el.dataset.f) {
-    const h = wf.hotels[+el.closest('tr').dataset.i], f = el.dataset.f;
+    const tr = el.closest('tr'), h = wf.hotels[+tr.dataset.i], f = el.dataset.f;
     h[f] = el.type === 'checkbox' ? el.checked : el.value;
+    if (f === 'name') { const x = dirHotel(h.name); if (x) { if (!h.manager && x.manager) { h.manager = x.manager; tr.querySelector('[data-f="manager"]').value = h.manager; } if (!h.email && x.email) { h.email = x.email.split(/\s*\/\s*/)[0]; tr.querySelector('[data-f="email"]').value = h.email; } } }
+    if (f === 'city') tr.querySelector('[data-f="name"]').setAttribute('list', 'dl-hotel-' + h.city);
+    const hi = tr.querySelector('[data-hinfo]'); if (hi) hi.innerHTML = hotelInfo(h);
   }
   document.querySelectorAll('[data-sum]').forEach(s => { s.textContent = hotelLine(wf.hotels[+s.dataset.sum]); });
   document.querySelectorAll('[data-rl]').forEach(s => { const [i, j] = s.dataset.rl.split(':').map(Number), r = wf.hotels[i].rooms[j]; s.textContent = `${r.type} ${r.qty}실`; });
@@ -524,6 +1265,7 @@ $('wf').addEventListener('input', e => {
 $('wf').addEventListener('change', e => { if (e.target.matches('select, input[type=checkbox], input[type=date]')) { drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; } });
 $('wf').addEventListener('click', e => {
   const b = e.target.closest('button, a'); if (!b) return;
+  if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.net = +b.dataset.hest; r.rate = sellRate(r.net); }); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
   if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; location.href = hotelMail(h); drawWorkflow(); return; }
   if (b.dataset.del !== undefined) { wf.hotels.splice(+b.dataset.del, 1); drawWorkflow(); return; }
   if (b.dataset.radd !== undefined) { e.preventDefault(); wf.hotels[+b.dataset.radd].rooms.push({ type: 'DBL', qty: 1, net: 0, rate: 0 }); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
@@ -561,23 +1303,26 @@ const BOOKABLE = [
 ];
 // vehicle class by group size (2026-11): 1–4 Staria + driving guide / 5–9 Solati + luggage van /
 // 10–13 mix (touring days: bus + guide, transfers: Solati + luggage van) / 14+ bus. County no longer used.
-const T_KO = { ICN: '인천공항', GMP: '김포공항', SEL_STN: '서울역', PUS: '김해공항', BUS_STN: '부산역', CJU: '제주공항' };
 const T_CITY = { ICN: 'seoul', GMP: 'seoul', SEL_STN: 'seoul', PUS: 'busan', BUS_STN: 'busan', CJU: 'jeju' };
-const CLS_KO = { drv: '스타리아 + 드라이빙가이드', drv7: '9인승 밴 + 드라이빙가이드', sol: '솔라티 + 짐차', mix: '투어일 대형버스 / 픽업·샌딩 솔라티 + 짐차', bus: '대형버스 (28·45인승)' };
-const clsOf = p => p <= 4 ? 'drv' : p <= 9 ? 'sol' : p <= 13 ? 'mix' : 'bus';
-const vclsOf = r => r.options.cls || clsOf(r.options.pax);
-const isMix = r => r.options.vehicle === 'Standard' && vclsOf(r) === 'mix';
-const hasLuggage = r => ['sol', 'mix'].includes(vclsOf(r)); // luggage van on arrival and departure only
+// requests from 2026-11-20 carry options.plan; older ones had a vehicle class (or only the group size)
+const OLD_PLAN = { drv: ['staria', 'staria', 0], sol: ['solati', 'solati', 1], mix: ['solati', 'bus', 1], bus: ['bus', 'bus', 0] };
+function planOf(r) {
+  if (r.options.plan) return r.options.plan;
+  const p = r.options.pax, c = r.options.cls || (p <= 4 ? 'drv' : p <= 9 ? 'sol' : p <= 13 ? 'mix' : 'bus'), x = OLD_PLAN[c] || OLD_PLAN.bus;
+  return { pickup: x[0], tour: x[1], luggage: !!x[2] };
+}
+const isMix = r => r.options.vehicle === 'Standard' && planOf(r).pickup !== planOf(r).tour;
+const hasLuggage = r => planOf(r).luggage; // luggage van on arrival and departure only
 function vehicleName(r) {
   if (r.options.vehicle !== 'Standard') return r.options.vehicle;
-  return CLS_KO[vclsOf(r)] || vclsOf(r);
+  return vehicleKo(planOf(r));
 }
 const cityOf = d => d.kind === 'tour' && d.region ? d.region : /Busan|Gyeongju|Haeundae|Gamcheon|Spa Day/.test(d.title + d.route) ? 'busan' : /Jeju|Sunrise Peak|Waterfalls|Alpacas|Markets & Café|Beaches & Volcanic/.test(d.title + d.route) ? 'jeju' : 'seoul';
 // every day the vehicle company works, in order. type: tour / half (travel-day sightseeing) / transfer; free = done by the touring vehicle, not charged
 function vehicleSchedule(r) {
   const out = [], mix = isMix(r), lugOn = hasLuggage(r), last = r.itinerary.length - 1;
   const v = (i, text, type, free) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text, type, free: !!free });
-  const tourBus = mix ? ' · 대형버스' : '', trVeh = mix ? ' · 솔라티' : '';
+  const pl = planOf(r), tourBus = mix ? ` · ${VEH_KO[pl.tour]}` : '', trVeh = mix ? ` · ${VEH_KO[pl.pickup]}` : '';
   r.itinerary.forEach((d, i) => {
     if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})${tourBus}`, 'tour');
     if (d.kind !== 'transfer') return;
@@ -621,14 +1366,15 @@ function vehicleText(r) {
 function buildOps(r) {
   const ops = [], pax = r.options.pax, date = i => r.trip.arrival ? addDays(r.trip.arrival, i) : '';
   const add = (cat, d, item, detail = '') => ops.push({ cat, date: d, item, detail, vendor: '', status: 'todo', ref: '' });
-  const driving = pax <= 4 && r.options.vehicle === 'Standard';
+  const driving = planOf(r).tour === 'staria' && r.options.vehicle === 'Standard';
   // vehicles: one line for the whole trip; the day-by-day plan is in the copy/print view
   const vs = vehicleSchedule(r), tourN = vs.filter(x => x.type === 'tour').length, halfN = vs.filter(x => x.type === 'half').length;
   const trN = vs.filter(x => x.type === 'transfer' && !x.free).length, freeN = vs.filter(x => x.free).length;
   const tourTxt = `투어 ${tourN}일${halfN ? ` · 이동일 관광 ${halfN}일` : ''}`, trTxt = `픽업·샌딩 ${trN}회${freeN ? ` (이동일 관광 차량 진행 ${freeN}회 별도)` : ''}`, lugTxt = hasLuggage(r) ? ' · 짐차 2회 (도착·출국)' : '';
   if (isMix(r)) {
-    add('vehicle', date(0), '투어 차량: 대형버스', `${pax}명 · ${tourTxt}`);
-    add('vehicle', date(0), '픽업·샌딩 차량: 솔라티 + 짐차', `${pax}명 · ${trTxt}${lugTxt}`);
+    const pl = planOf(r);
+    add('vehicle', date(0), `투어 차량: ${VEH_KO[pl.tour]}${pl.tour === 'staria' ? ' + 드라이빙가이드' : ''}`, `${pax}명 · ${tourTxt}`);
+    add('vehicle', date(0), `픽업·샌딩 차량: ${VEH_KO[pl.pickup]}${pl.luggage ? ' + 짐차' : ''}`, `${pax}명 · ${trTxt}${lugTxt}`);
   } else add('vehicle', date(0), `전 일정 차량: ${vehicleName(r)}`, `${pax}명 · ${tourTxt} · ${trTxt}${lugTxt}`);
   // guides: one line per city block of touring days
   const byCity = {};
@@ -651,7 +1397,7 @@ function buildOps(r) {
   });
   // hotels from step ②, meals, add-ons
   (wf.hotels || []).filter(h => h.status !== 'no' && h.offer).forEach(h => add('hotel', h.checkIn, `${CITY[h.city]} 호텔: ${h.name || '미정'}`, `${roomsKo(h)} · ${nightsBetween(h.checkIn, h.checkOut)}박`));
-  if (r.meals.length) r.itinerary.forEach((d, i) => { if (d.kind === 'tour' || (d.kind === 'transfer' && d.title !== 'Departure' && !d.title.startsWith('Arrival'))) add('meal', date(i), `식당 예약: ${r.meals.map(m => ({ Lunch: '점심', Dinner: '저녁' })[m]).join('·')}`, [...r.diet, r.dietOther].filter(Boolean).join(', ') || ''); });
+  if (r.meals.length) r.itinerary.forEach((d, i) => { const dm = Array.isArray(d.meals) ? d.meals.map(m => m[0].toUpperCase() + m.slice(1)) : (d.kind === 'tour' || (d.kind === 'transfer' && d.title !== 'Departure' && !d.title.startsWith('Arrival'))) ? r.meals : []; if (dm.length) add('meal', date(i), `식당 예약: ${dm.map(m => ({ Lunch: '점심', Dinner: '저녁' })[m]).join('·')}`, [...r.diet, r.dietOther].filter(Boolean).join(', ') || ''); });
   r.addons.forEach(a => add('addon', '', a, '날짜 협의'));
   return ops;
 }
@@ -663,7 +1409,7 @@ function opsSection() {
     ${ops.length ? `<div style="overflow:auto"><table class="ht ops"><thead><tr><th>구분</th><th>날짜</th><th>항목</th><th>내용</th><th>업체·담당</th><th>상태</th><th>확정번호·메모</th><th></th></tr></thead><tbody>
       ${rows.map(({ o, i }) => `<tr data-o="${i}" class="op-${o.status}"><td><select data-of="cat">${order.map(c => `<option value="${c}"${o.cat === c ? ' selected' : ''}>${OPS_CAT[c]}</option>`).join('')}</select></td>
         <td><input data-of="date" type="date" value="${o.date}"></td><td><input data-of="item" value="${esc(o.item)}"></td><td><input data-of="detail" value="${esc(o.detail)}"></td>
-        <td><input data-of="vendor" value="${esc(o.vendor)}" placeholder="업체명"></td>
+        <td><input data-of="vendor" list="dl-op-${i}" value="${esc(o.vendor)}" placeholder="업체명">${opsVendorList(o, i)}${vendorContact(o) ? `<div class="hint">${esc(vendorContact(o))}</div>` : ''}</td>
         <td><select data-of="status">${OPS_ST.map(([v, l]) => `<option value="${v}"${o.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
         <td><input data-of="ref" value="${esc(o.ref)}" placeholder="예약번호 등"></td><td><button class="btn ghost sm" data-odel="${i}">✕</button></td></tr>`).join('')}
     </tbody></table></div>` : '<p class="hint">일정·호텔 기준으로 수배 항목 목록 생성. 호텔은 ②단계에서 견적 포함한 호텔만 반영.</p>'}
@@ -793,15 +1539,20 @@ $('wf').addEventListener('toggle', e => { if (e.target.id === 'w-cost') costOpen
 
 // ---- rates page: overrides saved on the server (Wix CMS "HakeemSettings") and applied to every new quote
 let rDraft = null, rResetArmed = 0;
-const SLAB_NAME = ['1명 (스타리아·드라이빙가이드)', '2–4명 (스타리아·드라이빙가이드)', '5–9명 (솔라티 + 짐차)', '10–13명 (픽업·샌딩 솔라티 + 짐차 / 투어 대형버스)', '14–18명 (대형버스)', '19–25명 (대형버스)', '26–40명 (대형버스)'];
+const MARGIN_NAME = steps => steps.map((n, i) => `${i ? steps[i - 1] + 1 : 1}${n > (i ? steps[i - 1] + 1 : 1) ? '–' + n : ''}명`);
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
-  $('list').hidden = tab !== 'list'; $('rates').hidden = tab !== 'rates'; $('detail').style.display = 'none';
-  if (tab === 'rates') openRates(); else draw();
+  $('list').hidden = tab !== 'list'; $('rates').hidden = tab !== 'rates'; $('builder').hidden = tab !== 'builder'; $('dir').hidden = tab !== 'dir'; $('detail').style.display = 'none';
+  if (tab === 'rates') openRates(); else if (tab === 'builder') openBuilder(); else if (tab === 'dir') openDirectory(); else draw();
 }
 async function openRates() {
   try { settings = await api('/api/admin/settings'); } catch (e) { $('rates').innerHTML = `<div class="card">${KERR(e)}</div>`; return; }
-  staff = settings.staff || []; rDraft = JSON.parse(JSON.stringify(settings.rates || {})); drawRates();
+  staff = settings.staff || []; rDraft = JSON.parse(JSON.stringify(settings.rates || {})); cDraft = { ...(settings.customSights || {}) }; bRatesOK = false; drawRates();
+}
+let cDraft = {};
+async function openBuilder() {
+  if (!settings || !settings.defaults || !settings.defaults.vehicles) { try { settings = await api('/api/admin/settings'); } catch (e) { $('builder').innerHTML = `<div class="card">${KERR(e)}</div>`; return; } }
+  await loadDirectory(); bRatesOK = false; drawBuilder();
 }
 const rVal = (path) => path.reduce((o, k) => o == null ? undefined : o[k], rDraft);
 const dVal = (path) => path.reduce((o, k) => o == null ? undefined : o[k], settings.defaults);
@@ -816,22 +1567,33 @@ function drawRates() {
   $('rates').innerHTML = `
   <div class="card"><h3>기본</h3><div class="sub">환율과 생수·티슈 (1인·1투어일 기준, 가이드 포함 인원)</div>
     <div class="rgrid"><label>환율 (₩/US$)${rIn(['fx'], '')}</label><label>생수 1병${rIn(['water'])}</label><label>티슈${rIn(['tissue'])}</label><label>이동일 관광 (종일 대비 비율, 1 = 종일과 동일)${rIn(['halfDay'], '')}</label></div></div>
-  <div class="card"><h3>인원 구간별 차량·가이드·마진</h3><div class="sub">마진은 1인당 USD, 나머지는 원화. 픽업·샌딩은 편도 1회, 차량·가이드는 투어 1일, 짐차는 1회 (5–13명, 도착·출국 2회).<br>10–13명 행: 픽업·샌딩 칸 = 솔라티 요금, 차량 1일 칸 = 대형버스 요금</div>
-    <table><tr><th>구간</th><th>1인 마진 (US$)</th><th>픽업·샌딩 1회</th><th>차량 1일</th><th>가이드 1일</th><th>짐차 1회</th></tr>
-    ${D.slabs.map((s, i) => `<tr><td>${SLAB_NAME[i] || ''}</td>${['margin', 'transfer', 'day', 'guide', 'luggage'].map(k => `<td><label>${rIn(['slabs', i, k], k === 'margin' ? '$' : '₩')}</label></td>`).join('')}</tr>`).join('')}</table></div>
+  <div class="card"><h3>차량 · 가이드 · 짐차</h3><div class="sub">원화. 픽업·샌딩은 편도 1회, 투어는 1일. 스타리아 투어일은 드라이빙가이드라 가이드비 없음. 짐차는 1회 (도착·출국 2회)</div>
+    <table><tr><th>차량</th><th>픽업·샌딩 1회</th><th>투어 1일</th></tr>
+    ${Object.keys(D.vehicles).map(v => `<tr><td>${VEH_KO[v] || v}</td><td><label>${rIn(['vehicles', v, 'transfer'])}</label></td><td><label>${rIn(['vehicles', v, 'day'])}</label></td></tr>`).join('')}</table>
+    <div class="rgrid"><label>영어 가이드 1일${rIn(['guide'])}</label><label>짐차 1회${rIn(['luggage'])}</label><label>한복 대여 (1인 US$, 한복 선택 시 정확히 이만큼 추가)${rIn(['hanbokUSD'], '$')}</label></div></div>
+  <div class="card"><h3>추가 체험 (하킴 예약·결제, 지상비 포함)</h3><div class="sub">1인 원화. 바이어가 고르면 지상비에 포함. 뷰티·의료는 예약만 하고 손님이 현장 결제라 가격 없음</div>
+    <div class="rgrid">${Object.entries(CONFIG.addonPaid).map(([k, n]) => `<label>${esc(n)}${rIn(['addons', k])}</label>`).join('')}</div></div>
+  <div class="card"><h3>인원별 1인 마진 (US$)</h3><div class="sub">견적은 인원 구간의 가장 작은 인원 기준으로 계산</div>
+    <div class="rgrid">${MARGIN_NAME(settings.marginSteps || []).map((nm, i) => `<label>${nm}${rIn(['margins', i], '$')}</label>`).join('')}</div></div>
+  <div class="card"><h3>차량 배정 (인원·시장별)</h3><div class="sub">중동 / 인도. 그 외 국가는 인도 기준이고, 바이어가 '짐 추가'를 고르면 짐차 포함. 배정표 변경은 Claude에게 요청</div>
+    <table><tr><th>인원</th><th>중동</th><th>인도 · 기타</th></tr>${CONFIG.brackets.map(([a, b]) => `<tr><td>${a === b ? a : a + '–' + b}명</td><td>${esc(vehicleKo(planFor(a, 'mideast')))}</td><td>${esc(vehicleKo(planFor(a, 'india')))}</td></tr>`).join('')}</table></div>
   <div class="card"><h3>식사 · 교통</h3><div class="sub">식사는 1인 1회, 항공·KTX는 1인 편도</div>
     <div class="rgrid"><label>점심${rIn(['meals', 'lunch'])}</label><label>저녁${rIn(['meals', 'dinner'])}</label><label>국내선 항공${rIn(['tickets', 'flight'])}</label><label>KTX 일반실${rIn(['tickets', 'ktx'])}</label><label>KTX 특실${rIn(['tickets', 'ktx1st'])}</label></div></div>
   <div class="card"><h3>입장료 <span class="sub">1인 기준 · 수정 ${nChg}곳</span></h3>
     <input id="r-q" placeholder="관광지 검색" value="${esc(rq)}" style="width:260px;text-align:left;margin-top:8px">
     <table>${sights.map(k => `<tr><td>${esc(names[k])}</td><td><label>${rIn(['sights', k])}</label></td></tr>`).join('') || '<tr><td>검색 결과 없음</td></tr>'}</table></div>
+  <div class="card"><h3>추가한 관광지 <span class="sub">투어 빌더에서 새로 넣은 곳 · ${Object.keys(cDraft).length}곳</span></h3>
+    <table>${Object.entries(cDraft).map(([k, v]) => `<tr><td>${esc(k)}</td><td><label><input type="number" step="any" data-cs="${esc(k)}" value="${v}"><span class="def">1인 ₩</span></label></td><td><button class="btn ghost sm" data-cdel="${esc(k)}">삭제</button></td></tr>`).join('') || '<tr><td class="sub">아직 없음</td></tr>'}</table>
+    <div class="row" style="margin-top:8px"><label>새 관광지 이름<input id="c-name" style="min-width:240px"></label><label>1인 입장료 ₩<input id="c-price" type="number" value="0" style="width:110px"></label><button class="btn ghost" id="c-add">추가</button></div></div>
   <div class="card"><h3>직원 목록</h3><div class="sub">견적 요청의 '하킴 담당'에서 고를 이름. 한 줄에 한 명</div>
     <textarea id="r-staff">${esc(staff.join('\n'))}</textarea></div>
   <div class="rbar"><button class="btn" id="r-save">저장</button><button class="btn ghost" id="r-reset">전체 기본값으로</button><span class="saved" id="r-msg">${settings.rates && settings.rates.updatedAt ? '마지막 저장 ' + fmtT(settings.rates.updatedAt) : '저장된 변경 없음 (기본 단가 사용 중)'}</span></div>
-  <p class="sub">저장하면 이후 견적(사이트 가격·새 요청·원가표)에 바로 적용. 이미 들어온 요청의 사이트 계산가는 그대로이고, 원가표는 현재 단가로 다시 계산됨. 차량 업그레이드(럭셔리) 요금은 여기서 수정 불가.</p>`;
+  <p class="sub">저장하면 이후 견적(새 요청·원가표·투어 빌더)에 바로 적용. 이미 들어온 요청의 사이트 계산가는 그대로이고, 원가표는 현재 단가로 다시 계산됨. 차량 업그레이드(럭셔리) 요금은 여기서 수정 불가.</p>`;
 }
 $('rates').addEventListener('input', e => {
   const el = e.target;
   if (el.id === 'r-q') { const pos = el.selectionStart; drawRates(); const q = $('r-q'); q.focus(); q.setSelectionRange(pos, pos); return; }
+  if (el.dataset.cs) { cDraft[el.dataset.cs] = +el.value || 0; $('r-msg').textContent = '저장 안 됨'; return; }
   if (!el.dataset.rp) return;
   const path = el.dataset.rp.split('.').map(k => /^\d+$/.test(k) ? +k : k), d = dVal(path);
   let o = rDraft; for (let i = 0; i < path.length - 1; i++) { const k = path[i]; if (o[k] == null) o[k] = typeof path[i + 1] === 'number' ? [] : {}; o = o[k]; }
@@ -842,14 +1604,290 @@ $('rates').addEventListener('input', e => {
 $('rates').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.id === 'r-save' || (b.id === 'r-reset' && Date.now() - rResetArmed < 4000)) {
-    const body = { rates: b.id === 'r-reset' ? {} : rDraft, staff: $('r-staff').value.split('\n').map(s => s.trim()).filter(Boolean) };
-    try { settings = await api('/api/admin/settings', { method: 'POST', body: JSON.stringify(body) }); staff = settings.staff || []; rDraft = JSON.parse(JSON.stringify(settings.rates || {})); drawRates(); $('r-msg').textContent = b.id === 'r-reset' ? '기본값으로 되돌림' : '저장 완료 · 이후 견적에 적용'; fillStaff(); }
+    const body = { rates: b.id === 'r-reset' ? {} : rDraft, staff: $('r-staff').value.split('\n').map(s => s.trim()).filter(Boolean), customSights: cDraft };
+    try { settings = await api('/api/admin/settings', { method: 'POST', body: JSON.stringify(body) }); staff = settings.staff || []; rDraft = JSON.parse(JSON.stringify(settings.rates || {})); cDraft = { ...(settings.customSights || {}) }; bRatesOK = false; drawRates(); $('r-msg').textContent = b.id === 'r-reset' ? '기본값으로 되돌림' : '저장 완료 · 이후 견적에 적용'; fillStaff(); }
     catch (err) { $('r-msg').textContent = KERR(err); }
     return;
   }
+  if (b.dataset.cdel) { delete cDraft[b.dataset.cdel]; drawRates(); $('r-msg').textContent = '저장 안 됨'; return; }
+  if (b.id === 'c-add') { const n = $('c-name').value.trim().replace(/\s+/g, ' ').toUpperCase(); if (n) { cDraft[n] = +$('c-price').value || 0; drawRates(); $('r-msg').textContent = '저장 안 됨'; } return; }
   if (b.id === 'r-reset') { rResetArmed = Date.now(); b.textContent = '한 번 더 누르면 모든 수정 삭제'; }
 });
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+// ---- ④ internal tour builder: the buyer engine with today's rates, plus free editing of the stops (staff only)
+const BMARKET = [['mideast', '중동'], ['india', '인도'], ['other', '기타 (인도 기준)']];
+const BSEASON = [['spring', '봄'], ['summer', '여름'], ['autumn', '가을'], ['winter', '겨울']];
+const BTIER = [['B', 'Budget'], ['R', 'Regular'], ['L', 'Luxury']];
+const BTHEME = Object.entries(THEME);
+const ORDERS = [['seoul', 'jeju', 'busan'], ['seoul', 'busan', 'jeju'], ['jeju', 'seoul', 'busan'], ['jeju', 'busan', 'seoul'], ['busan', 'seoul', 'jeju'], ['busan', 'jeju', 'seoul']];
+const bNew = () => ({ market: 'other', country: '', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3,
+  swaps: {}, moveTour: {}, lotte: null, hanbok: null, meals: [], mealOff: {}, mealOn: {}, luggage: false, vehicle: 'std', addons: [] });
+let bSel = bNew(), bEdits = {}, bOrder = {}, bFrom = '', bFromReq = null, bRatesOK = false, bOpen = {};
+const dk = dayKey;
+const isCustom = k => !(k in (settings && settings.defaults ? settings.defaults.sights : {})) && k !== HANBOK_KEY;
+const sightLabel = k => isCustom(k) ? k : PRETTY(k);
+// today's rates from the server (defaults + saved overrides + sights added here)
+function bRates() {
+  if (!settings || !settings.defaults || !settings.defaults.vehicles) return false;
+  applyRates(settings.rates, settings.defaults, settings.customSights || {}); return true;
+}
+function builtDays() { return applyEdits(buildItinerary(bSel), bSel, bEdits, bOrder); }
+const opt = (list, v) => list.map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${l}</option>`).join('');
+function bOptions() {
+  const s = bSel, cityRow = c => `<label class="bc"><input type="checkbox" data-bk="${c}"${(c === 'seoul' ? s.seoul !== false : s[c]) ? ' checked' : ''}> ${CITY[c]} <input type="number" min="1" max="${c === 'seoul' ? 8 : 6}" data-bn="n${CITY_EN[c]}" value="${s['n' + CITY_EN[c]]}">박</label>`;
+  return `<div class="card bopts">
+    <div class="row">
+      <label>시장 (차량 기준)<select data-b="market">${opt(BMARKET, s.market)}</select></label>
+      <label>인원<input type="number" min="1" max="40" data-bnum="pax" value="${s.pax}" style="width:70px"></label>
+      <label>시즌<select data-b="season">${opt(BSEASON, s.season)}</select></label>
+      <label>등급<select data-b="tier">${opt(BTIER, s.tier)}</select></label>
+      <label>테마<select data-b="concept">${opt(BTHEME, s.concept)}</select></label>
+      <label>도시 순서<select data-b="order">${ORDERS.map(o => `<option value="${o.join(',')}"${o.join() === s.order.join() ? ' selected' : ''}>${o.map(c => CITY[c]).join(' → ')}</option>`).join('')}</select></label>
+      ${s.tier === 'L' ? `<label>차량 업그레이드<select data-b="vehicle">${opt([['std', '기본'], ...Object.entries(CONFIG.upgrades).map(([k, u]) => [k, `${u.short} (~${u.maxPax}명)`])], s.vehicle)}</select></label>` : ''}
+    </div>
+    <div class="row">${['seoul', 'jeju', 'busan'].map(cityRow).join('')}</div>
+    <div class="row bchk">
+      <label><input type="checkbox" data-bmeal="lunch"${s.meals.includes('lunch') ? ' checked' : ''}> 점심</label>
+      <label><input type="checkbox" data-bmeal="dinner"${s.meals.includes('dinner') ? ' checked' : ''}> 저녁</label>
+      <label><input type="checkbox" data-bb="hanbok"${hanbokOf(s) ? ' checked' : ''}> 경복궁 한복</label>
+      <label><input type="checkbox" data-bb="lotte"${(typeof s.lotte === 'boolean' ? s.lotte : s.concept === 'romantic') ? ' checked' : ''}> 롯데월드</label>
+      <label><input type="checkbox" data-bb="luggage"${s.luggage ? ' checked' : ''}> 짐 추가 (짐차)</label>
+      ${Object.entries(CONFIG.addonPaid).map(([k, n]) => `<label><input type="checkbox" data-badn="${k}"${(s.addons || []).includes(k) ? ' checked' : ''}> ${esc(n)} (${krw(CONFIG.addons[k] || 0)}/인)</label>`).join('')}
+      <span class="sp" style="flex:1"></span>
+      ${bFrom ? `<span class="hint">요청 ${esc(bFrom)} 수정 중${bFromReq && bFromReq.builder ? ` · 마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span><button class="btn sm" id="b-save-req">이 요청에 저장</button><button class="btn ghost sm" id="b-back-req">요청으로 돌아가기</button>` : ''}
+      <button class="btn ghost sm" id="b-reset-edit">관광지 편집 초기화</button>
+      <button class="btn ghost sm" id="b-new">새로 시작</button>
+    </div></div>`;
+}
+function bDay(d, i, days) {
+  const e = bEdits[dk(d)] || { rm: [], add: [] };
+  const same = days.map((x, j) => ({ x, j })).filter(o => o.x.slot && o.x.region === d.region);
+  const pos = same.findIndex(o => o.j === i);
+  const move = d.slot ? `<span class="bmv"><button class="btn ghost sm" data-bup="${i}"${pos <= 0 ? ' disabled' : ''}>▲</button><button class="btn ghost sm" data-bdn="${i}"${pos < 0 || pos >= same.length - 1 ? ' disabled' : ''}>▼</button></span>` : '';
+  const swap = d.slot ? `<select data-bswap="${d.slot}">${swapOptions(d.region, bSel).map(o => `<option value="${o.id}"${o.id === d.moduleId ? ' selected' : ''}>${esc(o.title)}${o.out ? ' (근교)' : ''}</option>`).join('')}<option value="free"${d.moduleId === 'free' ? ' selected' : ''}>자유일 (가이드·차량 없음)</option></select>` : '';
+  const stop = (s, where) => `<li${s.added ? ' class="add"' : ''}><span>${esc(sightLabel(s.key))}${where ? ` <em>${where}</em>` : ''}${placeMemo(s.key) ? `<small class="pm">${esc(placeMemo(s.key))}</small>` : ''}</span><span class="num">${s.price ? krw(s.price) : '–'}${s.key === HANBOK_KEY ? ` + US$${CONFIG.hanbokUSD}` : ''}</span><button class="rx" title="빼기" data-brm="${esc(dk(d))}|${esc(s.key)}">✕</button></li>`;
+  const list = d.kind === 'tour' ? d.stops.map(s => stop(s)).join('') : (d.adds || []).map(a => stop(a, '이동일 관광')).join('') + (d.kind !== 'tour' ? (d.lines || []).map(l => `<li class="ln">${esc(l)}</li>`).join('') : '');
+  const removed = e.rm.length ? `<div class="hint">뺀 곳: ${e.rm.map(k => `${esc(sightLabel(k))} <button class="linkbtn" data-bback="${esc(dk(d))}|${esc(k)}">되돌리기</button>`).join(' · ')}</div>` : '';
+  const canAdd = d.kind === 'tour' || d.kind === 'free' || (d.kind === 'transfer' && d.moveFrom);
+  const meals = (d.mealSlots || []).map(m => `<label><input type="checkbox" data-bmo="${esc(mealKey(d, m))}"${mealEdge(d) ? ' data-edge="1"' : ''}${d.meals.includes(m) ? ' checked' : ''}> ${m === 'lunch' ? '점심' : '저녁'}</label>`).join('');
+  return `<div class="day bday"><div class="n">${i + 1}</div><div>
+    <div class="bdh"><h4>${esc(d.title)} <span class="tag">${d.kind === 'tour' ? '투어' : d.kind === 'free' ? '자유' : '이동'}</span></h4>${swap}${move}</div>
+    <div class="rt">${esc(d.route || '')}</div>
+    <ul class="bst">${list}</ul>${removed}
+    ${meals ? `<div class="bchk">${meals}</div>` : ''}
+    ${canAdd ? `<div class="badd"><input list="b-sights" placeholder="관광지 추가 (목록에서 고르거나 새 이름 입력)" data-badd="${esc(dk(d))}"><button class="btn ghost sm" data-bgo="${esc(dk(d))}">추가</button></div>` : ''}
+  </div></div>`;
+}
+function bPrice(days) {
+  const q = quoteFor(days, bSel), c = costBreakdown(days, bSel), tbl = bracketTable(days, bSel);
+  const row = (x, cols) => `<tr>${cols.map(v => `<td${typeof v === 'number' ? ' class="num"' : ''}>${typeof v === 'number' ? v.toLocaleString('ko-KR') : esc(v)}</td>`).join('')}</tr>`;
+  return `<div class="card bprice">
+    <div class="sub">1인 지상비 · ${bSel.pax}명 (${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산)</div>
+    <div class="big">${money(q.perPerson)}</div>
+    <div>총액 ${money(q.total)} · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
+    <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
+    <h4>인원 구간별 1인 가격</h4>
+    <table class="ht">${tbl.map(t => `<tr${t.bracket[0] === q.bracket[0] ? ' class="on"' : ''}><td style="white-space:nowrap">${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')}명</td><td class="hint">${esc(vehicleKo(t.plan))}</td><td class="num">${money(t.perPerson)}</td></tr>`).join('')}</table>
+    <details${bOpen.cost ? ' open' : ''} id="b-cost"><summary>원가 세부내용 (${c.basePax}명 기준)</summary>
+      <table class="ht"><tr><th>공통 (그룹)</th><th>내용</th><th class="num">단가 ₩</th><th class="num">수량</th></tr>${c.common.map(x => row(x, [x.item, x.detail, x.unit, x.qty])).join('')}
+      <tr><th>개인 (1인)</th><th>Day</th><th class="num">₩</th><th></th></tr>${c.personal.map(x => row(x, [x.item, 'D' + x.day, x.unit, ''])).join('')}
+      ${c.supp.length ? `<tr><th>추가 (US$, 그룹)</th><th>Day</th><th class="num">US$</th><th></th></tr>${c.supp.map(x => row(x, [x.item, 'D' + x.day, Math.round(x.usd), ''])).join('')}` : ''}</table>
+      <div class="sum"><span>공통 ${usd1(c.parts.common)}/인</span><span>개인 ${usd1(c.parts.personal)}/인</span><span>추가 ${usd1(c.parts.supp)}/인</span><span>마진 ${usd1(c.parts.margin)}/인</span><span>합계 ${usd1(c.raw)} → ${money(c.perPerson)}</span></div>
+    </details>
+    <div class="acts"><button class="btn ghost" id="b-copy">일정·가격 복사 (영문)</button><span class="saved" id="b-msg"></span></div>
+  </div>`;
+}
+function drawBuilder() {
+  if (!bRatesOK) bRatesOK = bRates();
+  if (!bRatesOK) { $('builder').innerHTML = '<div class="card">단가를 불러오지 못했습니다. Wix 서버 파일(hakeem-core.js)이 최신인지 확인해 주세요.</div>'; return; }
+  const days = builtDays();
+  const all = Object.keys(SIGHTS).filter(k => k !== HANBOK_KEY).sort((a, b) => sightLabel(a).localeCompare(sightLabel(b)));
+  $('builder').innerHTML = `${bOptions()}<div class="bgrid"><div class="card"><h3 style="margin:0 0 6px">일정 (${days.length - 1}박 ${days.length}일)</h3>
+    <datalist id="b-sights">${all.map(k => `<option value="${esc(sightLabel(k))}">${SIGHTS[k] ? krw(SIGHTS[k]) : '무료'}</option>`).join('')}</datalist>
+    ${days.map((d, i) => bDay(d, i, days)).join('')}</div>${bPrice(days)}</div>`;
+  bLast = days;
+}
+let bLast = null;
+const bEdit = k => (bEdits[k] ||= { rm: [], add: [] });
+function bCityOrder(days, city) { return days.filter(d => d.slot && d.region === city).map(d => d.slot); }
+async function bAddSight(k, name, priceEl) {
+  const nm = name.trim(); if (!nm) return;
+  const all = Object.keys(SIGHTS), hit = all.find(x => sightLabel(x).toLowerCase() === nm.toLowerCase() || x.toLowerCase() === nm.toLowerCase());
+  if (hit) {
+    const day = (bLast || []).find(x => dk(x) === k), has = day && [...(day.stops || []), ...(day.adds || [])].some(x => x.key === hit);
+    if (has) { alertBox(`${sightLabel(hit)}: 이미 이 날 일정에 있음`); return; }
+    bEdit(k).add.push(hit); drawBuilder(); return;
+  }
+  // a new place: saved to the sight list on the server (shown on the rates page and here for everyone)
+  const box = document.querySelector(`[data-badd="${CSS.escape(k)}"]`).parentNode;
+  if (!priceEl) { box.insertAdjacentHTML('beforeend', `<span class="bnew">새 관광지 · 1인 입장료 ₩<input type="number" min="0" step="1000" value="0" data-bprice="${esc(k)}" style="width:100px"><button class="btn sm" data-bsave="${esc(k)}">목록에 저장하고 추가</button></span>`); return; }
+  const key = nm.replace(/\s+/g, ' ').toUpperCase(), cs = { ...(settings.customSights || {}), [key]: +priceEl.value || 0 };
+  try {
+    settings = await api('/api/admin/settings', { method: 'POST', body: JSON.stringify({ customSights: cs }) });
+    bRatesOK = bRates(); bEdit(k).add.push(key); drawBuilder(); $('b-msg').textContent = `${key} 저장됨 (단가 관리 › 추가한 관광지)`;
+  } catch (err) { alertBox(KERR(err)); }
+}
+const alertBox = t => { const m = $('b-msg'); if (m) m.textContent = t; };
+function bText(days) {
+  const q = quoteFor(days, bSel), tbl = bracketTable(days, bSel);
+  return [`${days.length - 1}N${days.length}D Korea · ${routeOf(bSel).map(c => `${CITY_EN[c]} ${bSel['n' + CITY_EN[c]]}N`).join(' → ')} · ${bSel.pax} pax`, '',
+    ...days.map((d, i) => `Day ${i + 1}: ${d.title}${d.kind === 'tour' ? ' – ' + d.stops.map(s => sightLabel(s.key)).join(', ') : (d.adds || []).length ? ' – ' + d.adds.map(a => sightLabel(a.key)).join(', ') : ''}${(d.meals || []).length ? ` (${d.meals.join(' & ')})` : ''}`), '',
+    `Land fee per person (hotel excluded): US$ ${q.perPerson.toLocaleString('en-US')} for ${bSel.pax} pax`, '',
+    'Per person by group size:', ...tbl.map(t => `${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')} pax: US$ ${t.perPerson.toLocaleString('en-US')}`)].join('\n');
+}
+function openInBuilder(r) {
+  if (!r.builderSel) { alert('이 요청은 저장된 선택값이 없어 투어 빌더로 열 수 없습니다.'); return; }
+  bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
+  bFrom = r.id; bFromReq = r; showTab('builder');
+}
+// saves the edited tour into the request: itinerary, options and site price are replaced (the first version stays in r.original)
+async function bSaveToRequest() {
+  const msg = $('b-msg');
+  try {
+    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, by: $('das') ? $('das').value : '' }) });
+    bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(bFrom)); current = bFromReq;
+    const row = rows.find(x => x.id === bFrom); if (row) { row.perPerson = d.price.perPerson; row.total = d.price.total; row.pax = bSel.pax; row.edited = true; }
+    drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · 1인 ${money(d.price.perPerson)}`;
+  } catch (err) { if (msg) msg.textContent = KERR(err); }
+}
+$('builder').addEventListener('change', e => {
+  const el = e.target, d = el.dataset;
+  if (d.b) { if (d.b === 'order') bSel.order = el.value.split(','); else { bSel[d.b] = el.value; if (d.b === 'market') bSel.country = ''; } if (bSel.tier !== 'L') bSel.vehicle = 'std'; }
+  else if (d.bnum) bSel.pax = Math.min(40, Math.max(1, +el.value || 1));
+  else if (d.bk) { bSel[d.bk] = el.checked; if (!bSel.seoul && !bSel.jeju && !bSel.busan) bSel.seoul = true; }
+  else if (d.bn) bSel[d.bn] = Math.max(1, Math.min(+el.max, +el.value || 1));
+  else if (d.bmeal) bSel.meals = ['lunch', 'dinner'].filter(m => m === d.bmeal ? el.checked : bSel.meals.includes(m));
+  else if (d.bb) bSel[d.bb] = el.checked;
+  else if (d.badn) bSel.addons = Object.keys(CONFIG.addonPaid).filter(k => k === d.badn ? el.checked : (bSel.addons || []).includes(k));
+  else if (d.bswap) bSel.swaps[d.bswap] = el.value;
+  else if (d.bmo) { const f = d.edge ? 'mealOn' : 'mealOff', on = d.edge ? el.checked : !el.checked; bSel[f] ||= {}; if (on) bSel[f][d.bmo] = true; else delete bSel[f][d.bmo]; }
+  else return;
+  drawBuilder();
+});
+$('builder').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.badd) { e.preventDefault(); bAddSight(e.target.dataset.badd, e.target.value); } });
+$('builder').addEventListener('toggle', e => { if (e.target.id === 'b-cost') bOpen.cost = e.target.open; }, true);
+$('builder').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.brm) { const [k, s] = d.brm.split('|'); const ed = bEdit(k); if (ed.add.includes(s)) ed.add.splice(ed.add.indexOf(s), 1); else ed.rm.push(s); drawBuilder(); }
+  if (d.bback) { const [k, s] = d.bback.split('|'); bEdit(k).rm = bEdit(k).rm.filter(x => x !== s); drawBuilder(); }
+  if (d.bgo) { const inp = document.querySelector(`[data-badd="${CSS.escape(d.bgo)}"]`); bAddSight(d.bgo, inp.value); }
+  if (d.bsave) { const inp = document.querySelector(`[data-badd="${CSS.escape(d.bsave)}"]`); bAddSight(d.bsave, inp.value, document.querySelector(`[data-bprice="${CSS.escape(d.bsave)}"]`)); }
+  if (d.bup || d.bdn) {
+    const i = +(d.bup || d.bdn), day = bLast[i], order = bCityOrder(bLast, day.region), p = order.indexOf(day.slot), q2 = d.bup ? p - 1 : p + 1;
+    if (q2 >= 0 && q2 < order.length) { [order[p], order[q2]] = [order[q2], order[p]]; bOrder[day.region] = order; drawBuilder(); }
+  }
+  if (b.id === 'b-reset-edit') { bEdits = {}; bOrder = {}; drawBuilder(); }
+  if (b.id === 'b-new') { bSel = bNew(); bEdits = {}; bOrder = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
+  if (b.id === 'b-save-req') bSaveToRequest();
+  if (b.id === 'b-back-req') { const id = bFrom; showTab('list'); open(id); }
+  if (b.id === 'b-copy') { const t = bText(bLast); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => alertBox('복사 완료'), () => alertBox('복사 불가')); }
+});
+$('to-builder').onclick = () => openInBuilder(current);
+
+// ---- company directory (hotels, guides, restaurants, transport, places, buyers) from the server: contacts stay on Wix, never in this file
+let DIR = null, dirTab = 'hotels';
+const DCITY = { seoul: 'Seoul', busan: 'Busan', jeju: 'Jeju' };
+async function loadDirectory() { if (DIR) return DIR; try { DIR = await api('/api/admin/directory'); } catch { DIR = null; } return DIR; }
+const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
+const remark = x => x ? [x.verdict, x.target && `대상: ${x.target}`, x.reason].filter(Boolean).join(' · ') : '';
+const dirHotel = name => DIR && DIR.hotels.find(h => norm(h.name) === norm(name));
+const hotelsIn = city => DIR ? DIR.hotels.filter(h => !city || norm(h.city) === norm(DCITY[city] || city)) : [];
+// rate sheet: KRW per room-night before tax; quotes add 10%
+function hotelRateCol(iso) {
+  const [, m, d] = iso.split('-').map(Number);
+  const H = DIR.hotelRates.headers, find = t => H.indexOf(t);
+  if (m === 4 && d <= 21 && find('4월 성수기(1~21일)') >= 0) return find('4월 성수기(1~21일)');
+  if (m === 5 && d <= 4 && find('5월 성수기(1~4일)') >= 0) return find('5월 성수기(1~4일)');
+  if (m === 12 && d >= 24 && find('12월 성수기(24~31일)') >= 0) return find('12월 성수기(24~31일)');
+  if (m === 10 && find('10월(전월 성수기)') >= 0) return find('10월(전월 성수기)');
+  return find(`${m}월`);
+}
+// average over the nights of the stay; Friday and Saturday nights use the weekend row
+function hotelRateEstimate(city, star, checkIn, checkOut) {
+  if (!DIR || !DIR.hotelRates || !checkIn || !checkOut || !star) return null;
+  const cityKo = { seoul: '서울', busan: '부산', jeju: '제주' }[city]; if (!cityKo) return null;
+  let sum = 0, n = 0;
+  for (let d = checkIn; d < checkOut; d = addDays(d, 1)) {
+    const wd = new Date(d + 'T00:00:00Z').getUTCDay(), day = wd === 5 || wd === 6 ? '주말' : '주중';
+    const row = DIR.hotelRates.rows.find(x => x.city === cityKo && x.day === day && +x.star === +star), c = hotelRateCol(d);
+    if (!row || c < 0 || !row.rates[c]) return null;
+    sum += row.rates[c]; n++;
+  }
+  return n ? Math.round(sum / n * 1.1 / 1000) * 1000 : null; // +10% tax and service, rounded to ₩1,000
+}
+const starOf = h => { const x = dirHotel(h.name); const m = String((x && x.star) || '').match(/[345]/) || String((current && current.hotel || []).join(' ')).match(/[345]/); return m ? +m[0] : null; };
+function hotelInfo(h) {
+  const x = dirHotel(h.name);
+  const est = hotelRateEstimate(h.city, starOf(h), h.checkIn, h.checkOut);
+  const bits = x ? [x.star, x.area, x.contract === 'O' && '계약 요금표 있음', x.triple === 'O' && '트리플', x.familyTwin && x.familyTwin !== 'X' && `패밀리트윈 ${x.familyTwin}`, x.quad && x.quad !== 'X' && `쿼드 ${x.quad}`, x.phone && `☎ ${x.phone}`].filter(Boolean) : [];
+  return `${x ? `<b>${esc(bits.join(' · '))}</b>${remark(x) ? `<br>${esc(remark(x))}` : ''}` : (DIR ? '목록에 없는 호텔' : '')}${est ? `<br>기준 요금(세금 10% 포함, 1실 1박 평균) ${krw(est)} <button class="btn ghost sm" data-hest="${esc(String(est))}">회신 요금 칸에 넣기</button>` : ''}`;
+}
+function hotelDatalists() {
+  if (!DIR) return '';
+  return Object.keys(DCITY).map(c => `<datalist id="dl-hotel-${c}">${hotelsIn(c).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area, h.verdict].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('');
+}
+// ③ vendor suggestions by category (guides and restaurants by the city in the item, restaurants by the guests' diet first)
+function opsVendorList(o, i) {
+  if (!DIR) return '';
+  const cityKo = /부산/.test(o.item + o.detail) ? 'Busan' : /제주/.test(o.item + o.detail) ? 'Jeju' : /서울/.test(o.item + o.detail) ? 'Seoul' : '';
+  let list = [];
+  if (o.cat === 'vehicle') list = DIR.transport.map(t => [t.name, [t.city, t.vehicles].filter(Boolean).join(' · ')]);
+  if (o.cat === 'guide') list = DIR.guides.filter(g => !cityKo || g.city === cityKo).sort((a, b) => (a.status === '승인' ? 0 : 1) - (b.status === '승인' ? 0 : 1)).map(g => [g.name, [g.city, g.langs, g.drive, g.status !== '승인' && g.status, g.phone, remark(g)].filter(Boolean).join(' · ')]);
+  if (o.cat === 'meal') {
+    const diet = (current.diet || []).join(' ').toLowerCase(), want = r => (/halal/.test(diet) && /할랄|아랍/.test(r.cuisine)) || ((/vegetarian|vegan|jain/.test(diet)) && /인도|채식|사찰/.test(r.cuisine)) ? 0 : 1;
+    list = DIR.restaurants.filter(r => !cityKo || r.city === cityKo).sort((a, b) => want(a) - want(b) || (a.status === '승인' ? 0 : 1) - (b.status === '승인' ? 0 : 1)).map(r => [r.name, [r.cuisine, r.area, r.verdict, r.target, r.phone].filter(Boolean).join(' · ')]);
+  }
+  if ((o.cat === 'addon' || o.cat === 'booking') && DIR.experiences) list = DIR.experiences.map(x => [x.name, [x.city, x.price, x.phone, x.desc].filter(Boolean).join(' · ')]);
+  if (o.cat === 'hotel') list = DIR.hotels.filter(h => !cityKo || h.city === cityKo).map(h => [h.name, [h.manager, h.phone, h.email].filter(Boolean).join(' · ')]);
+  return list.length ? `<datalist id="dl-op-${i}">${list.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</datalist>` : '';
+}
+const vendorContact = (o) => {
+  if (!DIR || !o.vendor) return '';
+  const pools = { vehicle: DIR.transport, guide: DIR.guides, meal: DIR.restaurants, hotel: DIR.hotels, addon: DIR.experiences, booking: DIR.experiences }[o.cat] || [];
+  const x = pools.find(v => norm(v.name) === norm(o.vendor));
+  return x ? [x.phone, x.email].filter(Boolean).join(' · ') : '';
+};
+// tour builder: our own notes on a place (site visits), matched on the English or Korean name
+function placeMemo(key) {
+  if (!DIR) return '';
+  const k = norm(PRETTY(key)), hit = DIR.places.find(p => p.memo && (norm(p.en) === k || (norm(p.en).length > 5 && (k.includes(norm(p.en)) || norm(p.en).includes(k)))));
+  return hit ? hit.memo : '';
+}
+// ---- the directory tab
+const DTABS = [['hotels', '호텔'], ['guides', '가이드'], ['restaurants', '식당'], ['transport', '교통'], ['experiences', '체험'], ['places', '장소'], ['partners', '바이어'], ['hotelRates', '호텔 요금 기준']];
+const DCOLS = {
+  hotels: [['name', '이름'], ['city', '도시'], ['area', '지역'], ['star', '등급'], ['verdict', '추천/비추천'], ['target', '추천 대상'], ['reason', '추천 이유'], ['manager', '담당자'], ['phone', '연락처'], ['email', '이메일']],
+  guides: [['name', '이름'], ['city', '도시'], ['langs', '언어'], ['drive', '드라이빙'], ['verdict', '추천/비추천'], ['target', '추천 대상'], ['reason', '추천 이유'], ['phone', '연락처'], ['rate', '요금']],
+  restaurants: [['name', '이름'], ['city', '도시'], ['cuisine', '음식'], ['area', '지역'], ['verdict', '추천/비추천'], ['target', '추천 대상'], ['reason', '추천 이유'], ['phone', '연락처']],
+  transport: [['name', '이름'], ['city', '지역'], ['vehicles', '차종'], ['phone', '연락처'], ['rate', '요금']],
+  experiences: [['name', '이름'], ['city', '지역'], ['desc', '내용'], ['price', '요금'], ['phone', '예약 번호'], ['season', '계절'], ['website', '웹사이트']],
+  places: [['name', '이름'], ['en', '영어 이름'], ['kind', '종류'], ['region', '지역'], ['fee', '입장료'], ['tags', '태그'], ['memo', '내부 메모']],
+  partners: [['name', '조직명'], ['country', '국가'], ['manager', '관리자'], ['email', '이메일'], ['status', '확인 상태'], ['note', '메모']],
+};
+async function openDirectory() {
+  $('dir').innerHTML = '<div class="card">불러오는 중…</div>';
+  await loadDirectory();
+  if (!DIR) { $('dir').innerHTML = '<div class="card">업체·호텔 목록을 불러오지 못했습니다. Wix에 backend/hakeem-directory.js가 있는지 확인해 주세요.</div>'; return; }
+  drawDirectory();
+}
+function drawDirectory() {
+  const q = ($('d-q') && $('d-q').value) || '', city = ($('d-city') && $('d-city').value) || '';
+  let body;
+  if (dirTab === 'hotelRates') {
+    const R = DIR.hotelRates;
+    body = `<div class="sub">${esc(R.note || '')}</div><div style="overflow:auto"><table class="ht"><tr><th>지역</th><th>요일</th><th>성급</th>${R.headers.map(h => `<th class="num">${esc(h)}</th>`).join('')}</tr>${R.rows.filter(r => !city || r.city === ({ Seoul: '서울', Busan: '부산', Jeju: '제주' })[city]).map(r => `<tr><td>${esc(r.city)}</td><td>${esc(r.day)}</td><td>${r.star}성</td>${r.rates.map(v => `<td class="num">${v ? Number(v).toLocaleString('ko-KR') : ''}</td>`).join('')}</tr>`).join('')}</table></div>${R.extras ? `<p class="sub">${esc(R.extras)}</p>` : ''}`;
+  } else {
+    const cols = DCOLS[dirTab], rows = (DIR[dirTab] || []).filter(x => (!city || !x.city || x.city === city) && (!q || Object.values(x).join(' ').toLowerCase().includes(q.toLowerCase())));
+    body = `<div class="sub">${rows.length}건</div><div style="overflow:auto"><table class="ht dirt"><tr>${cols.map(([, l]) => `<th>${l}</th>`).join('')}</tr>${rows.map(x => `<tr>${cols.map(([k]) => `<td>${k === 'email' && x[k] ? `<a href="mailto:${esc(x[k])}">${esc(x[k])}</a>` : k === 'website' && /^https?:/.test(x[k] || '') ? `<a href="${esc(x[k])}" target="_blank" rel="noopener">열기</a>` : esc(x[k] ?? '')}</td>`).join('')}</tr>`).join('')}</table></div>`;
+  }
+  $('dir').innerHTML = `<div class="card"><div class="bar">${DTABS.map(([k, l]) => `<button class="tab${k === dirTab ? ' on' : ''}" data-dtab="${k}">${l}</button>`).join('')}</div>
+    <div class="bar"><input id="d-q" placeholder="검색 (이름·메모·언어 등)" value="${esc(q)}"><select id="d-city"><option value="">전체 도시</option>${['Seoul', 'Busan', 'Jeju'].map(c => `<option${c === city ? ' selected' : ''}>${c}</option>`).join('')}</select><span class="count">기준: ${esc(DIR.updated || '')} · 수정은 사내 시트를 고친 뒤 Claude에게 반영 요청</span></div>
+    ${body}</div>`;
+}
+$('dir').addEventListener('click', e => { const b = e.target.closest('[data-dtab]'); if (b) { dirTab = b.dataset.dtab; drawDirectory(); } });
+$('dir').addEventListener('input', e => { if (e.target.id === 'd-q') { const p = e.target.selectionStart; drawDirectory(); const q = $('d-q'); q.focus(); q.setSelectionRange(p, p); } });
+$('dir').addEventListener('change', e => { if (e.target.id === 'd-city') drawDirectory(); });
+document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $('go').onclick = () => { key = $('pw').value; load(); };
 $('logout').onclick = () => { key = ''; try { sessionStorage.removeItem('hk-admin'); } catch {} location.reload(); };
 $('reload').onclick = load;
