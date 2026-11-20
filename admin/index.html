@@ -266,6 +266,10 @@ function planFor(pax, market, luggage) {
   return { pickup: row[1], tour: row[2], luggage: !!row[3] || !!luggage, extraLuggage: !row[3] && !!luggage };
 }
 const isDriving = p => p.tour === 'staria';
+// FOC (free of charge, e.g. tour leaders): travel with the group but do not pay. Vehicles and rooms count them; the price is per paying guest.
+const FOC_MAX = 5;
+const focOf = s => Math.max(0, Math.min(FOC_MAX, s.foc | 0, s.pax | 0));
+const headsOf = s => (s.pax | 0) + focOf(s);
 const marginFor = pax => (CONFIG.margins.find(([n]) => pax <= n) || CONFIG.margins[CONFIG.margins.length - 1])[1];
 const VEH_EN = { staria: 'van (Staria)', solati: 'minibus (Solati)', bus: 'bus (28 or 45-seater)' };
 const VEH_KO = { staria: '스타리아', solati: '솔라티', bus: '대형버스' };
@@ -829,13 +833,18 @@ function priceFor(days, pax, sel) {
   return { pax, plan: p, upgrade: up ? sel.vehicle : 'std', perPerson: pp, total: pp * pax, commonKRW: common, personalKRW: personal, margin, guidedDays, halfDays, hanbok, supplementUSD };
 }
 // Bracket price: per-person rate of the bracket's smallest group, charged for the actual group size.
-function quoteFor(days, sel) {
-  const br = bracketFor(sel.pax) || CONFIG.brackets[CONFIG.brackets.length - 1];
-  const r = priceFor(days, br[0], sel);
-  return { ...r, pax: sel.pax, bracket: br, total: r.perPerson * sel.pax, plan: planFor(sel.pax, sel.market, sel.luggage) };
+// With FOC: the rate is worked out for everyone travelling (paying + FOC); the FOC guests' land cost, without margin, is shared by the paying guests.
+function focPrice(days, paying, foc, sel) {
+  const heads = paying + foc, br = bracketFor(heads) || CONFIG.brackets[CONFIG.brackets.length - 1], r = priceFor(days, br[0], sel);
+  const perPerson = foc ? mround((r.perPerson * heads - r.margin * foc) / paying, CONFIG.roundTo) : r.perPerson;
+  return { r, br, heads, perPerson };
 }
-const bracketTable = (days, sel) => CONFIG.brackets.filter(([a]) => !sel.vehicle || sel.vehicle === 'std' || upgradeOK(sel.vehicle, a))
-  .map(br => ({ bracket: br, perPerson: priceFor(days, br[0], sel).perPerson, plan: planFor(br[0], sel.market, sel.luggage) }));
+function quoteFor(days, sel) {
+  const foc = focOf(sel), f = focPrice(days, sel.pax, foc, sel);
+  return { ...f.r, pax: sel.pax, foc, heads: f.heads, perHead: f.r.perPerson, perPerson: f.perPerson, bracket: f.br, total: f.perPerson * sel.pax, plan: planFor(f.heads, sel.market, sel.luggage) };
+}
+const bracketTable = (days, sel) => CONFIG.brackets.filter(([a]) => !sel.vehicle || sel.vehicle === 'std' || upgradeOK(sel.vehicle, a + focOf(sel)))
+  .map(br => { const foc = Math.min(focOf(sel), br[0]), f = focPrice(days, br[0], foc, sel); return { bracket: br, perPerson: f.perPerson, plan: planFor(f.heads, sel.market, sel.luggage) }; });
 
 // ---- cost sheet (admin only): the same sums as priceFor, item by item, at the bracket's smallest group
 const T_KO = { ICN: '인천공항', GMP: '김포공항', SEL_STN: '서울역', PUS: '김해공항', BUS_STN: '부산역', CJU: '제주공항' };
@@ -875,7 +884,7 @@ function costBreakdown(days, sel) {
   const parts = { common: commonKRW / CONFIG.fx / base, personal: personalKRW / CONFIG.fx, margin: marginFor(base), supp: suppUSD / base };
   return { fx: CONFIG.fx, roundTo: CONFIG.roundTo, basePax: base, pax: sel.pax, bracket: q.bracket, plan: p,
     vehicle: q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(p),
-    common, personal, supp, commonKRW, personalKRW, suppUSD, parts, raw: parts.common + parts.personal + parts.margin + parts.supp, perPerson: q.perPerson };
+    common, personal, supp, commonKRW, personalKRW, suppUSD, parts, raw: parts.common + parts.personal + parts.margin + parts.supp, perPerson: q.perPerson, perHead: q.perHead, foc: q.foc, heads: q.heads };
 }
 
 // ---- rates: engine defaults, overridden by what is saved on the admin page (Wix CMS HakeemSettings, key "rates")
@@ -1014,7 +1023,7 @@ async function open(id) {
       ${r.buyer ? line('바이어 코드', `<b>${esc(r.buyer.code)}</b> ${r.buyer.approved ? '승인됨' : '<span style="color:#b3261e">승인 대기</span>'}${r.buyer.discount ? `<br>할인 ${r.buyer.discount.type === 'pct' ? r.buyer.discount.value + '%' : 'US$' + r.buyer.discount.value + '/인'}${r.price.discountedPerPerson ? ` → 1인 ${usd(r.price.discountedPerPerson)}` : ''}` : ''}`) : line('바이어 코드', '<span class="hint">가입 전 요청</span>')}
       ${line('여행 날짜', r.trip.arrival ? `${fmt(r.trip.arrival)} – ${fmt(r.trip.departure)}` : '미정')}
       ${line('일정', `${r.trip.nights}박 ${r.trip.days}일<br>${esc(nd(' ' + r.trip.cities).trim())}${r.trip.arrivalAirport ? `<br>입국 ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} · 출국 ${T_KO[r.trip.departureAirport] || '인천공항'}${Array.isArray(r.trip.route) && !r.trip.route.includes('seoul') ? ' · <b>서울 일정 없음</b>' : ''}` : ''}`)}
-      ${line('그룹', `${o.pax}명 · ${esc(MARKET[o.market] || o.market)}`)}
+      ${line('그룹', `${o.pax}명${o.foc ? ` + FOC ${o.foc}명` : ''} · ${esc(MARKET[o.market] || o.market)}`)}
       ${line('스타일', `${esc(o.tier)} · ${THEME[o.theme] || o.theme} · ${SEASON[o.season] || o.season}<br>차량: ${esc(vehicleName(r))}${typeof o.hanbok === 'boolean' && r.itinerary.some(d => d.stops.some(s => /Gyeongbokgung/i.test(s))) ? `<br>경복궁 한복: ${o.hanbok ? '대여 포함 (1인 +US$20)' : '없음'}` : ''}`)}
       ${line('사이트 견적가 (지상비)', `<span class="price">${usd(r.price.perPerson)}</span> 1인당<br>총액 ${usd(r.price.total)} (${r.price.bracket[0] === r.price.bracket[1] ? r.price.bracket[0] : r.price.bracket.join('–')}명 구간 요금)`)}
       ${line('호텔 등급', esc(r.hotel.join(' / ')) || '–')}
@@ -1055,7 +1064,7 @@ function defaultWorkflow(r) {
     land: { perPerson: r.price.perPerson, pax: r.options.pax, note: '', sentAt: '' },
     country: r.options.country || COUNTRY_DEFAULT[r.options.market] || '',
     hotels: stays(r).map(s => ({ city: s.city, name: '', manager: '', email: '', checkIn: s.checkIn, checkOut: s.checkOut,
-      rooms: (r.rooms && r.rooms.length ? r.rooms : [{ type: 'TWN', qty: Math.ceil(r.options.pax / 2) }]).map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })), breakfast: true, status: 'todo', offer: true })),
+      rooms: (r.rooms && r.rooms.length ? r.rooms : [{ type: 'TWN', qty: Math.ceil(headsR(r) / 2) }]).map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })), breakfast: true, status: 'todo', offer: true })),
     hotelNote: '', hotelSentAt: '', hotelFx: (r.cost && r.cost.fx) || 1250, hotelMarkup: 0,
   };
 }
@@ -1170,7 +1179,7 @@ function drawWorkflow() {
 
 // ---- emails (opened in the mail app; nothing is sent automatically)
 function hotelMail(h) {
-  const n = nightsBetween(h.checkIn, h.checkOut), pax = current.options.pax;
+  const n = nightsBetween(h.checkIn, h.checkOut), pax = headsR(current);
   const subject = `[하킴트래블코리아] 객실 문의_${h.checkIn ? MON[+h.checkIn.slice(5, 7) - 1] : 'TBD'}_${n}N_${(wf.country || 'TBD').toUpperCase()}_${pax}PAX_${h.name || '호텔명'}`;
   const body = [`안녕하십니까 ${h.manager ? h.manager + ' 지배인님' : '담당자님'},`, '하킴 트래블 코리아 김채민입니다.', '',
     '아래와 같은 일정으로 예약 가능 여부와 단체 금액 확인 부탁드립니다.', '',
@@ -1367,12 +1376,12 @@ function oldTransfers(r, d, i, v, lugOn) {
 }
 function vehicleText(r) {
   const s = vehicleSchedule(r);
-  return [`[하킴트래블코리아] 차량 수배 요청`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${r.options.pax}명 + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : []),
+  return [`[하킴트래블코리아] 차량 수배 요청`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${headsR(r)}명${r.options.foc ? ` (FOC ${r.options.foc}명 포함)` : ''} + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : []),
     `* 기간: ${r.trip.arrival ? `${koDate(r.trip.arrival)} – ${koDate(r.trip.departure)}` : '날짜 미정'} (${r.trip.nights}박 ${r.trip.days}일)`, '', '[일정]',
     ...s.map(x => `${x.date ? koDate(x.date) : 'Day ' + x.day} (D${x.day}) ${x.text}`), '', '시간·픽업 장소는 확정 후 다시 전달드리겠습니다.', '감사합니다.'].join('\n');
 }
 function buildOps(r) {
-  const ops = [], pax = r.options.pax, date = i => r.trip.arrival ? addDays(r.trip.arrival, i) : '';
+  const ops = [], pax = headsR(r), date = i => r.trip.arrival ? addDays(r.trip.arrival, i) : '';
   const add = (cat, d, item, detail = '') => ops.push({ cat, date: d, item, detail, vendor: '', status: 'todo', ref: '' });
   const driving = planOf(r).tour === 'staria' && r.options.vehicle === 'Standard';
   // vehicles: one line for the whole trip; the day-by-day plan is in the copy/print view
@@ -1431,7 +1440,7 @@ function opsPrint() {
   $('qsheet').innerHTML = `<div class="qh"><img src="${document.querySelector('header img.logo').src}" alt=""><div style="text-align:right"><h2>수배 목록</h2><div class="sub">${esc(r.contact.company || r.contact.name)} · ${r.trip.nights}박 ${r.trip.days}일 · ${r.options.pax}명 · 요청번호 ${r.id}</div></div></div>
     <table><tr><th>날짜</th><th>구분</th><th>항목</th><th>내용</th><th>업체</th><th>상태</th><th>확정번호·메모</th></tr>
     ${ops.map(o => `<tr><td>${o.date ? fmt(o.date) : '–'}</td><td>${OPS_CAT[o.cat]}</td><td>${esc(o.item)}</td><td>${esc(o.detail)}</td><td>${esc(o.vendor)}</td><td>${(OPS_ST.find(s => s[0] === o.status) || [])[1]}</td><td>${esc(o.ref)}</td></tr>`).join('')}</table>
-    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${r.options.pax}명)</h3><table><tr><th>날짜</th><th>Day</th><th>내용</th></tr>${vehicleSchedule(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
+    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${headsR(r)}명)</h3><table><tr><th>날짜</th><th>Day</th><th>내용</th></tr>${vehicleSchedule(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
   document.body.classList.add('printing-quote');
   setTimeout(() => { window.print(); document.body.classList.remove('printing-quote'); }, 50);
 }
@@ -1462,7 +1471,7 @@ const krw = n => '₩' + Math.round(n).toLocaleString('ko-KR');
 const usd1 = n => (n < 0 ? '-$' : '$') + (Math.round(Math.abs(n) * 10) / 10).toLocaleString('en-US');
 function siteCost() {
   const c = current.cost; if (!c) return null;
-  return { basePax: c.basePax, fx: c.fx, margin: c.parts.margin, roundTo: c.roundTo,
+  return { basePax: c.basePax, fx: c.fx, margin: c.parts.margin, roundTo: c.roundTo, foc: c.foc || 0, paying: c.pax,
     common: c.common.map(x => ({ ...x })), personal: c.personal.map(x => ({ ...x })), supp: c.supp.map(x => ({ ...x })), editedAt: '' };
 }
 const costModel = () => wf.cost || siteCost();
@@ -1471,7 +1480,10 @@ function costCalc(m) {
   const pax = Math.max(1, +m.basePax || 1), fx = +m.fx || 1250;
   const parts = { common: commonKRW / fx / pax, personal: personalKRW / fx, supp: suppUSD / pax, margin: +m.margin || 0 };
   const net = parts.common + parts.personal + parts.supp, raw = net + parts.margin, step = m.roundTo || 5;
-  return { commonKRW, personalKRW, suppUSD, parts, net, raw, perPerson: Math.round(raw / step) * step };
+  // FOC: the land cost of the free guests (without margin) is shared by the paying guests
+  const foc = +m.foc || 0, paying = Math.max(1, +m.paying || 1), heads = paying + foc;
+  const perHead = Math.round(raw / step) * step, perPerson = foc ? Math.round((perHead * heads - parts.margin * foc) / paying / step) * step : perHead;
+  return { commonKRW, personalKRW, suppUSD, parts, net, raw, perHead, perPerson, foc, paying };
 }
 function editCost() { if (!wf.cost) { wf.cost = siteCost() || { basePax: wf.land.pax, fx: 1250, margin: 0, roundTo: 5, common: [], personal: [], supp: [] }; } wf.cost.editedAt = new Date().toISOString(); return wf.cost; }
 function costBlock() {
@@ -1504,6 +1516,7 @@ function costBlock() {
       <tr class="s"><td>원가 합계</td><td></td><td></td><td></td><td class="num" id="c-net">${usd1(k.net)} /인</td></tr>
       <tr><td>마진</td><td></td><td></td><td></td><td class="num" id="c-mg">${usd1(k.parts.margin)} /인</td></tr>
       <tr class="s"><td>${wf.cost ? '수정 계산가' : '사이트 계산가'} (US$5 단위 반올림)</td><td></td><td></td><td class="num" id="c-raw">${usd1(k.raw)}</td><td class="num"><b id="c-pp">${money(k.perPerson)}</b> /인</td></tr>
+      ${k.foc ? `<tr><td colspan="5" class="hint">FOC ${k.foc}명 포함: 전체 ${k.paying + k.foc}명 기준 1인 ${money(k.perHead)} → FOC 원가(마진 제외)를 유료 ${k.paying}명이 나눠 부담해 유료 1인 ${money(k.perPerson)}</td></tr>` : ''}
     </table>
     <div class="acts">
       <button class="btn" id="c-apply">계산가를 지상비에 반영</button>
@@ -1647,6 +1660,7 @@ function bOptions() {
     <div class="row">
       <label>시장 (차량 기준)<select data-b="market">${opt(BMARKET, s.market)}</select></label>
       <label>인원<input type="number" min="1" max="40" data-bnum="pax" value="${s.pax}" style="width:70px"></label>
+      <label>FOC<input type="number" min="0" max="5" data-bnum="foc" value="${s.foc || 0}" style="width:56px"></label>
       <label>시즌<select data-b="season">${opt(BSEASON, s.season)}</select></label>
       <label>등급<select data-b="tier">${opt(BTIER, s.tier)}</select></label>
       <label>테마<select data-b="concept">${opt(BTHEME, s.concept)}</select></label>
@@ -1690,7 +1704,7 @@ function bPrice(days) {
   const q = quoteFor(days, bSel), c = costBreakdown(days, bSel), tbl = bracketTable(days, bSel);
   const row = (x, cols) => `<tr>${cols.map(v => `<td${typeof v === 'number' ? ' class="num"' : ''}>${typeof v === 'number' ? v.toLocaleString('ko-KR') : esc(v)}</td>`).join('')}</tr>`;
   return `<div class="card bprice">
-    <div class="sub">1인 지상비 · ${bSel.pax}명 (${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산)</div>
+    <div class="sub">1인 지상비 · ${bSel.pax}명${focOf(bSel) ? ` + FOC ${focOf(bSel)}명 (FOC 원가는 유료 인원이 나눠 부담)` : ''} (${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산)</div>
     <div class="big">${money(q.perPerson)}</div>
     <div>총액 ${money(q.total)} · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
     <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
@@ -1738,9 +1752,9 @@ async function bAddSight(k, name, priceEl) {
 const alertBox = t => { const m = $('b-msg'); if (m) m.textContent = t; };
 function bText(days) {
   const q = quoteFor(days, bSel), tbl = bracketTable(days, bSel);
-  return [`${days.length - 1}N${days.length}D Korea · ${routeOf(bSel).map(c => `${CITY_EN[c]} ${bSel['n' + CITY_EN[c]]}N`).join(' → ')} · ${bSel.pax} pax`, '',
+  return [`${days.length - 1}N${days.length}D Korea · ${routeOf(bSel).map(c => `${CITY_EN[c]} ${bSel['n' + CITY_EN[c]]}N`).join(' → ')} · ${bSel.pax} pax${focOf(bSel) ? ` + ${focOf(bSel)} FOC` : ''}`, '',
     ...days.map((d, i) => `Day ${i + 1}: ${d.title}${d.kind === 'tour' ? ' – ' + d.stops.map(s => sightLabel(s.key)).join(', ') : (d.adds || []).length ? ' – ' + d.adds.map(a => sightLabel(a.key)).join(', ') : ''}${(d.meals || []).length ? ` (${d.meals.join(' & ')})` : ''}`), '',
-    `Land fee per person (hotel excluded): US$ ${q.perPerson.toLocaleString('en-US')} for ${bSel.pax} pax`, '',
+    `Land fee per person (hotel excluded): US$ ${q.perPerson.toLocaleString('en-US')} for ${bSel.pax} paying pax${focOf(bSel) ? ` (+${focOf(bSel)} FOC)` : ''}`, '',
     'Per person by group size:', ...tbl.map(t => `${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')} pax: US$ ${t.perPerson.toLocaleString('en-US')}`)].join('\n');
 }
 function openInBuilder(r) {
@@ -1761,6 +1775,7 @@ async function bSaveToRequest() {
 $('builder').addEventListener('change', e => {
   const el = e.target, d = el.dataset;
   if (d.b) { if (d.b === 'order') bSel.order = el.value.split(','); else { bSel[d.b] = el.value; if (d.b === 'market') bSel.country = ''; } if (bSel.tier !== 'L') bSel.vehicle = 'std'; }
+  else if (d.bnum === 'foc') bSel.foc = Math.min(5, Math.max(0, +el.value || 0));
   else if (d.bnum) bSel.pax = Math.min(40, Math.max(1, +el.value || 1));
   else if (d.bk) { bSel[d.bk] = el.checked; if (!bSel.seoul && !bSel.jeju && !bSel.busan) bSel.seoul = true; }
   else if (d.bn) bSel[d.bn] = Math.max(1, Math.min(+el.max, +el.value || 1));

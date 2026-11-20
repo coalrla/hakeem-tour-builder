@@ -323,6 +323,12 @@ body.gated { overflow: hidden; }
 .addons .gh { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 .addons .gh small { text-transform: none; letter-spacing: 0; margin-left: 6px; }
 .addons .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.side .addons { padding: 20px; flex: none; }
+.side .meals-box { padding: 20px; flex: none; }
+@media print { .meals-box { display: none !important; } }
+.side .addons .items { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+.side .addon { padding: 8px 10px; font-size: .86rem; }
+.side .addon span { font-size: .76rem; line-height: 1.35; }
 .addon { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; font-size: .9rem; background: var(--card); }
 .addon input { margin-top: 3px; accent-color: var(--accent); }
 .addon b { display: block; font-weight: 600; }
@@ -356,6 +362,12 @@ body.gated { overflow: hidden; }
 .form fieldset.pick label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
 .form fieldset.pick input { accent-color: var(--accent); margin: 0; }
 .form .diet-other { flex: 1 1 100%; margin-top: 4px; }
+.diet-side { border: 0; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.diet-side legend { font-size: .78rem; font-weight: 700; letter-spacing: .02em; color: var(--muted); margin-bottom: 6px; padding: 0; }
+.diet-side label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 99px; padding: 5px 11px; font-size: .84rem; font-weight: 500; color: var(--ink); cursor: pointer; background: var(--card); }
+.diet-side label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+.diet-side input[type=checkbox] { accent-color: var(--accent); margin: 0; }
+.diet-side .diet-other { flex: 1 1 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; font: inherit; font-size: .86rem; }
 .form .hint { font-weight: 400; font-size: .76rem; color: var(--muted); }
 .dp-wrap { position: relative; }
 #f-date-show { cursor: pointer; font-family: inherit; }
@@ -378,6 +390,75 @@ body.gated { overflow: hidden; }
 .contact { font-size: .88rem; color: var(--muted); }
 .contact a { color: var(--accent); }
 .status { font-size: .85rem; color: var(--accent); min-height: 1.2em; }
+.days { gap: 12px; }
+.day { grid-template-columns: 72px minmax(0, 1fr); gap: 18px; padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.day:first-child { border-top: 1px solid var(--line); padding-top: 18px; }
+.day.move { background: var(--paper); }
+.dn .dd { display: block; margin-top: 6px; font-family: inherit; font-size: .72rem; letter-spacing: .02em; text-transform: none; color: var(--muted); line-height: 1.3; }
+.day h4 { font-size: 1.14rem; line-height: 1.3; }
+.dmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; }
+.dmeta .tag { margin-left: 0; }
+.dmeta .rt { font-size: .82rem; color: var(--muted); margin: 0 0 0 2px; }
+.day .bl { margin: 10px 0 4px; font-size: .92rem; line-height: 1.55; }
+.day ul.stops { margin: 10px 0 0 4px; padding: 2px 0 2px 0; gap: 0; border-left: 2px solid var(--line); }
+.day ul.stops li { padding: 5px 0 5px 18px; font-size: .96rem; line-height: 1.45; }
+.day ul.stops li::before { left: -5px; top: calc(5px + .5em); width: 8px; height: 8px; box-shadow: 0 0 0 2px var(--card); }
+.day.move ul.stops li::before { box-shadow: 0 0 0 2px var(--paper); }
+.day ul.stops li.theme, .day ul.stops li.seasonal { margin: 2px 0 2px 8px; padding: 4px 8px 4px 14px; }
+.day ul.stops li.theme::before, .day ul.stops li.seasonal::before { left: -13px; top: calc(4px + .5em); }
+.dctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.dctl:empty { display: none; }
+.dtop { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px 14px; flex-wrap: wrap; }
+.dtop .swap { margin-left: auto; }
+.dtop .mv { margin-left: auto; }
+.dctl .lotte-opt, .dctl .meal-opt { margin: 0; }
+.dctl .req-add { flex: 1 1 100%; margin-top: 0; max-width: 520px; min-width: 0; box-sizing: border-box; }
+.dctl { min-width: 0; }
+@media (max-width: 620px) { .day { grid-template-columns: 46px minmax(0, 1fr); gap: 10px; padding: 14px 12px; } .dn b { font-size: 1.6rem; } .dtop .swap { margin-left: 0; flex-wrap: wrap; } .dtop .swap select { max-width: 100%; } }
+@media print { .dctl { display: none !important; } .day { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 10px 0; } }
+.pax-row { display: grid; grid-template-columns: auto auto; justify-content: start; gap: 8px 28px; align-items: end; }
+.pax-col { display: grid; gap: 8px; }
+.pax-col .label { white-space: nowrap; }
+.foc-s { font-weight: 500; letter-spacing: 0; text-transform: none; font-size: .72rem; color: var(--muted); margin-left: 4px; }
+.date-in { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--card); cursor: pointer; width: 100%; box-sizing: border-box; }
+.side .dp { top: 72px; }
+.side .hotels { padding: 20px; gap: 12px; }
+.side .hotels h2 { font-size: 1.15rem; margin: 0; }
+.side .hotels .contact { font-size: .82rem; }
+.side .hotels .form { grid-template-columns: minmax(0, 1fr); }
+.side .rooms-f { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 901px) { .side { overflow-y: auto; scrollbar-width: thin; } .side .panel { flex: none !important; overflow: visible !important; } .side .hotels { flex: none; } }
+.side .room-row { display: flex; flex-wrap: wrap; width: 100%; box-sizing: border-box; }
+.side .room-row select { flex: 1 1 100%; min-width: 0; }
+.side .room-row .xb { margin-right: auto; }
+.side .hotels .form > * { min-width: 0; }
+.btn.big { font-size: 1.05rem; padding: 13px 26px; }
+.price button.ask-btn { font: inherit; font-weight: 700; }
+body.qv-on main, body.qv-on .intro, body.qv-on .mini { display: none !important; }
+.qv { max-width: 980px; margin: 18px auto 24px; padding: 0 20px; display: grid; gap: 14px; }
+.qv[hidden] { display: none; }
+.qv-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.qv-bar .sp { flex: 1; }
+.qv-head { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+@media (max-width: 620px) { .qv-head { grid-template-columns: 1fr; } }
+.qv-head h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.7rem; margin: 2px 0 4px; }
+.qv-ref { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.qv-for { font-size: .9rem; color: var(--muted); }
+.qv table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.qv th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 12px 6px 0; vertical-align: top; width: 34%; }
+.qv td { padding: 6px 0; border-top: 1px solid var(--line); }
+.qv th { border-top: 1px solid var(--line); }
+.qv ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: .9rem; }
+.qv ol b { color: var(--ink); }
+.qv .q-note { font-size: .88rem; color: var(--muted); }
+.qv .q-meal { margin: 10px 0 0; font-size: .86rem; font-weight: 600; color: var(--brand); }
+.qv .qv-days { margin-top: 10px; }
+.price .tot { font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; font-synthesis: none; }
+.qv .qv-days .day { break-inside: avoid; }
+@media print {
+  body.qv-on .qv-bar, body.qv-on .top a, body.qv-on .acct { display: none !important; }
+  .qv { margin: 0; padding: 0; }
+}
 footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .8rem; color: var(--muted); }
 </style>
 </head>
@@ -439,13 +520,30 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
   <aside class="side">
   <section class="card trip" aria-label="Group size and cities">
       <div class="field">
-        <label class="label" for="pax">Travelers</label>
-        <div class="stepper">
-          <button type="button" id="pax-dn" aria-label="Fewer travelers">−</button>
-          <input id="pax" type="number" min="1" max="40" value="10" inputmode="numeric" aria-label="Number of travelers">
-          <button type="button" id="pax-up" aria-label="More travelers">+</button>
+        <div class="pax-row">
+          <div class="pax-col"><label class="label" for="pax">Travelers</label>
+            <div class="stepper">
+              <button type="button" id="pax-dn" aria-label="Fewer travelers">−</button>
+              <input id="pax" type="number" min="1" max="40" value="10" inputmode="numeric" aria-label="Number of travelers">
+              <button type="button" id="pax-up" aria-label="More travelers">+</button>
+            </div></div>
+          <div class="pax-col"><label class="label" for="foc">FOC</label>
+            <div class="stepper"><button type="button" id="foc-dn" aria-label="Fewer FOC">−</button><input id="foc" type="number" min="0" max="5" value="0" inputmode="numeric" aria-label="Number of FOC guests"><button type="button" id="foc-up" aria-label="More FOC">+</button></div></div>
         </div>
+        <span class="hint" id="foc-hint" hidden></span>
         <span class="hint" id="veh-hint"></span>
+      </div>
+      <div class="field">
+        <label class="label" for="country">Guests from</label>
+        <div class="combo" id="country-box">
+          <input id="country" class="select country" role="combobox" aria-expanded="false" aria-controls="country-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Type or select a country">
+          <ul class="combo-list" id="country-list" role="listbox" hidden></ul>
+        </div>
+      </div>
+      <div class="field dp-wrap">
+        <label class="label" for="f-date-show">Arrival date</label>
+        <input id="f-date-show" class="date-in" readonly placeholder="Select a date" aria-haspopup="dialog"><input id="f-dates" type="hidden"><div class="dp" id="dp" hidden role="dialog" aria-label="Choose arrival date"></div>
+        <span class="hint" id="date-hint">Tours can start from 7 days after today.</span>
       </div>
       <div class="field">
         <span class="label">Cities &amp; nights</span>
@@ -467,6 +565,19 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
           </div>
         </div>
         <span class="hint">Use ▲▼ to set the order of your cities. Tours start at the airport of your first city (Incheon, Gimhae or Jeju) and end at Incheon International Airport. Days moving between cities can include a tour.</span>
+      </div>
+  </section>
+  <section class="card ask hotels" id="hotels">
+      <h2>Hotels</h2>
+      <p class="contact" style="margin:0">Hotels are quoted separately. Tell us the category and rooms you need, and we will send hotel options with your quotation.</p>
+      <div class="form">
+        <fieldset class="wide pick" id="f-hotel"><legend>Hotel category</legend>
+          <label><input type="checkbox" value="3★"> 3★</label><label><input type="checkbox" value="4★"> 4★</label><label><input type="checkbox" value="5★"> 5★</label>
+        </fieldset>
+        <div class="wide rooms-f"><span class="rl">Rooms</span>
+          <div id="room-rows"></div>
+          <div class="room-foot"><button type="button" class="room-add" id="room-add">+ Add room type</button><span class="hint" id="room-hint"></span></div>
+        </div>
       </div>
   </section>
   <form class="panel" id="opts" aria-label="Tour options" onsubmit="return false">
@@ -513,13 +624,6 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
       </div>
     </div>
 
-    <div class="field">
-      <label class="label" for="country">Guests from</label>
-      <div class="combo" id="country-box">
-        <input id="country" class="select country" role="combobox" aria-expanded="false" aria-controls="country-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Type or select a country">
-        <ul class="combo-list" id="country-list" role="listbox" hidden></ul>
-      </div>
-    </div>
 
     <div class="field">
       <span class="label">Luggage</span>
@@ -527,6 +631,8 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
       <span class="hint" id="lug-hint">Adds a luggage van for arrival and departure. Standard is one large suitcase per person.</span>
     </div>
 
+  </form>
+  <section class="card meals-box" aria-label="Meals">
     <div class="field">
       <span class="label" id="l-meals">Meals</span>
       <div class="seg c2" role="group" aria-labelledby="l-meals" data-multi="meals">
@@ -534,9 +640,18 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
         <button type="button" class="opt" data-v="dinner">Dinner</button>
       </div>
       <span class="hint" id="meal-count"></span>
-      <span class="hint" id="meal-hint">At local restaurants on touring days and travel days between cities (arrival and departure days can be added in the itinerary). Preferred cuisine (e.g. halal, Indian, vegetarian) can be arranged on request.</span>
+      <span class="hint" id="meal-hint">At local restaurants on touring days and travel days between cities (arrival and departure days can be added in the itinerary).</span>
+      <fieldset class="pick diet-side" id="f-diet"><legend>Dietary requirements</legend>
+        <label><input type="checkbox" value="Halal"> Halal</label><label><input type="checkbox" value="Vegetarian"> Vegetarian</label><label><input type="checkbox" value="Vegan"> Vegan</label><label><input type="checkbox" value="Jain"> Jain</label><label><input type="checkbox" value="Non-vegetarian"> Non-vegetarian</label><label><input type="checkbox" value="Other" id="f-diet-other-on"> Other</label>
+        <input id="f-diet-other" class="diet-other" placeholder="Please specify (e.g. no beef, seafood allergy)" hidden>
+      </fieldset>
     </div>
-  </form>
+  </section>
+  <section class="card addons">
+    <div class="sec-h">Add-on experiences</div>
+    <p class="legend" style="margin:0 0 12px">Tick what interests your guests. We book them all; beauty and medical services are paid by your guests at the venue.</p>
+    <div id="addons"></div>
+  </section>
   </aside>
 
   <div class="results">
@@ -550,7 +665,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
         <div class="from">Your quotation</div>
         <div class="amt ask-amt">On request</div>
         <div class="per">Prepared by our tour team for your group and dates</div>
-        <a class="btn ask-btn" href="#ask">Request a quotation</a>
+        <button type="button" class="btn ask-btn" data-req>Request a quotation</button>
       </div>
     </section>
   <section class="card slabs" id="slab-card" hidden>
@@ -586,43 +701,23 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
     </section>
     <section class="card note-card"><span id="note-ex">Excludes hotels and meals.</span><br><span id="note-lug">Based on one large suitcase per person. An extra luggage van can be added under Luggage.</span><br><span id="note-meal">Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.</span><br>All touring is private for your group. Prices are sent in your formal quotation.</section>
 
-    <section class="card addons">
-      <div class="sec-h">Add-on experiences</div>
-      <p class="legend" style="margin:0 0 12px">Tick what interests your guests. We book them all; beauty and medical services are paid by your guests at the venue.</p>
-      <div id="addons"></div>
-    </section>
 
     <section class="card ask" id="ask">
-      <h2>Request a formal quotation</h2>
-      <p class="contact" style="margin:0">Send us this itinerary and our tour team will reply with your quotation and hotel options, usually within one working day.</p>
+      <h2>Ready for your price?</h2>
+      <p class="contact" style="margin:0">Add any special requests, then request your quotation. You will see the land fee for this tour straight away, and we will email hotel options within one working day.</p>
       <div class="form">
-        <label>Your name<input id="f-name" autocomplete="name"></label>
-        <label>Company / agency<input id="f-co" autocomplete="organization"></label>
-        <label>Email<input id="f-mail" type="email" autocomplete="email"></label>
-        <label class="dp-wrap">Arrival date<input id="f-date-show" readonly placeholder="Select a date" aria-haspopup="dialog"><input id="f-dates" type="hidden"><div class="dp" id="dp" hidden role="dialog" aria-label="Choose arrival date"></div><span class="hint" id="date-hint">Tours can start from 7 days after today.</span></label>
-        <fieldset class="wide pick" id="f-hotel"><legend>Hotel category</legend>
-          <label><input type="checkbox" value="3★"> 3★</label><label><input type="checkbox" value="4★"> 4★</label><label><input type="checkbox" value="5★"> 5★</label>
-        </fieldset>
-        <div class="wide rooms-f"><span class="rl">Rooms</span>
-          <div id="room-rows"></div>
-          <div class="room-foot"><button type="button" class="room-add" id="room-add">+ Add room type</button><span class="hint" id="room-hint"></span></div>
-        </div>
-        <fieldset class="wide pick" id="f-diet"><legend>Dietary requirements</legend>
-          <label><input type="checkbox" value="Halal"> Halal</label><label><input type="checkbox" value="Vegetarian"> Vegetarian</label><label><input type="checkbox" value="Vegan"> Vegan</label><label><input type="checkbox" value="Jain"> Jain</label><label><input type="checkbox" value="Non-vegetarian"> Non-vegetarian</label><label><input type="checkbox" value="Other" id="f-diet-other-on"> Other</label>
-          <input id="f-diet-other" class="diet-other" placeholder="Please specify (e.g. no beef, seafood allergy)" hidden>
-        </fieldset>
         <label class="wide">Notes<textarea id="f-notes" rows="3" placeholder="Special requests"></textarea></label>
       </div>
       <div class="actions">
-        <button type="button" class="btn" id="send-btn">Send request</button><input id="f-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
-        <button type="button" class="btn ghost" id="pdf-btn">Save as PDF</button>
+        <button type="button" class="btn big" id="send-btn">Request a quotation</button><input id="f-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px">
         <a class="btn ghost" id="wa-btn" href="https://wa.me/821054267112">WhatsApp us</a>
       </div>
       <div class="status" id="status" role="status"></div>
-      <div class="contact">Email <a href="mailto:contact@hakeemtravel.com">contact@hakeemtravel.com</a> · Tel +82-2-6166-7112 · WhatsApp +82-10-5426-7112<br>You can also save this page as a PDF and send it to us.</div>
+      <div class="contact">Email <a href="mailto:contact@hakeemtravel.com">contact@hakeemtravel.com</a> · Tel +82-2-6166-7112 · WhatsApp +82-10-5426-7112</div>
     </section>
   </div>
 </main>
+<section class="qv" id="qv" hidden aria-live="polite"></section>
 <footer>Hakeem Travel Korea · Room 707, SK V1 Center, 9-gil Seonyu-ro, Yeongdeungpo-gu, Seoul · Itineraries may change with local conditions, opening days and weather.</footer>
 
 <script>
@@ -662,6 +757,10 @@ function planFor(pax, market, luggage) {
   return { pickup: row[1], tour: row[2], luggage: !!row[3] || !!luggage, extraLuggage: !row[3] && !!luggage };
 }
 const isDriving = p => p.tour === 'staria';
+// FOC (free of charge, e.g. tour leaders): travel with the group but do not pay. Vehicles and rooms count them; the price is per paying guest.
+const FOC_MAX = 5;
+const focOf = s => Math.max(0, Math.min(FOC_MAX, s.foc | 0, s.pax | 0));
+const headsOf = s => (s.pax | 0) + focOf(s);
 const marginFor = pax => (CONFIG.margins.find(([n]) => pax <= n) || CONFIG.margins[CONFIG.margins.length - 1])[1];
 const VEH_EN = { staria: 'van (Staria)', solati: 'minibus (Solati)', bus: 'bus (28 or 45-seater)' };
 const VEH_KO = { staria: '스타리아', solati: '솔라티', bus: '대형버스' };
@@ -1196,7 +1295,7 @@ const CITY_NAME = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
 const SEASON_NAME = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
 const TIER_NAME = { B: 'Budget', R: 'Regular', L: 'Luxury' };
 const CONCEPT_NAME = { classic: 'Classic Korea', family: 'Family', romantic: 'Couple', beauty: 'K-Beauty', wellness: 'Wellness', tech: 'Tech & Innovation', education: 'Education' };
-const sel = { market: 'other', country: '', meals: [], moveTour: {}, vehicle: 'std', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3, swaps: {}, lotte: null, hanbok: null, mealOff: {}, mealOn: {}, luggage: false, addons: [] };
+const sel = { market: 'other', country: '', foc: 0, meals: [], moveTour: {}, vehicle: 'std', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3, swaps: {}, lotte: null, hanbok: null, mealOff: {}, mealOn: {}, luggage: false, addons: [] };
 (function initSeason() { const m = new Date().getMonth(); sel.season = m >= 2 && m <= 4 ? 'spring' : m <= 7 && m >= 5 ? 'summer' : m >= 8 && m <= 10 ? 'autumn' : 'winter'; })();
 
 const SMALL = new Set(['AND', 'OF', 'THE', 'AT', 'TO', 'IN', 'BY', 'WITH', 'FOR']);
@@ -1311,14 +1410,14 @@ const ROOM_TYPES = [['SGL', 'Single (1 PAX, 1 Queen size bed)', 1], ['TWN', 'Twi
 const EXTRA_BED = 'Extra Bed (1 PAX, 1 Extra bed)';
 const roomCap = r => ((ROOM_TYPES.find(x => x[0] === r.type) || [0, 0, 2])[2]) + (r.xb && r.type !== 'SGL' ? 1 : 0);
 let roomPick = null;
-const roomsNow = () => roomPick || [{ type: 'TWN', qty: Math.ceil(sel.pax / 2) }];
+const roomsNow = () => roomPick || [{ type: 'TWN', qty: Math.ceil(headsOf(sel) / 2) }];
 const roomName = c => (ROOM_TYPES.find(x => x[0] === c) || [c, c])[1];
 function roomsText() { return roomsNow().filter(r => r.qty > 0).map(r => `${r.qty} x ${roomName(r.type)}${r.xb && r.type !== 'SGL' ? ` + ${EXTRA_BED}` : ''}`).join(', ') || '-'; }
 function renderRooms() {
   const rows = roomsNow();
   document.getElementById('room-rows').innerHTML = rows.map((r, i) => `<span class="room-row"><select data-ri="${i}" aria-label="Room type">${ROOM_TYPES.map(([c, n]) => `<option value="${c}"${r.type === c ? ' selected' : ''}>${n}</option>`).join('')}</select><input data-ri="${i}" type="number" min="0" max="40" value="${r.qty}" aria-label="Number of rooms">${r.type !== 'SGL' ? `<label class="xb" title="${EXTRA_BED}"><input type="checkbox" data-ri="${i}" data-xb="1"${r.xb ? ' checked' : ''}>+ Extra bed</label>` : ''}${rows.length > 1 ? `<button type="button" class="x" data-rx="${i}" aria-label="Remove">×</button>` : ''}</span>`).join('');
   const beds = rows.reduce((a, r) => a + r.qty * roomCap(r), 0);
-  document.getElementById('room-hint').innerHTML = `${Number(rows.reduce((a, r) => a + r.qty, 0))} rooms for up to ${Number(beds)} guests (group of ${Number(sel.pax)})${beds < sel.pax ? ' · <span style="color:#d32f2f;font-weight:600">not enough beds yet</span>' : ''}`;
+  document.getElementById('room-hint').innerHTML = `${Number(rows.reduce((a, r) => a + r.qty, 0))} rooms for up to ${Number(beds)} guests (group of ${Number(headsOf(sel))}${focOf(sel) ? ` incl. ${focOf(sel)} FOC` : ''})${beds < headsOf(sel) ? ' · <span style="color:#d32f2f;font-weight:600">not enough beds yet</span>' : ''}`;
 }
 document.getElementById('room-rows').addEventListener('change', e => {
   const i = e.target.dataset.ri; if (i === undefined) return;
@@ -1341,8 +1440,8 @@ if (window.self !== window.top) {
 }
 // Prices are not shown on this page: the quote card lists what is included, worked out from the itinerary.
 function localQuote(days) {
-  const up = sel.vehicle !== 'std' && upgradeOK(sel.vehicle, sel.pax) ? sel.vehicle : 'std';
-  return { plan: planFor(sel.pax, sel.market, sel.luggage), upgrade: up, guidedDays: days.filter(d => d.kind === 'tour').length };
+  const up = sel.vehicle !== 'std' && upgradeOK(sel.vehicle, headsOf(sel)) ? sel.vehicle : 'std';
+  return { plan: planFor(headsOf(sel), sel.market, sel.luggage), upgrade: up, guidedDays: days.filter(d => d.kind === 'tour').length };
 }
 let lastDays = null, lastQ = null, renderSeq = 0;
 function render() {
@@ -1352,7 +1451,7 @@ function render() {
   const nights = days.length - 1;
   const cities = routeOf(sel).map(c => CITY_NAME[c]);
   document.getElementById('q-title').textContent = `${nights} nights / ${days.length} days · ${cities.join(' → ')}`;
-  document.getElementById('q-route').textContent = [SEASON_NAME[sel.season], TIER_NAME[sel.tier], CONCEPT_NAME[sel.concept], guestsLabel(), `${sel.pax} traveler${sel.pax > 1 ? 's' : ''}`].filter(Boolean).join(' · ');
+  document.getElementById('q-route').textContent = [SEASON_NAME[sel.season], TIER_NAME[sel.tier], CONCEPT_NAME[sel.concept], guestsLabel(), `${sel.pax} traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''}`].filter(Boolean).join(' · ');
   renderDays(days);
   document.getElementById('meal-count').textContent = sel.meals.length ? `${mealWords()} · tick or untick days in the itinerary` : '';
   updateDateHint(days);
@@ -1368,10 +1467,10 @@ function renderPrice(days, q) {
   const up = q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade] : null;
   document.getElementById('q-chips').innerHTML = [up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false }), q.plan.luggage ? 'Luggage van' : null, `${q.guidedDays} guided touring days`, transportWords(days) ? `${transportWords(days)} included` : null, sel.meals.length ? `${mealWords()} included` : null]
     .filter(Boolean).map(t => `<span class="chip">${t}</span>`).join('');
-  document.getElementById('mini-t').textContent = `${document.getElementById('q-title').textContent} · ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}`;
+  document.getElementById('mini-t').textContent = `${document.getElementById('q-title').textContent} · ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''}`;
   document.getElementById('mini-p').textContent = 'Quotation on request';
   document.getElementById('veh-hint').textContent = up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false });
-  const lug = document.getElementById('lug-on'), planLug = planFor(sel.pax, sel.market, false).luggage;
+  const lug = document.getElementById('lug-on'), planLug = planFor(headsOf(sel), sel.market, false).luggage;
   lug.checked = planLug || sel.luggage; lug.disabled = planLug;
   document.getElementById('lug-hint').textContent = planLug ? 'A luggage van is already included for your group size.' : 'Adds a luggage van for arrival and departure. Standard is one large suitcase per person.';
   const incl = [
@@ -1386,7 +1485,7 @@ function renderPrice(days, q) {
   ].filter(Boolean);
   document.getElementById('note-ex').textContent = sel.meals.length === 2 ? 'Excludes hotels.' : sel.meals.length ? `Excludes hotels and ${sel.meals.includes('lunch') ? 'dinner' : 'lunch'}.` : 'Excludes hotels and meals.';
   document.getElementById('note-lug').textContent = q.plan.luggage ? 'A luggage van is included for arrival and departure.' : 'Based on one large suitcase per person. An extra luggage van can be added under Luggage.';
-  document.getElementById('note-meal').textContent = sel.meals.length ? 'Halal, vegetarian, vegan or Jain meals can be arranged: tell us in the request form.' : 'Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.';
+  document.getElementById('note-meal').textContent = sel.meals.length ? 'Halal, vegetarian, vegan or Jain meals can be arranged: choose under Meals.' : 'Lunch and dinner can be added under Meals, with halal, vegetarian, vegan or Jain options.';
   document.getElementById('incl').innerHTML = incl.map(t => `<li>${t}</li>`).join('');
   updateRequest();
 }
@@ -1456,6 +1555,8 @@ function movePanel(d) {
     return `<option value="${o.value}"${pick && pick.value === o.value ? ' selected' : ''}${taken ? ' disabled' : ''}>${o.title}${taken ? ' (on another travel day)' : ''}</option>`; }).join('')}</optgroup>`;
   return `<div class="mv"><label class="mv-on"><input type="checkbox" data-mv-on="${d.moveKey}"${pick ? ' checked' : ''}> Add a tour</label>${pick ? `<label class="swap"><span>Tour</span><select data-mv="${d.moveKey}" aria-label="Tour on this travel day">${group(d.moveFrom, 'before')}${group(d.moveTo, 'after')}</select></label>` : ''}</div>`;
 }
+// weekday and date of each day once the arrival date is picked
+function dayDate(i) { const a = arrival(); if (!a) return ''; const x = new Date(a); x.setDate(x.getDate() + i); return x.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
 function renderDays(days) {
   const lg = document.getElementById('legend');
   const hasTheme = days.some(d => d.stops && d.stops.some(s => s.theme));
@@ -1472,8 +1573,9 @@ function renderDays(days) {
     const items = d.kind === 'tour'
       ? d.stops.map(s => `<li class="${[s.theme && 'theme', s.seasonal && 'seasonal'].filter(Boolean).join(' ')}">${pretty(s.key)}${s.theme && !d.themeDay ? `<span class="tt">${CONCEPT_NAME[sel.concept]}</span>` : ''}${s.seasonal && !d.seasonDay ? `<span class="st">${SEASON_NAME[sel.season].split(' ')[0]}</span>` : ''}${s.note ? `<em>${s.note}</em>` : ''}</li>`).join('')
       : moveLines(d).join('');
-    return `<article class="day${d.kind !== 'tour' ? ' move' : ''}"><div class="dn">Day<b>${i + 1}</b></div><div>
-      <div class="dh"><h4>${d.title}${tag}${d.swapped ? '<span class="tag chg">Changed</span>' : ''}</h4>${swapSelect(d, days)}${movePanel(d)}</div><div class="rt">${d.route || ''}</div>${d.blurb ? `<p class="bl">${d.blurb}</p>` : ''}${d.lotteOpt ? `<label class="lotte-opt"><input type="checkbox" id="lotte-on"${d.stops.some(s => s.key === 'LOTTE WORLD THEME PARK') ? ' checked' : ''}> Add Lotte World theme park (rides & parades, about half a day)</label>` : ''}${d.hanbokOpt ? `<label class="lotte-opt"><input type="checkbox" id="hanbok-on"${d.stops.some(s => s.key === HANBOK_KEY) ? ' checked' : ''}> Wear hanbok at Gyeongbokgung Palace</label>` : ''}${mealOpt(d)}<ul>${items}${reqItems(d)}</ul>${reqInput(d)}</div></article>`;
+    const dd = dayDate(i), ctl = [swapSelect(d, days), movePanel(d)].join('');
+    return `<article class="day${d.kind !== 'tour' ? ' move' : ''}"><div class="dn">Day<b>${i + 1}</b>${dd ? `<span class="dd">${dd}</span>` : ''}</div><div class="dbody">
+      <div class="dtop"><h4>${d.title}</h4>${ctl}</div><div class="dmeta">${tag}${d.swapped ? '<span class="tag chg">Changed</span>' : ''}${d.route ? `<span class="rt">${d.route}</span>` : ''}</div>${d.blurb ? `<p class="bl">${d.blurb}</p>` : ''}<ul class="stops">${items}${reqItems(d)}</ul><div class="dctl">${d.lotteOpt ? `<label class="lotte-opt"><input type="checkbox" id="lotte-on"${d.stops.some(s => s.key === 'LOTTE WORLD THEME PARK') ? ' checked' : ''}> Add Lotte World theme park (rides & parades, about half a day)</label>` : ''}${d.hanbokOpt ? `<label class="lotte-opt"><input type="checkbox" id="hanbok-on"${d.stops.some(s => s.key === HANBOK_KEY) ? ' checked' : ''}> Wear hanbok at Gyeongbokgung Palace</label>` : ''}${mealOpt(d)}${reqInput(d)}</div></div></article>`;
   }).join('');
 
 }
@@ -1483,9 +1585,9 @@ function requestText(days, q) {
   const lines = [
     'Dear Hakeem Travel Korea team,', '',
     'Please send us a formal quotation for the tour below.', '',
-    `Name: ${v('f-name') || '-'}`, `Company: ${v('f-co') || '-'}`, `Email: ${v('f-mail') || '-'}`, `Travel dates: ${travelDates(days) || '-'}`,
+    `Name: ${BUYER ? BUYER.name : '-'}`, `Company: ${BUYER ? BUYER.company : '-'}`, `Email: ${BUYER ? BUYER.email : '-'}`, `Account code: ${BUYER ? BUYER.code : '-'}`, `Travel dates: ${travelDates(days) || '-'}`,
     `Vehicle: ${q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : 'Standard'}`,
-    `Group: ${sel.pax} pax · Guests from: ${guestsLabel() || '-'} · Theme: ${CONCEPT_NAME[sel.concept]} · ${TIER_NAME[sel.tier]} · ${SEASON_NAME[sel.season]}`,
+    `Group: ${sel.pax} pax${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''} · Guests from: ${guestsLabel() || '-'} · Theme: ${CONCEPT_NAME[sel.concept]} · ${TIER_NAME[sel.tier]} · ${SEASON_NAME[sel.season]}`,
     `Cities: ${routeOf(sel).map(c => `${CITY_NAME[c]} ${sel['n' + CITY_NAME[c]]}N`).join(' → ')} (${days.length - 1}N${days.length}D)`,
     `Luggage: ${q.plan.luggage ? (q.plan.extraLuggage ? 'Extra luggage (luggage van requested)' : 'Luggage van included') : 'One large suitcase per person'}`, '',
     'Itinerary:',
@@ -1515,20 +1617,23 @@ function updateRequest(days, q) {
   days = days || lastDays || buildItinerary(sel); q = q || lastQ;
   if (!q) return;
   lastText = requestText(days, q);
-  const subj = `Tour quotation request – ${days.length - 1}N${days.length}D Korea – ${sel.pax} pax – ${TIER_NAME[sel.tier]}`;
+  const subj = `Tour quotation request – ${days.length - 1}N${days.length}D Korea – ${sel.pax} pax${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''} – ${TIER_NAME[sel.tier]}`;
   window.mailHref = `mailto:contact@hakeemtravel.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(lastText)}`;
   document.getElementById('wa-btn').href = `https://wa.me/821054267112?text=${encodeURIComponent(lastText.slice(0, 1500))}`;
 }
 
 // ---- controls
 function syncButtons() {
-  if (sel.tier !== 'L' || !upgradeOK(sel.vehicle, sel.pax)) sel.vehicle = 'std';
+  if (sel.tier !== 'L' || !upgradeOK(sel.vehicle, headsOf(sel))) sel.vehicle = 'std';
   document.getElementById('veh-field').hidden = sel.tier !== 'L';
-  document.querySelectorAll('[data-key="vehicle"] .opt').forEach(b => b.disabled = !upgradeOK(b.dataset.v, sel.pax));
-  document.getElementById('veh-std').textContent = vehicleShort(planFor(sel.pax, sel.market, false));
+  document.querySelectorAll('[data-key="vehicle"] .opt').forEach(b => b.disabled = !upgradeOK(b.dataset.v, headsOf(sel)));
+  document.getElementById('veh-std').textContent = vehicleShort(planFor(headsOf(sel), sel.market, false));
   document.querySelectorAll('.seg').forEach(g => g.querySelectorAll('.opt').forEach(b => b.setAttribute('aria-pressed', String(g.dataset.multi ? sel[g.dataset.multi].includes(b.dataset.v) : sel[g.dataset.key] === b.dataset.v))));
   if (document.activeElement !== cIn) cIn.value = cName(sel.country);
   document.getElementById('pax').value = sel.pax;
+  sel.foc = focOf(sel); document.getElementById('foc').value = sel.foc;
+  document.getElementById('foc-dn').disabled = sel.foc <= 0; document.getElementById('foc-up').disabled = sel.foc >= Math.min(FOC_MAX, sel.pax);
+  const fh = document.getElementById('foc-hint'); fh.hidden = !sel.foc; fh.textContent = sel.foc ? `${sel.pax} paying + ${sel.foc} FOC = ${headsOf(sel)} travelling. Prices are per paying guest and cover the FOC.` : '';
   document.getElementById('pax-dn').disabled = sel.pax <= 1;
   document.getElementById('pax-up').disabled = sel.pax >= 40;
   for (const k of ['nSeoul', 'nJeju', 'nBusan']) document.getElementById(k).value = sel[k];
@@ -1547,6 +1652,9 @@ document.querySelectorAll('.seg').forEach(g => g.addEventListener('click', e => 
   sel[g.dataset.key] = b.dataset.v; syncButtons(); render();
 }));
 const clampInput = (id, v) => { const el = document.getElementById(id); return Math.min(+el.max, Math.max(+el.min, Math.round(+v || +el.min))); };
+document.getElementById('foc-dn').onclick = () => { sel.foc = Math.max(0, focOf(sel) - 1); syncButtons(); render(); };
+document.getElementById('foc-up').onclick = () => { sel.foc = Math.min(FOC_MAX, sel.pax, focOf(sel) + 1); syncButtons(); render(); };
+document.getElementById('foc').addEventListener('change', e => { sel.foc = Math.max(0, Math.min(FOC_MAX, sel.pax, parseInt(e.target.value, 10) || 0)); syncButtons(); render(); });
 document.getElementById('pax-dn').onclick = () => { sel.pax = clampInput('pax', sel.pax - 1); syncButtons(); render(); };
 document.getElementById('pax-up').onclick = () => { sel.pax = clampInput('pax', sel.pax + 1); syncButtons(); render(); };
 const paxEl = document.getElementById('pax');
@@ -1596,7 +1704,7 @@ document.getElementById('addons').addEventListener('change', e => { const id = e
     const a = arrival(); show.value = fmtDate(a);
     const mo = a.getMonth(), s = mo >= 2 && mo <= 4 ? 'spring' : mo >= 5 && mo <= 7 ? 'summer' : mo >= 8 && mo <= 10 ? 'autumn' : 'winter';
     if (s !== sel.season) { sel.season = s; syncButtons(); render(); return; } // match the season to the arrival month
-    updateDateHint(); updateRequest();
+    render();
   });
   document.addEventListener('click', e => { if (!dp.hidden && !e.target.closest('.dp-wrap')) dp.hidden = true; });
 })();
@@ -1604,46 +1712,7 @@ document.getElementById('f-diet-other-on').addEventListener('change', e => { con
 document.getElementById('f-diet-other').addEventListener('input', () => updateRequest());
 document.getElementById('swap-reset').addEventListener('click', () => { sel.swaps = {}; sel.moveTour = {}; render(); });
 ['f-hotel', 'f-diet'].forEach(id => document.getElementById(id).addEventListener('change', () => updateRequest()));
-['f-name', 'f-co', 'f-mail', 'f-notes'].forEach(id => document.getElementById(id).addEventListener('input', () => updateRequest()));
-// ---- Send request: saved on the server for the Hakeem team (/admin). The preview build cannot send.
-document.getElementById('send-btn').onclick = async () => {
-  const st = document.getElementById('status'), btn = document.getElementById('send-btn');
-  const v = id => document.getElementById(id).value.trim();
-  const picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
-  if (!v('f-name') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('f-mail'))) { st.textContent = 'Please add your name and a valid email address.'; return; }
-  if (window.HK_PREVIEW) { st.textContent = 'Preview only: requests are sent from the live page (hakeemtravel.com/tour-builder).'; return; }
-  const payload = { sel, auth: authOf(), contact: { name: v('f-name'), company: v('f-co'), email: v('f-mail') }, arrival: document.getElementById('f-dates').value,
-    hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
-    addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website') };
-  btn.disabled = true; st.textContent = 'Sending…';
-  try {
-    const r = await hkFetch('/api/request', 'POST', payload);
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(d.error || 'Error');
-    st.innerHTML = `Thank you! Your request has been sent (ref. ${d.id || ''}). Our tour team will reply to ${esc(v('f-mail'))}, usually within one working day.`;
-    btn.textContent = 'Sent ✓';
-  } catch (e) {
-    st.innerHTML = `${e.message === 'Error' ? 'Sorry, the request could not be sent.' : esc(e.message)} You can also <a href="${window.mailHref}">email it to us</a>.`;
-    btn.disabled = false;
-  }
-};
-// ---- Save as PDF: the browser's print dialog, with a print layout (options panel and form hidden, request details shown)
-document.getElementById('pdf-btn').onclick = () => {
-  const v = id => document.getElementById(id).value.trim();
-  const picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value === 'Other' ? `Other: ${v('f-diet-other') || '-'}` : x.value);
-  const rows = [
-    ['Prepared for', [v('f-name'), v('f-co')].filter(Boolean).join(', ')],
-    ['Travel dates', travelDates()],
-    ['Hotel category', picked('f-hotel').join(' / ')],
-    ['Rooms', roomsText()],
-    ['Meals included', mealWords() || 'None (land only)'],
-    ['Dietary requirements', picked('f-diet').join(', ')],
-    ['Add-on experiences', pickedAddonNames().join(', ')],
-    ['Notes', v('f-notes')],
-  ].filter(([, x]) => x);
-  document.getElementById('print-info').innerHTML = `<div class="sec-h">Request details</div><table>${rows.map(([k, x]) => `<tr><th>${k}</th><td>${esc(x)}</td></tr>`).join('')}</table><p class="pi-date">Generated on ${fmtDate(new Date())} · Prices are sent in our formal quotation.</p>`;
-  try { window.print(); } catch { document.getElementById('status').textContent = 'Printing is blocked here. Please open the page in your browser and try again.'; }
-};
+['f-notes'].forEach(id => document.getElementById(id).addEventListener('input', () => updateRequest()));
 // compact summary bar at the top once the quote card has scrolled out of view
 if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { document.getElementById('mini').hidden = e.isIntersecting; document.body.classList.toggle('mini-on', !e.isIntersecting); }).observe(document.querySelector('.quote'));
 syncButtons(); render();
@@ -1670,7 +1739,6 @@ function onAuth(fresh) {
   const acct = document.getElementById('acct');
   acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
   const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
-  fill('f-name', BUYER.name); fill('f-co', BUYER.company); fill('f-mail', BUYER.email);
   if (BUYER.country && !sel.country) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
   if (fresh) gateWelcome();
   render();
@@ -1727,31 +1795,83 @@ document.getElementById('gate').addEventListener('click', async e => {
   }
 });
 document.addEventListener('click', e => {
-  if (e.target.id === 'acct-out') { try { localStorage.removeItem(AUTH_KEY); } catch {} BUYER = null; TOKEN = ''; document.getElementById('acct').hidden = true; document.getElementById('welcome').hidden = true; showGate('in'); render(); }
+  if (e.target.id === 'acct-out') { try { localStorage.removeItem(AUTH_KEY); } catch {} BUYER = null; TOKEN = ''; lastReq = null; hideQuote(); document.getElementById('acct').hidden = true; document.getElementById('welcome').hidden = true; showGate('in'); render(); }
   if (e.target.id === 'welcome-x') document.getElementById('welcome').hidden = true;
 });
-// prices for approved buyers, from the server; a discount shows the list price struck through
-async function buyerPrices(days) {
-  const card = document.getElementById('price-box'), slabCard = document.getElementById('slab-card'), seq = ++priceSeq;
-  if (!BUYER || !BUYER.approved || window.HK_PREVIEW) {
-    card.innerHTML = `<div class="from">Your quotation</div><div class="amt ask-amt">On request</div><div class="per">${BUYER && !BUYER.approved ? `Prices appear here once our team confirms your account (${esc(BUYER.code)}).` : 'Prepared by our tour team for your group and dates'}</div><a class="btn ask-btn" href="#ask">Request a quotation</a>`;
-    slabCard.hidden = true; document.getElementById('mini-p').textContent = 'Quotation on request'; return;
-  }
-  document.querySelector('.quote').classList.add('loading');
-  let p = null;
-  try { const r = await hkFetch('/api/quote', 'POST', { ...sel, auth: authOf() }); p = (await r.json()).prices; } catch {}
-  if (seq !== priceSeq) return;
-  document.querySelector('.quote').classList.remove('loading');
-  if (!p) { card.innerHTML = '<div class="from">Your price</div><div class="amt ask-amt">On request</div><div class="per">Prices could not be loaded. Please send us your request.</div>'; slabCard.hidden = true; return; }
-  const fmt = n => n.toLocaleString('en-US'), disc = p.discounted !== null && p.discounted !== undefined && p.discounted < p.perPerson;
-  const pp = disc ? p.discounted : p.perPerson, offLabel = p.discount ? (p.discount.type === 'pct' ? `${p.discount.value}% off` : `US$${fmt(p.discount.value)} off per person`) : '';
-  card.innerHTML = `<div class="from">Your price${disc ? ` <span class="off">${offLabel}</span>` : ''}</div>
-    ${disc ? `<div class="was">US$${fmt(p.perPerson)}</div>` : ''}<div class="amt"><sup>US$</sup>${fmt(pp)}</div><div class="per">per person · land fee, hotels excluded</div>
-    <div class="br">Group rate for ${bracketLabel(p.bracket)}</div><div class="tot">Total for ${sel.pax}: US$ ${fmt(pp * sel.pax)}</div>`;
-  document.getElementById('slabs').innerHTML = p.slabs.map(s => `<div class="slab${s.bracket[0] === p.bracket[0] ? ' on' : ''}"><span>${bracketLabel(s.bracket)}</span>${s.discounted !== null && s.discounted !== undefined && s.discounted < s.perPerson ? `<s>${usd(s.perPerson)}</s><b>${usd(s.discounted)}</b>` : `<b>${usd(s.perPerson)}</b>`}</div>`).join('');
-  slabCard.hidden = false;
-  document.getElementById('mini-p').textContent = `US$${fmt(pp)} per person · total US$${fmt(pp * sel.pax)}`;
+// the price card asks for a request; the request opens the quotation view with the buyer's price (discount struck through)
+function buyerPrices() {
+  document.getElementById('price-box').innerHTML = `<div class="from">Your quotation</div><div class="amt ask-amt">One click away</div><div class="per">See your price for this tour now</div><button type="button" class="btn ask-btn" data-req>Request a quotation</button>`;
+  document.getElementById('slab-card').hidden = true; document.getElementById('mini-p').textContent = 'Request a quotation to see your price';
 }
+let lastReq = null;
+function requestPayload() {
+  const v = id => document.getElementById(id).value.trim(), picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
+  return { sel, auth: authOf(), arrival: document.getElementById('f-dates').value,
+    hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
+    addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website') };
+}
+async function doRequest(btn) {
+  if (!BUYER) { showGate('in'); return; }
+  const st = document.getElementById('status'), payload = requestPayload(), key = JSON.stringify(payload);
+  if (lastReq && lastReq.key === key) { showQuote(lastReq.d); return; } // nothing changed since the last request
+  if (window.HK_PREVIEW) { showQuote({ id: 'PREVIEW', prices: null }); return; }
+  const btns = document.querySelectorAll('[data-req], #send-btn'); btns.forEach(b => { b.disabled = true; });
+  const was = btn ? btn.textContent : ''; if (btn) btn.textContent = 'Preparing your quotation…'; st.textContent = '';
+  try {
+    const r = await hkFetch('/api/request', 'POST', payload), d = await r.json().catch(() => ({}));
+    if (r.status === 401) { BUYER = null; TOKEN = ''; showGate('in'); gateMsg('Please log in again.'); return; }
+    if (!r.ok) throw new Error(d.error || 'Error');
+    lastReq = { key, d }; showQuote(d);
+  } catch (e) {
+    st.innerHTML = `${e.message === 'Error' ? 'Sorry, the request could not be sent.' : esc(e.message)} You can also <a href="${window.mailHref}">email it to us</a>.`;
+    document.getElementById('ask').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } finally { btns.forEach(b => { b.disabled = false; }); if (btn) btn.textContent = was; }
+}
+function showQuote(d) {
+  const days = lastDays || buildItinerary(sel), q = lastQ, p = d.prices, fmt = n => n.toLocaleString('en-US');
+  const v = id => document.getElementById(id).value.trim(), picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value === 'Other' ? `Other: ${v('f-diet-other') || '-'}` : x.value);
+  let price, slabs = '';
+  if (p) {
+    const disc = p.discounted !== null && p.discounted !== undefined && p.discounted < p.perPerson, pp = disc ? p.discounted : p.perPerson;
+    const off = p.discount ? (p.discount.type === 'pct' ? `${p.discount.value}% off` : `US$${fmt(p.discount.value)} off per person`) : '';
+    price = `<div class="price"><div class="from">Land fee per ${focOf(sel) ? 'paying guest' : 'person'}${disc ? ` <span class="off">${off}</span>` : ''}</div>${disc ? `<div class="was">US$${fmt(p.perPerson)}</div>` : ''}<div class="amt"><sup>US$</sup>${fmt(pp)}</div>
+      <div class="per">hotels excluded · group rate for ${bracketLabel(p.bracket)}${focOf(sel) ? ' incl. FOC' : ''}</div><div class="tot">Total land fee for ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''}: US$ ${fmt(pp * sel.pax)}</div></div>`;
+    slabs = `<div class="card slabs"><h3>Price per person by group size</h3><div class="slab-grid">${p.slabs.map(s => `<div class="slab${s.bracket[0] === p.bracket[0] ? ' on' : ''}"><span>${bracketLabel(s.bracket)}</span>${s.discounted !== null && s.discounted !== undefined && s.discounted < s.perPerson ? `<s>${usd(s.perPerson)}</s><b>${usd(s.discounted)}</b>` : `<b>${usd(s.perPerson)}</b>`}</div>`).join('')}</div></div>`;
+  } else price = `<div class="price"><div class="from">Land fee per person</div><div class="amt ask-amt">${window.HK_PREVIEW ? 'Shown on the live page' : 'On request'}</div><div class="per">${window.HK_PREVIEW ? 'Preview only: the live page shows the price here.' : 'Our tour team will send your price shortly.'}</div><div class="tot">Total land fee for ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''}: ${window.HK_PREVIEW ? 'shown on the live page' : 'on request'}</div></div>`;
+  const up = q && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade] : null;
+  const rows = [
+    ['Travel dates', travelDates(days) || 'To be confirmed'],
+    ['Group', `${sel.pax} paying traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC (free of charge)` : ''}${guestsLabel() ? ' from ' + guestsLabel() : ''}`],
+    ['Style', `${TIER_NAME[sel.tier]} · ${CONCEPT_NAME[sel.concept]} · ${SEASON_NAME[sel.season]}`],
+    ['Vehicle', q ? (up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false }) + (q.plan.luggage ? ' + luggage van' : '')) : ''],
+    ['Meals', mealWords() || 'None (land only)'],
+    ['Dietary requirements', picked('f-diet').join(', ')],
+    ['Add-on experiences', pickedAddonNames().join(', ')],
+    ['Hotel category', picked('f-hotel').join(' / ') || 'To be advised'],
+    ['Rooms', roomsText()],
+    ['Notes', v('f-notes')],
+  ].filter(([, x]) => x);
+  // the full day-by-day plan as shown on the page, without the edit controls, plus each day's meals
+  const dv = document.getElementById('days').cloneNode(true); dv.removeAttribute('id'); dv.classList.add('qv-days');
+  dv.querySelectorAll('.dctl, .swap, .mv, input, select, button').forEach(n => n.remove());
+  dv.querySelectorAll('article.day').forEach((a, i) => { const m = (days[i] && days[i].meals) || []; if (m.length) a.querySelector('.dbody').insertAdjacentHTML('beforeend', `<p class="q-meal">Meals: ${m.map(x => x === 'lunch' ? 'Lunch' : 'Dinner').join(' & ')} at local restaurants</p>`); });
+  const itin = dv.outerHTML;
+  const qv = document.getElementById('qv');
+  qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="qv-back">← Edit tour</button><span class="sp"></span><button type="button" class="btn ghost" id="qv-pdf">Save as PDF</button><a class="btn ghost" href="${document.getElementById('wa-btn').href}" target="_blank" rel="noopener">WhatsApp us</a></div>
+    <div class="card"><div class="qv-head"><div><div class="qv-ref">Quotation ${esc(d.id || '')} · ${fmtDate(new Date())}</div><h2>${esc(document.getElementById('q-title').textContent)}</h2>
+      <div class="route">${esc(document.getElementById('q-route').textContent)}</div><div class="qv-for">Prepared for ${esc(BUYER.name)}, ${esc(BUYER.company)} (${esc(BUYER.code)})</div></div>${price}</div></div>${slabs}
+    <div class="card"><div class="sec-h">Details</div><table>${rows.map(([k, x]) => `<tr><th>${k}</th><td>${esc(x)}</td></tr>`).join('')}</table></div>
+    <div class="card"><div class="sec-h">Day-by-day itinerary</div>${itin}</div>
+    <div class="card"><p class="q-note" style="margin:0">Hotels are quoted separately: our tour team will email hotel options to ${esc(BUYER.email)}, usually within one working day. Prices are in US dollars for private touring, and are confirmed with your booking.</p></div>`;
+  qv.hidden = false; document.body.classList.add('qv-on'); window.scrollTo(0, 0);
+}
+function hideQuote() { document.getElementById('qv').hidden = true; document.body.classList.remove('qv-on'); }
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.hasAttribute('data-req') || b.id === 'send-btn') doRequest(b);
+  if (b.id === 'qv-back') { hideQuote(); document.querySelector('.quote').scrollIntoView(); }
+  if (b.id === 'qv-pdf') { try { window.print(); } catch {} }
+});
 (async function initGate() {
   let a = null; try { a = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); } catch {}
   if (a && a.email && a.token) { try { const r = await gateCall('/api/login', a); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(false); return; } catch {} }
