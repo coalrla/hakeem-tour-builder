@@ -185,6 +185,32 @@ html.tall-frame .side .panel { overflow: visible !important; max-height: none !i
 .price .amt sup { font-size: 1rem; margin-right: 2px; }
 .price .per { font-size: .85rem; color: var(--muted); }
 .price .ask-amt { font-size: 2.1rem; }
+.price .was { text-decoration: line-through; color: var(--muted); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.price .off { background: var(--gold-soft, #f6eedd); color: var(--gold); border-radius: 99px; padding: 1px 8px; font-size: .72rem; margin-left: 4px; letter-spacing: 0; text-transform: none; }
+.slab s { display: block; font-size: .78rem; color: var(--muted); }
+.price .tot { font-size: 1.2rem; font-weight: 800; color: var(--brand); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.gate { position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 32, .55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto; }
+.gate[hidden] { display: none; }
+body.gated { overflow: hidden; }
+.g-card { background: var(--card); color: var(--ink); border-radius: 16px; padding: 26px 26px 20px; width: min(440px, 100%); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.g-logo { height: 54px; width: auto; display: block; margin-bottom: 8px; }
+.g-card h2 { font-family: var(--font-display); font-weight: 400; margin: 0; font-size: 1.6rem; }
+.g-sub { color: var(--muted); font-size: .9rem; margin: 4px 0 14px; }
+.g-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.g-tab { flex: 1; border: 1px solid var(--line); background: none; color: var(--muted); border-radius: 9px; padding: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+.g-tab.on { border-color: var(--brand); color: var(--brand); background: var(--brand-soft, #efeaf7); }
+.g-form { display: grid; gap: 10px; }
+.g-form[hidden] { display: none; }
+.g-form label { display: grid; gap: 4px; font-size: .82rem; font-weight: 600; color: var(--muted); }
+.g-form input, .g-form select { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--card); }
+.g-form .btn { margin-top: 4px; }
+.g-note { font-size: .82rem; color: var(--muted); margin: 2px 0 0; }
+.g-msg { min-height: 1.3em; font-size: .85rem; color: #b3261e; margin-top: 8px; }
+.g-msg.ok { color: var(--muted); }
+.acct { font-size: .85rem; color: var(--muted); margin-left: auto; margin-right: 16px; }
+.acct b { color: var(--brand); }
+.welcome { max-width: 1240px; margin: 12px auto 0; padding: 10px 16px; background: var(--gold-soft, #f6eedd); border-radius: 10px; font-size: .9rem; }
+@media print { .gate, .acct, .welcome { display: none !important; } }
 .price .ask-btn { display: inline-block; margin-top: 10px; text-decoration: none; }
 .note-card { font-size: .82rem; color: var(--muted); padding: 14px 22px; }
 
@@ -356,12 +382,50 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 </style>
 </head>
 <body>
+<div class="gate" id="gate" hidden><div class="g-card" role="dialog" aria-modal="true" aria-labelledby="g-title">
+  <img src="logo.png" alt="Hakeem Travel Korea" class="g-logo">
+  <h2 id="g-title">Design your Korea tour</h2>
+  <p class="g-sub">For travel agencies and tour operators.</p>
+  <div id="g-up" class="g-form" hidden>
+    <label>Your name<input id="g-name" autocomplete="name"></label>
+    <label>Company / agency<input id="g-company" autocomplete="organization"></label>
+    <label>Email<input id="g-email" type="email" autocomplete="email"></label>
+    <label>Country<select id="g-country"></select></label>
+    <label>Phone (with country code)<input id="g-phone" type="tel" autocomplete="tel" placeholder="+971 50 123 4567"></label>
+    <label>Password (at least 8 characters)<input id="g-pw" type="password" autocomplete="new-password"></label>
+    <label>Confirm password<input id="g-pw2" type="password" autocomplete="new-password"></label>
+    <input id="g-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px">
+    <button type="button" class="btn" id="g-signup">Sign up</button>
+    <p class="g-note">Already have an account? <button type="button" class="linkbtn" data-g="in">Log in</button></p>
+  </div>
+  <div id="g-in" class="g-form">
+    <label>Email<input id="g-in-email" type="email" autocomplete="email"></label>
+    <label>Password<input id="g-in-pw" type="password" autocomplete="current-password"></label>
+    <button type="button" class="btn" id="g-signin">Log in</button>
+    <p class="g-note">New to Hakeem Travel Korea? <button type="button" class="linkbtn" data-g="up">Sign up</button><br><button type="button" class="linkbtn" data-g="reset">Forgot your password?</button></p>
+  </div>
+  <div id="g-reset" class="g-form" hidden>
+    <p class="g-note">Enter the email you signed up with. We will send you a 6-digit code.</p>
+    <label>Email<input id="g-r-email" type="email" autocomplete="email"></label>
+    <button type="button" class="btn" id="g-r-send">Send code</button>
+    <div id="g-r-step2" class="g-form" hidden>
+      <label>6-digit code<input id="g-r-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label>
+      <label>New password (at least 8 characters)<input id="g-r-pw" type="password" autocomplete="new-password"></label>
+      <label>Confirm new password<input id="g-r-pw2" type="password" autocomplete="new-password"></label>
+      <button type="button" class="btn" id="g-r-set">Set password and log in</button>
+    </div>
+    <p class="g-note"><button type="button" class="linkbtn" data-g="in">Back to log in</button></p>
+  </div>
+  <div class="g-msg" id="g-msg" aria-live="polite"></div>
+</div></div>
 <header class="top">
   <div class="top-in">
     <div class="brand"><a href="https://www.hakeemtravel.com/" aria-label="Hakeem Travel Korea home"><img src="logo.png" alt="Hakeem Travel Korea" width="184" height="72"></a></div>
+    <span class="acct" id="acct" hidden></span>
     <a href="https://www.hakeemtravel.com/">hakeemtravel.com ↗</a>
   </div>
 </header>
+<div class="welcome" id="welcome" hidden></div>
 
 <section class="intro">
   <div class="intro-txt">
@@ -482,13 +546,17 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
         <div class="route" id="q-route"></div>
         <div class="chips" id="q-chips"></div>
       </div>
-      <div class="price">
+      <div class="price" id="price-box">
         <div class="from">Your quotation</div>
         <div class="amt ask-amt">On request</div>
         <div class="per">Prepared by our tour team for your group and dates</div>
         <a class="btn ask-btn" href="#ask">Request a quotation</a>
       </div>
     </section>
+  <section class="card slabs" id="slab-card" hidden>
+      <h3>Your price per person by group size</h3>
+      <div class="slab-grid" id="slabs"></div>
+  </section>
 
     <section class="card print-only" id="print-info"></section>
 
@@ -1290,6 +1358,7 @@ function render() {
   updateDateHint(days);
   renderAddons(days);
   renderPrice(days, localQuote(days));
+  buyerPrices(days);
 }
 
 const hasTicket = (days, w) => days.some(d => (d.tickets || []).some(([n]) => n.includes(w)));
@@ -1543,7 +1612,7 @@ document.getElementById('send-btn').onclick = async () => {
   const picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
   if (!v('f-name') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('f-mail'))) { st.textContent = 'Please add your name and a valid email address.'; return; }
   if (window.HK_PREVIEW) { st.textContent = 'Preview only: requests are sent from the live page (hakeemtravel.com/tour-builder).'; return; }
-  const payload = { sel, contact: { name: v('f-name'), company: v('f-co'), email: v('f-mail') }, arrival: document.getElementById('f-dates').value,
+  const payload = { sel, auth: authOf(), contact: { name: v('f-name'), company: v('f-co'), email: v('f-mail') }, arrival: document.getElementById('f-dates').value,
     hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
     addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website') };
   btn.disabled = true; st.textContent = 'Sending…';
@@ -1578,6 +1647,116 @@ document.getElementById('pdf-btn').onclick = () => {
 // compact summary bar at the top once the quote card has scrolled out of view
 if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { document.getElementById('mini').hidden = e.isIntersecting; document.body.classList.toggle('mini-on', !e.isIntersecting); }).observe(document.querySelector('.quote'));
 syncButtons(); render();
+
+// ---- buyer accounts: sign up once (email, name, company, country, phone) and get an access code; sign in with email + code.
+// Approved buyers see prices (with their discount); others see "On request".
+var BUYER = null, priceSeq = 0;
+var AUTH_KEY = 'hk-buyer';
+var TOKEN = '';
+const authOf = () => BUYER ? { email: BUYER.email, token: TOKEN } : null;
+function gateMsg(t, ok) { const m = document.getElementById('g-msg'); m.textContent = t; m.className = 'g-msg' + (ok ? ' ok' : ''); }
+function showGate(tab) {
+  document.getElementById('gate').hidden = false; document.body.classList.add('gated');
+  tab = tab || 'in';
+  document.querySelectorAll('.g-tab').forEach(b => b.classList.toggle('on', b.dataset.g === tab));
+  document.getElementById('g-up').hidden = tab !== 'up'; document.getElementById('g-in').hidden = tab !== 'in'; document.getElementById('g-reset').hidden = tab !== 'reset';
+  if (tab === 'reset') { const r = document.getElementById('g-r-email'); if (!r.value) r.value = document.getElementById('g-in-email').value; }
+  const sel = document.getElementById('g-country');
+  if (!sel.options.length) sel.innerHTML = '<option value="">Select country</option>' + COUNTRIES.map(([n, c]) => `<option value="${c}">${n}</option>`).join('');
+}
+function onAuth(fresh) {
+  try { localStorage.setItem(AUTH_KEY, JSON.stringify(authOf())); } catch {}
+  document.getElementById('gate').hidden = true; document.body.classList.remove('gated');
+  const acct = document.getElementById('acct');
+  acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
+  const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
+  fill('f-name', BUYER.name); fill('f-co', BUYER.company); fill('f-mail', BUYER.email);
+  if (BUYER.country && !sel.country) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
+  if (fresh) gateWelcome();
+  render();
+}
+function gateWelcome() {
+  const w = document.getElementById('welcome');
+  w.hidden = false;
+  w.innerHTML = `<b>Welcome! Your account code is ${esc(BUYER.code)}.</b> Next time, log in with your email and password. <button type="button" class="linkbtn" id="welcome-x">Close</button>`;
+}
+async function gateCall(path, body) {
+  if (window.HK_PREVIEW) { // preview page: no server, a code is made up here
+    if (path === '/api/forgot') return { ok: true };
+    if (path === '/api/reset') body = Object.assign({ name: 'Preview', company: 'Preview Travel', country: 'ARE' }, body);
+    const key = String(body.company || 'AGENCY').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/).filter(w => w && !['TRAVEL', 'TRAVELS', 'TOURS', 'TOUR', 'HOLIDAYS', 'LLC', 'LTD', 'PVT', 'THE'].includes(w))[0] || 'AGENCY';
+    return { ok: true, token: 'preview', buyer: { code: body.code || `${body.country}-${key.slice(0, 8)}-001`, name: body.name || 'Preview', company: body.company || '', email: body.email, country: body.country || '', approved: true } };
+  }
+  const r = await hkFetch(path, 'POST', body), d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+  return d;
+}
+document.getElementById('gate').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.g) { showGate(b.dataset.g); gateMsg(''); return; }
+  const v = id => document.getElementById(id).value.trim();
+  if (b.id === 'g-signup') {
+    const body = { email: v('g-email'), name: v('g-name'), company: v('g-company'), country: v('g-country'), phone: v('g-phone'), password: document.getElementById('g-pw').value, website: v('g-website') };
+    if (!body.name || !body.company || !body.country || !body.phone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Please fill in every field with a valid email.');
+    if (body.password.length < 8) return gateMsg('Please choose a password of at least 8 characters.');
+    if (body.password !== document.getElementById('g-pw2').value) return gateMsg('The two passwords do not match.');
+    b.disabled = true; gateMsg('Creating your access code…', true);
+    try { const r = await gateCall('/api/signup', body); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(true); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
+  }
+  if (b.id === 'g-r-send') {
+    const email = v('g-r-email');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return gateMsg('Enter the email you signed up with.');
+    b.disabled = true; gateMsg('Sending…', true);
+    try { await gateCall('/api/forgot', { email }); document.getElementById('g-r-step2').hidden = false; b.textContent = 'Send a new code'; gateMsg(`If ${email} is registered, a code is on its way. Check your inbox (and spam folder).`, true); document.getElementById('g-r-code').focus(); }
+    catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
+  }
+  if (b.id === 'g-r-set') {
+    const body = { email: v('g-r-email'), code: v('g-r-code'), password: document.getElementById('g-r-pw').value };
+    if (!/^\d{6}$/.test(body.code)) return gateMsg('Enter the 6-digit code from the email.');
+    if (body.password.length < 8) return gateMsg('Please choose a password of at least 8 characters.');
+    if (body.password !== document.getElementById('g-r-pw2').value) return gateMsg('The two passwords do not match.');
+    b.disabled = true; gateMsg('Saving…', true);
+    try { const r = await gateCall('/api/reset', body); BUYER = r.buyer; TOKEN = r.token || ''; gateMsg(''); onAuth(false); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
+  }
+  if (b.id === 'g-signin') {
+    const body = { email: v('g-in-email'), password: document.getElementById('g-in-pw').value };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Enter the email you signed up with.');
+    if (!body.password) return gateMsg('Enter your password.');
+    b.disabled = true; gateMsg('Logging in…', true);
+    try { const r = await gateCall('/api/login', body); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(false); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
+  }
+});
+document.addEventListener('click', e => {
+  if (e.target.id === 'acct-out') { try { localStorage.removeItem(AUTH_KEY); } catch {} BUYER = null; TOKEN = ''; document.getElementById('acct').hidden = true; document.getElementById('welcome').hidden = true; showGate('in'); render(); }
+  if (e.target.id === 'welcome-x') document.getElementById('welcome').hidden = true;
+});
+// prices for approved buyers, from the server; a discount shows the list price struck through
+async function buyerPrices(days) {
+  const card = document.getElementById('price-box'), slabCard = document.getElementById('slab-card'), seq = ++priceSeq;
+  if (!BUYER || !BUYER.approved || window.HK_PREVIEW) {
+    card.innerHTML = `<div class="from">Your quotation</div><div class="amt ask-amt">On request</div><div class="per">${BUYER && !BUYER.approved ? `Prices appear here once our team confirms your account (${esc(BUYER.code)}).` : 'Prepared by our tour team for your group and dates'}</div><a class="btn ask-btn" href="#ask">Request a quotation</a>`;
+    slabCard.hidden = true; document.getElementById('mini-p').textContent = 'Quotation on request'; return;
+  }
+  document.querySelector('.quote').classList.add('loading');
+  let p = null;
+  try { const r = await hkFetch('/api/quote', 'POST', { ...sel, auth: authOf() }); p = (await r.json()).prices; } catch {}
+  if (seq !== priceSeq) return;
+  document.querySelector('.quote').classList.remove('loading');
+  if (!p) { card.innerHTML = '<div class="from">Your price</div><div class="amt ask-amt">On request</div><div class="per">Prices could not be loaded. Please send us your request.</div>'; slabCard.hidden = true; return; }
+  const fmt = n => n.toLocaleString('en-US'), disc = p.discounted !== null && p.discounted !== undefined && p.discounted < p.perPerson;
+  const pp = disc ? p.discounted : p.perPerson, offLabel = p.discount ? (p.discount.type === 'pct' ? `${p.discount.value}% off` : `US$${fmt(p.discount.value)} off per person`) : '';
+  card.innerHTML = `<div class="from">Your price${disc ? ` <span class="off">${offLabel}</span>` : ''}</div>
+    ${disc ? `<div class="was">US$${fmt(p.perPerson)}</div>` : ''}<div class="amt"><sup>US$</sup>${fmt(pp)}</div><div class="per">per person · land fee, hotels excluded</div>
+    <div class="br">Group rate for ${bracketLabel(p.bracket)}</div><div class="tot">Total for ${sel.pax}: US$ ${fmt(pp * sel.pax)}</div>`;
+  document.getElementById('slabs').innerHTML = p.slabs.map(s => `<div class="slab${s.bracket[0] === p.bracket[0] ? ' on' : ''}"><span>${bracketLabel(s.bracket)}</span>${s.discounted !== null && s.discounted !== undefined && s.discounted < s.perPerson ? `<s>${usd(s.perPerson)}</s><b>${usd(s.discounted)}</b>` : `<b>${usd(s.perPerson)}</b>`}</div>`).join('');
+  slabCard.hidden = false;
+  document.getElementById('mini-p').textContent = `US$${fmt(pp)} per person · total US$${fmt(pp * sel.pax)}`;
+}
+(async function initGate() {
+  let a = null; try { a = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); } catch {}
+  if (a && a.email && a.token) { try { const r = await gateCall('/api/login', a); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(false); return; } catch {} }
+  showGate('in');
+})();
 </script>
 </body>
 </html>

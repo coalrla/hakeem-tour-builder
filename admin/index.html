@@ -125,6 +125,12 @@ tbody tr:hover { background: var(--brand-soft); }
 .saved { font-size: .82rem; color: var(--ok); }
 .btn.sm { padding: 3px 9px; font-size: .8rem; }
 .hinfo { font-size: .78rem; line-height: 1.45; }
+#buyers .bygroup { margin-bottom: 12px; padding: 12px 14px; }
+#buyers .byh { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+#buyers tr.pend td { background: #fff8e6; }
+#buyers .disc { display: inline-flex; gap: 4px; }
+#buyers .disc select, #buyers .disc input, #buyers td input[data-bf="note"] { border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; font-size: .85rem; }
+#buyers .disc input { width: 70px; }
 .hinfo b { font-weight: 600; color: var(--ink); }
 ul.bst small.pm { display: block; font-size: .75rem; color: var(--gold); font-weight: 400; }
 #dir .bar .tab { border: 1px solid var(--line); }
@@ -185,7 +191,7 @@ body.printing-quote #qsheet { display: block; }
 </style>
 </head>
 <body>
-<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button></nav><span class="sp"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
+<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="buyers">바이어</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button></nav><span class="sp"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
 <main>
   <form id="login" class="card" onsubmit="return false">
     <b>하킴 직원 전용</b>
@@ -212,6 +218,7 @@ body.printing-quote #qsheet { display: block; }
   <section id="rates" hidden></section>
   <section id="builder" hidden></section>
   <section id="dir" hidden></section>
+  <section id="buyers" hidden></section>
 
   <section id="detail">
     <div class="dtop">
@@ -989,7 +996,7 @@ function exportCSV() {
 function draw() {
   const list = filtered(), f = $('fst').value;
   $('count').textContent = `전체 ${rows.length}건 중 ${list.length}건 · 신규 ${rows.filter(r => r.status === 'new').length}건`;
-  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.edited ? ' <span class="tag">수정</span>' : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
+  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.edited ? ' <span class="tag">수정</span>' : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
     : '<tr><td colspan="10" class="empty">견적 요청 없음.</td></tr>';
 }
 async function open(id) {
@@ -1004,6 +1011,7 @@ async function open(id) {
     <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수${r.builder ? ` · <b style="color:var(--brand)">투어 빌더로 수정됨 ${fmtT(r.builder.savedAt)}${r.builder.by ? ' (' + esc(r.builder.by) + ')' : ''}</b>${r.original ? ` · 원래 ${r.original.trip.nights}박 ${r.original.options.pax}명 1인 ${usd(r.original.price.perPerson)}` : ''}` : ''}</div>
     <div class="grid">
       ${line('바이어 담당자', `${esc(r.contact.name)}<br><a href="mailto:${esc(r.contact.email)}">${esc(r.contact.email)}</a>`)}
+      ${r.buyer ? line('바이어 코드', `<b>${esc(r.buyer.code)}</b> ${r.buyer.approved ? '승인됨' : '<span style="color:#b3261e">승인 대기</span>'}${r.buyer.discount ? `<br>할인 ${r.buyer.discount.type === 'pct' ? r.buyer.discount.value + '%' : 'US$' + r.buyer.discount.value + '/인'}${r.price.discountedPerPerson ? ` → 1인 ${usd(r.price.discountedPerPerson)}` : ''}` : ''}`) : line('바이어 코드', '<span class="hint">가입 전 요청</span>')}
       ${line('여행 날짜', r.trip.arrival ? `${fmt(r.trip.arrival)} – ${fmt(r.trip.departure)}` : '미정')}
       ${line('일정', `${r.trip.nights}박 ${r.trip.days}일<br>${esc(nd(' ' + r.trip.cities).trim())}${r.trip.arrivalAirport ? `<br>입국 ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} · 출국 ${T_KO[r.trip.departureAirport] || '인천공항'}${Array.isArray(r.trip.route) && !r.trip.route.includes('seoul') ? ' · <b>서울 일정 없음</b>' : ''}` : ''}`)}
       ${line('그룹', `${o.pax}명 · ${esc(MARKET[o.market] || o.market)}`)}
@@ -1542,8 +1550,8 @@ let rDraft = null, rResetArmed = 0;
 const MARGIN_NAME = steps => steps.map((n, i) => `${i ? steps[i - 1] + 1 : 1}${n > (i ? steps[i - 1] + 1 : 1) ? '–' + n : ''}명`);
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
-  $('list').hidden = tab !== 'list'; $('rates').hidden = tab !== 'rates'; $('builder').hidden = tab !== 'builder'; $('dir').hidden = tab !== 'dir'; $('detail').style.display = 'none';
-  if (tab === 'rates') openRates(); else if (tab === 'builder') openBuilder(); else if (tab === 'dir') openDirectory(); else draw();
+  $('list').hidden = tab !== 'list'; $('rates').hidden = tab !== 'rates'; $('builder').hidden = tab !== 'builder'; $('dir').hidden = tab !== 'dir'; $('buyers').hidden = tab !== 'buyers'; $('detail').style.display = 'none';
+  if (tab === 'rates') openRates(); else if (tab === 'builder') openBuilder(); else if (tab === 'dir') openDirectory(); else if (tab === 'buyers') openBuyers(); else draw();
 }
 async function openRates() {
   try { settings = await api('/api/admin/settings'); } catch (e) { $('rates').innerHTML = `<div class="card">${KERR(e)}</div>`; return; }
@@ -1887,6 +1895,53 @@ function drawDirectory() {
 $('dir').addEventListener('click', e => { const b = e.target.closest('[data-dtab]'); if (b) { dirTab = b.dataset.dtab; drawDirectory(); } });
 $('dir').addEventListener('input', e => { if (e.target.id === 'd-q') { const p = e.target.selectionStart; drawDirectory(); const q = $('d-q'); q.focus(); q.setSelectionRange(p, p); } });
 $('dir').addEventListener('change', e => { if (e.target.id === 'd-city') drawDirectory(); });
+
+// ---- ⑤ buyers who signed up on the tour builder: approve (prices shown), discounts by contact or by company
+let BUY = null, buyDirty = {}, compDirty = {}, buyFilter = '';
+async function openBuyers() {
+  $('buyers').innerHTML = '<div class="card">불러오는 중…</div>';
+  try { BUY = await api('/api/admin/buyers'); } catch (e) { $('buyers').innerHTML = `<div class="card">${KERR(e)}<br><span class="hint">Wix 서버 파일(hakeem-core.js)이 최신인지 확인해 주세요.</span></div>`; return; }
+  buyDirty = {}; compDirty = {}; drawBuyers();
+}
+const discText = d => !d ? '' : d.type === 'pct' ? `${d.value}%` : `US$${d.value}/인`;
+const discInputs = (d, attr) => `<span class="disc"><select ${attr}="type"><option value="">할인 없음</option><option value="pct"${d && d.type === 'pct' ? ' selected' : ''}>%</option><option value="usd"${d && d.type === 'usd' ? ' selected' : ''}>US$/인</option></select><input ${attr}="value" type="number" min="0" step="1" value="${d ? d.value : ''}" placeholder="0"></span>`;
+function drawBuyers() {
+  const q = buyFilter.toLowerCase(), list = BUY.buyers.filter(b => !q || [b.code, b.company, b.name, b.email, b.phone, b.country].join(' ').toLowerCase().includes(q));
+  const groups = {}; list.forEach(b => { (groups[b.companyKey] ||= []).push(b); });
+  const keys = Object.keys(groups).sort((a, b) => Math.max(...groups[b].map(x => +new Date(x.createdAt))) - Math.max(...groups[a].map(x => +new Date(x.createdAt))));
+  const pending = BUY.buyers.filter(b => !b.approved).length;
+  $('buyers').innerHTML = `<div class="bar"><input id="by-q" placeholder="코드·회사·이름·이메일 검색" value="${esc(buyFilter)}"><span class="count">바이어 ${BUY.buyers.length}명 · 차단 ${pending}명</span><button class="btn" id="by-save">저장</button><span class="saved" id="by-msg"></span></div>
+  <p class="hint">가입하면 바로 승인되고(할인 없음), 승인을 해제하면 로그인이 막힙니다. 비밀번호를 잊은 바이어는 로그인 화면의 'Forgot your password?'에서 이메일로 받은 6자리 코드로 직접 바꿉니다. '비번 초기화'는 예외용으로, 저장하면 다음 로그인 때 입력한 비밀번호가 새 비밀번호가 됩니다. 할인은 담당자별 할인이 있으면 그것을, 없으면 회사 할인을 적용하고, 사이트에 원래 가격을 취소선으로 함께 보여줍니다.</p>
+  ${keys.length ? keys.map(k => { const c = BUY.companies[k] || { name: groups[k][0].company }, cd = compDirty[k] && compDirty[k].discount !== undefined ? compDirty[k].discount : c.discount;
+    return `<div class="card bygroup"><div class="byh"><b>${esc(c.name || groups[k][0].company)}</b> <span class="hint">${esc(k)}</span><span class="sp" style="flex:1"></span><label class="hint">회사 할인 ${discInputs(cd, `data-cd="${esc(k)}" data-cf`)}</label></div>
+      <table class="ht"><tr><th>코드</th><th>이름</th><th>이메일 · 전화</th><th>가입</th><th>최근 접속</th><th class="num">요청</th><th>승인</th><th>담당자 할인 (회사 할인보다 우선)</th><th>메모</th></tr>
+      ${groups[k].map(b => { const u = { ...b, ...(buyDirty[b.code] || {}) };
+        return `<tr data-code="${esc(b.code)}"${u.approved ? '' : ' class="pend"'}><td><b>${esc(b.code)}</b></td><td>${esc(b.name)}</td><td><a href="mailto:${esc(b.email)}">${esc(b.email)}</a><br><span class="hint">${esc(b.phone)}</span></td>
+          <td>${fmtT(b.createdAt)}</td><td>${b.lastLogin ? fmtT(b.lastLogin) : '–'}</td><td class="num">${b.requests || 0}</td>
+          <td><label class="hint"><input type="checkbox" data-bf="approved"${u.approved ? ' checked' : ''}> ${u.approved ? '승인됨' : '차단'}</label><br><label class="hint"><input type="checkbox" data-bf="resetPassword"${u.resetPassword ? ' checked' : ''}> 비번 초기화</label>${b.hasPassword === false ? '<div class="hint">비밀번호 미설정</div>' : ''}</td>
+          <td>${discInputs(u.discount, 'data-bd')}${!u.discount && cd ? `<div class="hint">회사 할인 ${discText(cd)} 적용</div>` : ''}</td>
+          <td><input data-bf="note" value="${esc(u.note || '')}" placeholder="메모"></td></tr>`; }).join('')}</table></div>`; }).join('') : '<div class="card empty">아직 가입한 바이어가 없습니다.</div>'}`;
+}
+const readDisc = (root, attr) => { const t = root.querySelector(`[${attr}="type"]`).value, v = +root.querySelector(`[${attr}="value"]`).value || 0; return t && v > 0 ? { type: t, value: v } : null; };
+$('buyers').addEventListener('input', e => {
+  const el = e.target;
+  if (el.id === 'by-q') { buyFilter = el.value; const p = el.selectionStart; drawBuyers(); const q = $('by-q'); q.focus(); q.setSelectionRange(p, p); return; }
+  const tr = el.closest('tr[data-code]');
+  if (tr) { const d = (buyDirty[tr.dataset.code] ||= {});
+    if (el.dataset.bf === 'approved') d.approved = el.checked;
+    else if (el.dataset.bf === 'resetPassword') { if (el.checked) d.resetPassword = true; else delete d.resetPassword; }
+    else if (el.dataset.bf === 'note') d.note = el.value;
+    else if (el.hasAttribute('data-bd')) d.discount = readDisc(tr, 'data-bd');
+    $('by-msg').textContent = '저장 안 됨'; if (el.dataset.bf === 'approved') drawBuyers(); return; }
+  if (el.dataset.cd) { const box = el.closest('.byh'); (compDirty[el.dataset.cd] ||= {}).discount = readDisc(box, 'data-cf'); $('by-msg').textContent = '저장 안 됨'; }
+});
+$('buyers').addEventListener('change', e => { if (e.target.tagName === 'SELECT') e.target.dispatchEvent(new Event('input', { bubbles: true })); });
+$('buyers').addEventListener('click', async e => {
+  if (e.target.id !== 'by-save') return;
+  const body = { buyers: Object.entries(buyDirty).map(([code, d]) => ({ code, ...d })), companies: compDirty };
+  try { BUY = await api('/api/admin/buyers', { method: 'POST', body: JSON.stringify(body) }); buyDirty = {}; compDirty = {}; drawBuyers(); $('by-msg').textContent = '저장 완료 · 사이트에 바로 적용'; }
+  catch (err) { $('by-msg').textContent = KERR(err); }
+});
 document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $('go').onclick = () => { key = $('pw').value; load(); };
 $('logout').onclick = () => { key = ''; try { sessionStorage.removeItem('hk-admin'); } catch {} location.reload(); };
