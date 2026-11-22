@@ -1778,7 +1778,8 @@ function showGate(tab) {
   document.getElementById('g-up').hidden = tab !== 'up'; document.getElementById('g-in').hidden = tab !== 'in'; document.getElementById('g-reset').hidden = tab !== 'reset';
   if (tab === 'reset') { const r = document.getElementById('g-r-email'); if (!r.value) r.value = document.getElementById('g-in-email').value; }
   const sel = document.getElementById('g-country');
-  if (!sel.options.length) sel.innerHTML = '<option value="">Select country</option>' + COUNTRIES.map(([n, c]) => `<option value="${c}">${n}</option>`).join('');
+  // sign-up country is the agency's own country, so Korea is listed here (it is not a 'Guests from' choice)
+  if (!sel.options.length) sel.innerHTML = '<option value="">Select country</option>' + [...COUNTRIES, ['South Korea', 'KOR']].sort((a, b) => a[0].localeCompare(b[0])).map(([n, c]) => `<option value="${c}">${n}</option>`).join('');
 }
 var pendingReq = false; // set when "Request a quotation" opened the login, so the request goes ahead after login
 function hideGate() { document.getElementById('gate').hidden = true; document.body.classList.remove('gated'); pendingReq = false; }
@@ -1789,7 +1790,7 @@ function onAuth(fresh) {
   document.getElementById('auth-btns').hidden = true;
   acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
   const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
-  if (BUYER.country && !sel.country) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
+  if (BUYER.country && !sel.country && COUNTRIES.some(c => c[1] === BUYER.country)) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
   if (fresh) gateWelcome();
   render();
   if (pendingReq) { pendingReq = false; doRequest(document.querySelector('[data-req]')); }
