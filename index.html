@@ -23,14 +23,14 @@
 /* Layout: sticky option panel on the left, quote + day-by-day itinerary on the right; stacks on phones. */
 :root {
   --ink: #14243b;
-  --paper: #f3f5f4;
+  --paper: #f5f4f8;
   --card: #ffffff;
-  --line: #dce3e1;
+  --line: #e2dee9;
   --muted: #5b6876;
-  --accent: #0c6b60;
-  --accent-soft: #e2f0ed;
-  --brand: #5b3d91;
-  --brand-soft: #efe9f8;
+  --accent: #5b3d91;
+  --accent-soft: #efe9f8;
+  --brand: #7a5cc0;
+  --brand-soft: #f3eefb;
   --gold: #a87a24;
   --gold-soft: #f7efdf;
   --font-display: "ZEN SERIF", Georgia, serif;
@@ -40,12 +40,12 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ink: #e7ecf1; --paper: #0f1720; --card: #16212d; --line: #263443; --muted: #9aa8b6;
-    --accent: #4dbfae; --accent-soft: #15302d; --brand: #b9a2ea; --brand-soft: #2a2242; --gold: #e0b45c; --gold-soft: #2c2415; color-scheme: dark;
+    --accent: #b9a2ea; --accent-soft: #2a2242; --brand: #d4a64a; --brand-soft: #2e2516; --gold: #ecc66e; --gold-soft: #2c2415; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --ink: #e7ecf1; --paper: #0f1720; --card: #16212d; --line: #263443; --muted: #9aa8b6;
-  --accent: #4dbfae; --accent-soft: #15302d; --brand: #b9a2ea; --brand-soft: #2a2242; --gold: #e0b45c; --gold-soft: #2c2415; color-scheme: dark;
+  --accent: #b9a2ea; --accent-soft: #2a2242; --brand: #d4a64a; --brand-soft: #2e2516; --gold: #ecc66e; --gold-soft: #2c2415; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -75,7 +75,6 @@ button, input, textarea { font: inherit; color: inherit; }
 .mini { position: fixed; top: 0; left: 0; right: 0; z-index: 30; background: var(--card); border-bottom: 1px solid var(--line); box-shadow: 0 4px 14px rgba(20,36,59,.08); padding: 10px 20px; display: flex; justify-content: center; gap: 18px; align-items: baseline; font-size: .9rem; flex-wrap: wrap; }
 .mini b { font-family: var(--font-display); font-weight: 400; color: var(--gold); font-size: 1.15rem; }
 @media print { .mini { display: none !important; } }
-@media (min-width: 901px) { body.mini-on .side { top: 64px; max-height: calc(100vh - 80px); } }
 /* very narrow screens (Wix mobile embed is about 280–320px wide): nothing may stick out sideways */
 @media (max-width: 340px) {
   .wrap, .intro { padding-left: 10px; padding-right: 10px; }
@@ -108,19 +107,33 @@ html.tall-frame .side .panel { overflow: visible !important; max-height: none !i
 @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
 
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 22px; }
-/* left column: group size and cities stay in view; the options below scroll inside the column */
+/* left column: on a computer every box shows at full length; on a phone the boxes become steps (Group, Hotels, Meals, Add-ons) shown one at a time */
 .side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-@media (min-width: 901px) {
-  .side { position: sticky; top: 16px; max-height: calc(100vh - 32px); }
-  .side .trip { flex: none; }
-  .side .panel { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
-}
+.side > .card { flex: none; }
+.side-steps, .side-nav { display: none; }
 @media (max-width: 900px) {
-  .wrap > .side, .wrap > .results { display: contents; }
+  .wrap > .results { display: contents; }
   .wrap { display: flex; flex-direction: column; gap: 16px; }
   .wrap > .results > * { order: 5; width: 100%; box-sizing: border-box; }
-  .wrap .trip { order: 1; } .wrap > .results > .quote { order: 2; } .wrap > .results > .slabs { order: 3; } .wrap .panel { order: 4; }
+  .wrap > .results > .quote { order: 1; } .wrap > .results > .slabs { order: 2; }
+  .wrap > .side { order: 3; width: 100%; gap: 12px; scroll-margin-top: 84px; }
+  .side > .card, .side > .panel { width: 100%; box-sizing: border-box; }
+  .side > .card:not(.step-on), .side > .panel:not(.step-on) { display: none; }
+  .side > .step-on { animation: step-in .28s ease; }
+  .side > .step-on.from-left { animation-name: step-in-l; }
+  .side-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  .side-steps button { border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 10px; padding: 8px 4px; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; display: grid; gap: 2px; justify-items: center; }
+  .side-steps button b { font-size: .7rem; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--line); color: var(--ink); }
+  .side-steps button.on { border-color: var(--accent); color: var(--accent); }
+  .side-steps button.on b { background: var(--accent); color: var(--card); }
+  .side-steps button.done b { background: var(--accent-soft, #efe9f8); color: var(--accent); }
+  .side-nav { display: flex; gap: 8px; }
+  .side-nav .btn { flex: 1; }
+  .side-nav .btn[hidden] { display: none; }
 }
+@keyframes step-in { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes step-in-l { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@media print { .side-steps, .side-nav { display: none !important; } }
 .field { display: grid; gap: 8px; }
 .label { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .seg { display: grid; gap: 6px; }
@@ -207,10 +220,34 @@ body.gated { overflow: hidden; }
 .g-note { font-size: .82rem; color: var(--muted); margin: 2px 0 0; }
 .g-msg { min-height: 1.3em; font-size: .85rem; color: #b3261e; margin-top: 8px; }
 .g-msg.ok { color: var(--muted); }
-.acct { font-size: .85rem; color: var(--muted); margin-left: auto; margin-right: 16px; }
+.acct { font-size: .85rem; color: var(--muted); margin-right: 16px; }
 .acct b { color: var(--brand); }
+.auth-btns { display: flex; gap: 8px; margin-right: 16px; }
+.help-btn { margin-left: auto; border: 0; background: none; color: var(--muted); font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; padding: 6px 4px; display: inline-flex; align-items: center; gap: 6px; }
+.help-btn::before { content: "?"; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid currentColor; font-size: .75rem; font-weight: 800; }
+.help-btn:hover { color: var(--accent); }
+/* first-visit guide: a spotlight on one part of the page and a short note beside it */
+.tg-spot { position: absolute; z-index: 90; border-radius: 16px; box-shadow: 0 0 0 4px var(--accent), 0 0 0 9999px rgba(15, 23, 32, .6); pointer-events: none; transition: all .25s ease; }
+.tg-pop { position: absolute; z-index: 91; width: min(340px, calc(100vw - 24px)); background: var(--card); color: var(--ink); border-radius: 14px; padding: 16px 18px 14px; box-shadow: 0 16px 40px rgba(0,0,0,.3); transition: top .25s ease, left .25s ease; }
+.tg-pop h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.tg-pop p { margin: 0; font-size: .9rem; color: var(--muted); line-height: 1.45; }
+.tg-foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.tg-dots { display: flex; gap: 5px; margin-right: auto; }
+.tg-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.tg-dots i.on { background: var(--accent); }
+.tg-skip { border: 0; background: none; color: var(--muted); font: inherit; font-size: .88rem; cursor: pointer; padding: 6px; }
+.tg-pop .btn { padding: 8px 16px; font-size: .9rem; }
+.tg-block { position: fixed; inset: 0; z-index: 89; }
+@media print { .help-btn, .tg-spot, .tg-pop, .tg-block { display: none !important; } }
+.auth-btns[hidden] { display: none; }
+.auth-btns .btn { padding: 7px 14px; font-size: .88rem; }
+.g-card { position: relative; }
+.qv-hotel { margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: var(--gold-soft, #f6eedd); border-left: 4px solid var(--gold, #b8893a); font-size: .95rem; }
+.qv-hotel b { color: var(--ink); }
+.g-x { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 1.6rem; line-height: 1; cursor: pointer; padding: 4px 8px; }
+.g-x:hover { color: var(--ink); }
 .welcome { max-width: 1240px; margin: 12px auto 0; padding: 10px 16px; background: var(--gold-soft, #f6eedd); border-radius: 10px; font-size: .9rem; }
-@media print { .gate, .acct, .welcome { display: none !important; } }
+@media print { .gate, .acct, .auth-btns, .help-btn, .welcome { display: none !important; } }
 .price .ask-btn { display: inline-block; margin-top: 10px; text-decoration: none; }
 .note-card { font-size: .82rem; color: var(--muted); padding: 14px 22px; }
 
@@ -310,8 +347,11 @@ body.gated { overflow: hidden; }
 .st { display: inline-block; margin-left: 8px; font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--sz); background: var(--sz-bg); border: 1px solid var(--sz); border-radius: 99px; padding: 0 6px; vertical-align: 1px; }
 .tag.season { background: var(--sz); color: #fff; }
 .legend b.sz { background: var(--sz-bg); color: var(--sz); }
-.s-spring { --sz: #b2456b; --sz-bg: #fbe9ef; } .s-summer { --sz: #2f7d6b; --sz-bg: #e3f2ee; }
+.s-spring { --sz: #b2456b; --sz-bg: #fbe9ef; } .s-summer { --sz: #9a6f1c; --sz-bg: #f7efdf; }
 .s-autumn { --sz: #b35a1f; --sz-bg: #fbeadd; } .s-winter { --sz: #3c639b; --sz-bg: #e6eef8; }
+/* dark mode: seasonal stops keep their colour but on a dark background, so the place name stays readable */
+:root[data-theme="dark"] .s-spring { --sz: #f08fb0; --sz-bg: #3a1f2a; } :root[data-theme="dark"] .s-summer { --sz: #e0b45c; --sz-bg: #2e2516; } :root[data-theme="dark"] .s-autumn { --sz: #f0a066; --sz-bg: #3a2618; } :root[data-theme="dark"] .s-winter { --sz: #8fb4e8; --sz-bg: #1d2a3d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .s-spring { --sz: #f08fb0; --sz-bg: #3a1f2a; } :root:not([data-theme="light"]) .s-summer { --sz: #e0b45c; --sz-bg: #2e2516; } :root:not([data-theme="light"]) .s-autumn { --sz: #f0a066; --sz-bg: #3a2618; } :root:not([data-theme="light"]) .s-winter { --sz: #8fb4e8; --sz-bg: #1d2a3d; } }
 .day li.theme { background: var(--gold-soft); border-radius: 6px; padding: 3px 8px 3px 22px; margin-left: -6px; }
 .day li.theme::before { background: var(--gold); left: 8px; top: calc(3px + .62em); }
 .tt { display: inline-block; margin-left: 8px; font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gold); }
@@ -386,6 +426,8 @@ body.gated { overflow: hidden; }
 .btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; padding: 11px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
 :root[data-theme="dark"] .btn { color: #0f1720; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #0f1720; } }
+:root[data-theme="dark"] .btn.ghost { color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.ghost { color: var(--accent); } }
 .btn.ghost { background: transparent; color: var(--accent); }
 .contact { font-size: .88rem; color: var(--muted); }
 .contact a { color: var(--accent); }
@@ -456,7 +498,7 @@ body.qv-on main, body.qv-on .intro, body.qv-on .mini { display: none !important;
 .price .tot { font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; font-synthesis: none; }
 .qv .qv-days .day { break-inside: avoid; }
 @media print {
-  body.qv-on .qv-bar, body.qv-on .top a, body.qv-on .acct { display: none !important; }
+  body.qv-on .qv-bar, body.qv-on .top a, body.qv-on .acct, body.qv-on .auth-btns, body.qv-on .help-btn { display: none !important; }
   .qv { margin: 0; padding: 0; }
 }
 footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .8rem; color: var(--muted); }
@@ -464,6 +506,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 </head>
 <body>
 <div class="gate" id="gate" hidden><div class="g-card" role="dialog" aria-modal="true" aria-labelledby="g-title">
+  <button type="button" class="g-x" id="g-x" aria-label="Close">×</button>
   <img src="logo.png" alt="Hakeem Travel Korea" class="g-logo">
   <h2 id="g-title">Design your Korea tour</h2>
   <p class="g-sub">For travel agencies and tour operators.</p>
@@ -502,7 +545,9 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 <header class="top">
   <div class="top-in">
     <div class="brand"><a href="https://www.hakeemtravel.com/" aria-label="Hakeem Travel Korea home"><img src="logo.png" alt="Hakeem Travel Korea" width="184" height="72"></a></div>
+    <button type="button" class="help-btn" id="tour-btn">How it works</button>
     <span class="acct" id="acct" hidden></span>
+    <div class="auth-btns" id="auth-btns"><button type="button" class="btn ghost" data-auth="in">Log in</button><button type="button" class="btn" data-auth="up">Sign up</button></div>
     <a href="https://www.hakeemtravel.com/">hakeemtravel.com ↗</a>
   </div>
 </header>
@@ -517,8 +562,9 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 <div class="mini" id="mini" hidden><span id="mini-t"></span><b id="mini-p"></b></div>
 
 <main class="wrap">
-  <aside class="side">
-  <section class="card trip" aria-label="Group size and cities">
+  <aside class="side" id="side">
+  <nav class="side-steps" id="side-steps" aria-label="Steps"><button type="button" data-step="0" class="on"><b>1</b>Group</button><button type="button" data-step="1"><b>2</b>Hotels</button><button type="button" data-step="2"><b>3</b>Style</button><button type="button" data-step="3"><b>4</b>Meals</button><button type="button" data-step="4"><b>5</b>Add-ons</button></nav>
+  <section class="card trip step-on" aria-label="Group size and cities">
       <div class="field">
         <div class="pax-row">
           <div class="pax-col"><label class="label" for="pax">Travelers</label>
@@ -652,10 +698,11 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
     <p class="legend" style="margin:0 0 12px">Tick what interests your guests. We book them all; beauty and medical services are paid by your guests at the venue.</p>
     <div id="addons"></div>
   </section>
+  <div class="side-nav"><button type="button" class="btn ghost" id="side-prev" hidden>Back</button><button type="button" class="btn" id="side-next">Next: Hotels</button></div>
   </aside>
 
   <div class="results">
-  <section class="card quote" aria-live="polite">
+  <section class="card quote" id="quote-card" aria-live="polite">
       <div>
         <h2 id="q-title"></h2>
         <div class="route" id="q-route"></div>
@@ -675,7 +722,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 
     <section class="card print-only" id="print-info"></section>
 
-    <section class="card">
+    <section class="card" id="itin-card">
       <div class="sec-h">Day-by-day itinerary</div>
       <p class="swap-hint">Want something different? Use <b>Change</b> to swap any day for another tour in the same city, or add your own places to any day. Added places will be confirmed in your quotation. <button type="button" id="swap-reset" class="linkbtn" hidden>Reset to suggested itinerary</button></p>
       <p class="legend" id="legend" hidden></p>
@@ -703,8 +750,8 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
 
 
     <section class="card ask" id="ask">
-      <h2>Ready for your price?</h2>
-      <p class="contact" style="margin:0">Add any special requests, then request your quotation. You will see the land fee for this tour straight away, and we will email hotel options within one working day.</p>
+      <h2>Any additional requests?</h2>
+      <p class="contact" style="margin:0">Add any special requests, then request your quotation. You will see the land fee for this tour straight away. Hotel options and rates will be discussed with you by email.</p>
       <div class="form">
         <label class="wide">Notes<textarea id="f-notes" rows="3" placeholder="Special requests"></textarea></label>
       </div>
@@ -1469,7 +1516,7 @@ function renderPrice(days, q) {
     .filter(Boolean).map(t => `<span class="chip">${t}</span>`).join('');
   document.getElementById('mini-t').textContent = `${document.getElementById('q-title').textContent} · ${sel.pax} traveler${sel.pax > 1 ? 's' : ''}${focOf(sel) ? ` + ${focOf(sel)} FOC` : ''}`;
   document.getElementById('mini-p').textContent = 'Quotation on request';
-  document.getElementById('veh-hint').textContent = up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false });
+  document.getElementById('veh-hint').innerHTML = esc(up ? `Chauffeur-driven ${up.label} + English-speaking guide` : vehicleLabel({ ...q.plan, luggage: false })).split(' + ').join('<br>+ ');
   const lug = document.getElementById('lug-on'), planLug = planFor(headsOf(sel), sel.market, false).luggage;
   lug.checked = planLug || sel.luggage; lug.disabled = planLug;
   document.getElementById('lug-hint').textContent = planLug ? 'A luggage van is already included for your group size.' : 'Adds a luggage van for arrival and departure. Standard is one large suitcase per person.';
@@ -1733,15 +1780,19 @@ function showGate(tab) {
   const sel = document.getElementById('g-country');
   if (!sel.options.length) sel.innerHTML = '<option value="">Select country</option>' + COUNTRIES.map(([n, c]) => `<option value="${c}">${n}</option>`).join('');
 }
+var pendingReq = false; // set when "Request a quotation" opened the login, so the request goes ahead after login
+function hideGate() { document.getElementById('gate').hidden = true; document.body.classList.remove('gated'); pendingReq = false; }
 function onAuth(fresh) {
   try { localStorage.setItem(AUTH_KEY, JSON.stringify(authOf())); } catch {}
   document.getElementById('gate').hidden = true; document.body.classList.remove('gated');
   const acct = document.getElementById('acct');
+  document.getElementById('auth-btns').hidden = true;
   acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
   const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
   if (BUYER.country && !sel.country) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
   if (fresh) gateWelcome();
   render();
+  if (pendingReq) { pendingReq = false; doRequest(document.querySelector('[data-req]')); }
 }
 function gateWelcome() {
   const w = document.getElementById('welcome');
@@ -1795,7 +1846,9 @@ document.getElementById('gate').addEventListener('click', async e => {
   }
 });
 document.addEventListener('click', e => {
-  if (e.target.id === 'acct-out') { try { localStorage.removeItem(AUTH_KEY); } catch {} BUYER = null; TOKEN = ''; lastReq = null; hideQuote(); document.getElementById('acct').hidden = true; document.getElementById('welcome').hidden = true; showGate('in'); render(); }
+  if (e.target.id === 'acct-out') { try { localStorage.removeItem(AUTH_KEY); } catch {} BUYER = null; TOKEN = ''; lastReq = null; hideQuote(); document.getElementById('acct').hidden = true; document.getElementById('auth-btns').hidden = false; document.getElementById('welcome').hidden = true; render(); }
+  const ab = e.target.closest('[data-auth]'); if (ab) { pendingReq = false; showGate(ab.dataset.auth); gateMsg(''); }
+  if (e.target.id === 'g-x' || e.target.id === 'gate') hideGate();
   if (e.target.id === 'welcome-x') document.getElementById('welcome').hidden = true;
 });
 // the price card asks for a request; the request opens the quotation view with the buyer's price (discount struck through)
@@ -1811,7 +1864,7 @@ function requestPayload() {
     addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website') };
 }
 async function doRequest(btn) {
-  if (!BUYER) { showGate('in'); return; }
+  if (!BUYER) { showGate('in'); gateMsg('Please log in or sign up to see your quotation.', true); pendingReq = true; return; }
   const st = document.getElementById('status'), payload = requestPayload(), key = JSON.stringify(payload);
   if (lastReq && lastReq.key === key) { showQuote(lastReq.d); return; } // nothing changed since the last request
   if (window.HK_PREVIEW) { showQuote({ id: 'PREVIEW', prices: null }); return; }
@@ -1819,7 +1872,7 @@ async function doRequest(btn) {
   const was = btn ? btn.textContent : ''; if (btn) btn.textContent = 'Preparing your quotation…'; st.textContent = '';
   try {
     const r = await hkFetch('/api/request', 'POST', payload), d = await r.json().catch(() => ({}));
-    if (r.status === 401) { BUYER = null; TOKEN = ''; showGate('in'); gateMsg('Please log in again.'); return; }
+    if (r.status === 401) { BUYER = null; TOKEN = ''; document.getElementById('acct').hidden = true; document.getElementById('auth-btns').hidden = false; showGate('in'); gateMsg('Please log in again.'); pendingReq = true; return; }
     if (!r.ok) throw new Error(d.error || 'Error');
     lastReq = { key, d }; showQuote(d);
   } catch (e) {
@@ -1859,10 +1912,10 @@ function showQuote(d) {
   const qv = document.getElementById('qv');
   qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="qv-back">← Edit tour</button><span class="sp"></span><button type="button" class="btn ghost" id="qv-pdf">Save as PDF</button><a class="btn ghost" href="${document.getElementById('wa-btn').href}" target="_blank" rel="noopener">WhatsApp us</a></div>
     <div class="card"><div class="qv-head"><div><div class="qv-ref">Quotation ${esc(d.id || '')} · ${fmtDate(new Date())}</div><h2>${esc(document.getElementById('q-title').textContent)}</h2>
-      <div class="route">${esc(document.getElementById('q-route').textContent)}</div><div class="qv-for">Prepared for ${esc(BUYER.name)}, ${esc(BUYER.company)} (${esc(BUYER.code)})</div></div>${price}</div></div>${slabs}
+      <div class="route">${esc(document.getElementById('q-route').textContent)}</div><div class="qv-for">Prepared for ${esc(BUYER.name)}, ${esc(BUYER.company)} (${esc(BUYER.code)})</div></div>${price}</div><div class="qv-hotel"><b>Hotels are not included in this price.</b> Our tour team will email hotel options to ${esc(BUYER.email)}, usually within one working day.</div></div>${slabs}
     <div class="card"><div class="sec-h">Details</div><table>${rows.map(([k, x]) => `<tr><th>${k}</th><td>${esc(x)}</td></tr>`).join('')}</table></div>
     <div class="card"><div class="sec-h">Day-by-day itinerary</div>${itin}</div>
-    <div class="card"><p class="q-note" style="margin:0">Hotels are quoted separately: our tour team will email hotel options to ${esc(BUYER.email)}, usually within one working day. Prices are in US dollars for private touring, and are confirmed with your booking.</p></div>`;
+    <div class="card"><p class="q-note" style="margin:0">Prices are in US dollars for private touring, and are confirmed with your booking.</p></div>`;
   qv.hidden = false; document.body.classList.add('qv-on'); window.scrollTo(0, 0);
 }
 function hideQuote() { document.getElementById('qv').hidden = true; document.body.classList.remove('qv-on'); }
@@ -1875,8 +1928,83 @@ document.addEventListener('click', e => {
 (async function initGate() {
   let a = null; try { a = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null'); } catch {}
   if (a && a.email && a.token) { try { const r = await gateCall('/api/login', a); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(false); return; } catch {} }
-  showGate('in');
+  // not logged in: the page stays open; the login opens from the header buttons or from "Request a quotation"
 })();
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('gate').hidden) hideGate(); });
+// ---- phone layout: the left-column boxes are steps, one at a time, with Back / Next
+const SIDE_STEPS = ['.trip', '#hotels', '#opts', '.meals-box', '.addons'], SIDE_NAMES = ['Group', 'Hotels', 'Style', 'Meals', 'Add-ons'];
+let sideI = 0;
+const sideNarrow = () => document.documentElement.clientWidth <= 900;
+function sideGo(i, scroll) {
+  const from = sideI; sideI = Math.max(0, Math.min(SIDE_STEPS.length - 1, i));
+  SIDE_STEPS.forEach((q, k) => { const c = document.querySelector('.side > ' + q); if (!c) return; c.classList.toggle('step-on', k === sideI); c.classList.toggle('from-left', k === sideI && sideI < from); });
+  document.querySelectorAll('#side-steps button').forEach((b, k) => { b.classList.toggle('on', k === sideI); b.classList.toggle('done', k < sideI); });
+  document.getElementById('side-prev').hidden = sideI === 0;
+  document.getElementById('side-next').textContent = sideI < SIDE_STEPS.length - 1 ? `Next: ${SIDE_NAMES[sideI + 1]}` : 'Done: see the itinerary';
+  if (scroll && sideNarrow()) document.getElementById('side').scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+document.getElementById('side-steps').addEventListener('click', e => { const b = e.target.closest('[data-step]'); if (b) sideGo(+b.dataset.step, true); });
+document.getElementById('side-prev').addEventListener('click', () => sideGo(sideI - 1, true));
+document.getElementById('side-next').addEventListener('click', () => {
+  if (sideI < SIDE_STEPS.length - 1) sideGo(sideI + 1, true);
+  else { const it = document.getElementById('itin-card'); it.style.scrollMarginTop = '84px'; it.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+});
+// ---- "How it works": a short guide shown on the first visit only (remembered in this browser); the header button replays it
+const TOUR_KEY = 'hk-guide-seen';
+const TOUR = [
+  { el: '.trip', t: 'Set up your group', p: 'Choose the number of travelers, where they come from, the arrival date, and the cities and nights for your tour.' },
+  { el: '#quote-card', t: 'Your tour at a glance', p: 'Your tour summary updates as you go. When you are happy with it, press Request a quotation here.' },
+  { el: '#itin-card', t: 'Make the itinerary yours', p: 'Use Change to swap a day for another tour in the same city, or add your own places and requests to any day.' },
+  { el: '#hotels', t: 'Hotels, meals and add-ons', p: 'Tell us the hotel category and rooms you need, and add meals or experiences to your tour.', pm: 'Tap Next to go through hotels, tour style, meals and add-ons, one step at a time.' },
+  { el: '#send-btn', t: 'See your price', p: 'Request a quotation to see the land fee straight away. It takes a one-minute sign-up the first time. Hotel options and rates follow by email.' },
+];
+let tourI = -1, tourEls = null;
+function tourEnd() {
+  if (!tourEls) return; Object.values(tourEls).forEach(n => n.remove()); tourEls = null; tourI = -1;
+  if (sideNarrow()) sideGo(0);
+  try { localStorage.setItem(TOUR_KEY, '1'); } catch {}
+  window.removeEventListener('resize', tourPlace); window.removeEventListener('scroll', tourPlace);
+}
+function tourPlace() {
+  if (!tourEls) return;
+  const st = TOUR[tourI], el = document.querySelector(st.el); if (!el) return;
+  const r = el.getBoundingClientRect(), sx = scrollX, sy = scrollY, pad = 8, vw = document.documentElement.clientWidth;
+  Object.assign(tourEls.spot.style, { top: (r.top + sy - pad) + 'px', left: (r.left + sx - pad) + 'px', width: (r.width + pad * 2) + 'px', height: (r.height + pad * 2) + 'px' });
+  const pop = tourEls.pop, pw = pop.offsetWidth, ph = pop.offsetHeight, gap = 16, vh = innerHeight;
+  let top, left;
+  if (vw > 900 && r.right + gap + pw < vw - 12) { left = r.right + gap; top = Math.max(r.top, 12); }          // beside, on the right
+  else if (vw > 900 && r.left - gap - pw > 12) { left = r.left - gap - pw; top = Math.max(r.top, 12); }      // beside, on the left
+  else if (r.bottom + gap + ph < vh - 12) { left = Math.min(Math.max(r.left, 12), vw - pw - 12); top = r.bottom + gap; }  // below
+  else { left = (vw - pw) / 2; top = vh - ph - 12; }                                                          // pinned to the bottom of the screen
+  if (top + ph > vh - 12) top = Math.max(12, vh - ph - 12);
+  Object.assign(pop.style, { top: (top + sy) + 'px', left: (left + sx) + 'px' });
+}
+function tourShow(i) {
+  tourI = i; const st = TOUR[i];
+  const si = SIDE_STEPS.indexOf(st.el); if (si >= 0 && sideNarrow()) sideGo(si);
+  const el = document.querySelector(st.el);
+  if (!el) { if (i + 1 < TOUR.length) tourShow(i + 1); else tourEnd(); return; }
+  const last = i === TOUR.length - 1;
+  tourEls.pop.innerHTML = `<h3>${st.t}</h3><p>${st.pm && sideNarrow() ? st.pm : st.p}</p><div class="tg-foot"><span class="tg-dots">${TOUR.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</span>${last ? '' : '<button type="button" class="tg-skip" data-tg="skip">Skip</button>'}${i ? '<button type="button" class="btn ghost" data-tg="back">Back</button>' : ''}<button type="button" class="btn" data-tg="next">${last ? 'Start designing' : 'Next'}</button></div>`;
+  const r = el.getBoundingClientRect();
+  const narrow = document.documentElement.clientWidth <= 900, tall = r.height > innerHeight * .6;
+  if (narrow && r.height > innerHeight * .35) { el.scrollIntoView({ block: 'start', behavior: 'instant' }); scrollBy(0, -96); } // room for the price bar that sticks to the top
+  else { el.scrollIntoView({ block: tall ? 'start' : 'center', behavior: 'instant' }); if (tall) scrollBy(0, -90); }
+  tourPlace(); tourEls.pop.querySelector('[data-tg="next"]').focus({ preventScroll: true });
+}
+function tourStart() {
+  if (tourEls) return; hideQuote();
+  const mk = c => { const d = document.createElement('div'); d.className = c; document.body.appendChild(d); return d; };
+  tourEls = { block: mk('tg-block'), spot: mk('tg-spot'), pop: mk('tg-pop') };
+  tourEls.pop.setAttribute('role', 'dialog'); tourEls.pop.setAttribute('aria-label', 'How it works');
+  tourEls.pop.addEventListener('click', e => { const b = e.target.closest('[data-tg]'); if (!b) return;
+    if (b.dataset.tg === 'skip') tourEnd(); else if (b.dataset.tg === 'back') tourShow(tourI - 1); else if (tourI + 1 < TOUR.length) tourShow(tourI + 1); else { tourEnd(); scrollTo(0, 0); } });
+  window.addEventListener('resize', tourPlace); window.addEventListener('scroll', tourPlace, { passive: true });
+  tourShow(0);
+}
+document.getElementById('tour-btn').addEventListener('click', tourStart);
+document.addEventListener('keydown', e => { if (!tourEls) return; if (e.key === 'Escape') tourEnd(); if (e.key === 'ArrowRight' && tourI + 1 < TOUR.length) tourShow(tourI + 1); if (e.key === 'ArrowLeft' && tourI > 0) tourShow(tourI - 1); });
+setTimeout(() => { let seen = false; try { seen = !!localStorage.getItem(TOUR_KEY); } catch {} if (!seen && document.getElementById('gate').hidden) tourStart(); }, 700);
 </script>
 </body>
 </html>
