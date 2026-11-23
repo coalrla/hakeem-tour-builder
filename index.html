@@ -501,6 +501,16 @@ body.qv-on main, body.qv-on .intro, body.qv-on .mini { display: none !important;
   body.qv-on .qv-bar, body.qv-on .top a, body.qv-on .acct, body.qv-on .auth-btns, body.qv-on .help-btn { display: none !important; }
   .qv { margin: 0; padding: 0; }
 }
+.g-opt { font-weight: 400; color: var(--muted); }
+#g-country-box input { width: 100%; box-sizing: border-box; }
+.g-mail { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr); align-items: center; gap: 6px; }
+.g-mail input { min-width: 0; }
+.g-mail span { color: var(--muted); font-weight: 600; }
+.pin-boxes { display: flex; gap: 8px; }
+.g-form .pin-boxes input { width: 48px; height: 50px; padding: 0; text-align: center; font-size: 1.3rem; box-sizing: border-box; }
+#g-country-list li.gh-h { font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 10px 10px 4px; cursor: default; }
+#g-country-list li.gh-h ~ li.gh-h { border-top: 1px solid var(--line); margin-top: 4px; }
+#gate input.pin { letter-spacing: .5em; max-width: 9em; }
 footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .8rem; color: var(--muted); }
 </style>
 </head>
@@ -512,21 +522,20 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
   <p class="g-sub">For travel agencies and tour operators.</p>
   <div id="g-up" class="g-form" hidden>
     <label>Your name<input id="g-name" autocomplete="name"></label>
-    <label>Company / agency<input id="g-company" autocomplete="organization"></label>
-    <label>Email<input id="g-email" type="email" autocomplete="email"></label>
-    <label>Country<select id="g-country"></select></label>
-    <label>Phone (with country code)<input id="g-phone" type="tel" autocomplete="tel" placeholder="+971 50 123 4567"></label>
-    <label>Password (at least 8 characters)<input id="g-pw" type="password" autocomplete="new-password"></label>
-    <label>Confirm password<input id="g-pw2" type="password" autocomplete="new-password"></label>
+    <label for="g-email-id">Email</label><div class="g-mail"><input id="g-email-id" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="name"><span>@</span><input id="g-email-dom" autocapitalize="off" spellcheck="false" placeholder="company.com" list="g-mail-doms"></div><datalist id="g-mail-doms"><option value="gmail.com"><option value="outlook.com"><option value="hotmail.com"><option value="yahoo.com"><option value="icloud.com"></datalist><input type="hidden" id="g-email">
+    <label for="g-country-in">Country</label><div class="combo" id="g-country-box"><input id="g-country-in" role="combobox" aria-expanded="false" aria-controls="g-country-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Type to search"><ul class="combo-list" id="g-country-list" role="listbox" hidden></ul></div><input type="hidden" id="g-country">
+    <label><span>Phone <span class="g-opt">(optional)</span></span><input id="g-phone" type="tel" autocomplete="tel" placeholder="+82 10 1234 5678"></label>
+    <label>4-digit PIN<input id="g-pw" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password"></label>
+    <label>Confirm PIN<input id="g-pw2" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password"></label>
     <input id="g-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px">
     <button type="button" class="btn" id="g-signup">Sign up</button>
     <p class="g-note">Already have an account? <button type="button" class="linkbtn" data-g="in">Log in</button></p>
   </div>
   <div id="g-in" class="g-form">
     <label>Email<input id="g-in-email" type="email" autocomplete="email"></label>
-    <label>Password<input id="g-in-pw" type="password" autocomplete="current-password"></label>
+    <label>4-digit PIN<input id="g-in-pw" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password"></label>
     <button type="button" class="btn" id="g-signin">Log in</button>
-    <p class="g-note">New to Hakeem Travel Korea? <button type="button" class="linkbtn" data-g="up">Sign up</button><br><button type="button" class="linkbtn" data-g="reset">Forgot your password?</button></p>
+    <p class="g-note">New to Hakeem Travel Korea? <button type="button" class="linkbtn" data-g="up">Sign up</button><br><button type="button" class="linkbtn" data-g="reset">Forgot your PIN?</button></p>
   </div>
   <div id="g-reset" class="g-form" hidden>
     <p class="g-note">Enter the email you signed up with. We will send you a 6-digit code.</p>
@@ -534,9 +543,9 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
     <button type="button" class="btn" id="g-r-send">Send code</button>
     <div id="g-r-step2" class="g-form" hidden>
       <label>6-digit code<input id="g-r-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label>
-      <label>New password (at least 8 characters)<input id="g-r-pw" type="password" autocomplete="new-password"></label>
-      <label>Confirm new password<input id="g-r-pw2" type="password" autocomplete="new-password"></label>
-      <button type="button" class="btn" id="g-r-set">Set password and log in</button>
+      <label>New 4-digit PIN<input id="g-r-pw" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password"></label>
+      <label>Confirm new PIN<input id="g-r-pw2" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password"></label>
+      <button type="button" class="btn" id="g-r-set">Set PIN and log in</button>
     </div>
     <p class="g-note"><button type="button" class="linkbtn" data-g="in">Back to log in</button></p>
   </div>
@@ -1777,10 +1786,92 @@ function showGate(tab) {
   document.querySelectorAll('.g-tab').forEach(b => b.classList.toggle('on', b.dataset.g === tab));
   document.getElementById('g-up').hidden = tab !== 'up'; document.getElementById('g-in').hidden = tab !== 'in'; document.getElementById('g-reset').hidden = tab !== 'reset';
   if (tab === 'reset') { const r = document.getElementById('g-r-email'); if (!r.value) r.value = document.getElementById('g-in-email').value; }
-  const sel = document.getElementById('g-country');
-  // sign-up country is the agency's own country, so Korea is listed here (it is not a 'Guests from' choice)
-  if (!sel.options.length) sel.innerHTML = '<option value="">Select country</option>' + [...COUNTRIES, ['South Korea', 'KOR']].sort((a, b) => a[0].localeCompare(b[0])).map(([n, c]) => `<option value="${c}">${n}</option>`).join('');
 }
+// sign-up: picking a country puts its calling code in the phone box (phone is optional); PINs are 4 digits
+const DIAL = {AFG:93,ALB:355,DZA:213,ASM:1,AND:376,AGO:244,AIA:1,ATG:1,ARG:54,ARM:374,ABW:297,AUS:61,AUT:43,AZE:994,BHS:1,BHR:973,BGD:880,BRB:1,BLR:375,BEL:32,BLZ:501,BEN:229,BMU:1,BTN:975,BOL:591,BES:599,BIH:387,BWA:267,BRA:55,VGB:1,BRN:673,BGR:359,BFA:226,BDI:257,CPV:238,KHM:855,CMR:237,CAN:1,CYM:1,CAF:236,TCD:235,CHL:56,CHN:86,CXR:61,CCK:61,COL:57,COM:269,COG:242,COK:682,CRI:506,HRV:385,CUB:53,CUW:599,CYP:357,CZE:420,CIV:225,COD:243,DNK:45,DJI:253,DMA:1,DOM:1,ECU:593,EGY:20,SLV:503,GNQ:240,ERI:291,EST:372,SWZ:268,ETH:251,FLK:500,FRO:298,FJI:679,FIN:358,FRA:33,GUF:594,PYF:689,GAB:241,GMB:220,GEO:995,DEU:49,GHA:233,GIB:350,GRC:30,GRL:299,GRD:1,GLP:590,GUM:1,GTM:502,GGY:44,GIN:224,GNB:245,GUY:592,HTI:509,HND:504,HKG:852,HUN:36,ISL:354,IND:91,IDN:62,IRN:98,IRQ:964,IRL:353,IMN:44,ISR:972,ITA:39,JAM:1,JPN:81,JEY:44,JOR:962,KAZ:7,KEN:254,KIR:686,KWT:965,KGZ:996,LAO:856,LVA:371,LBN:961,LSO:266,LBR:231,LBY:218,LIE:423,LTU:370,LUX:352,MAC:853,MDG:261,MWI:265,MYS:60,MDV:960,MLI:223,MLT:356,MHL:692,MTQ:596,MRT:222,MUS:230,MYT:262,MEX:52,FSM:691,MDA:373,MCO:377,MNG:976,MNE:382,MSR:1,MAR:212,MOZ:258,MMR:95,NAM:264,NRU:674,NPL:977,NLD:31,NCL:687,NZL:64,NIC:505,NER:227,NGA:234,NIU:683,NFK:672,MKD:389,MNP:1,NOR:47,OMN:968,PAK:92,PLW:680,PSE:970,PAN:507,PNG:675,PRY:595,PER:51,PHL:63,POL:48,PRT:351,PRI:1,QAT:974,ROU:40,RUS:7,RWA:250,REU:262,BLM:590,SHN:290,KNA:1,LCA:1,MAF:590,SPM:508,VCT:1,WSM:685,SMR:378,STP:239,SAU:966,SEN:221,SRB:381,SYC:248,SLE:232,SGP:65,SXM:1,SVK:421,SVN:386,SLB:677,SOM:252,ZAF:27,SSD:211,ESP:34,LKA:94,SDN:249,SUR:597,SJM:47,SWE:46,CHE:41,SYR:963,TWN:886,TJK:992,TZA:255,THA:66,TLS:670,TGO:228,TKL:690,TON:676,TTO:1,TUN:216,TUR:90,TKM:993,TCA:1,TUV:688,VIR:1,UGA:256,UKR:380,ARE:971,GBR:44,USA:1,URY:598,UZB:998,VUT:678,VAT:39,VEN:58,VNM:84,WLF:681,YEM:967,ZMB:260,ZWE:263,ALA:358,KOR:82};
+const phoneVal = () => { const v = document.getElementById('g-phone').value.trim(); return /^\+?\d{0,4}$/.test(v) ? '' : v; };
+function gDial(code) {
+  const ph = document.getElementById('g-phone'), c = DIAL[code]; if (!c) return;
+  const cur = ph.value.trim(); if (!cur || /^\+\d{1,4}$/.test(cur)) ph.value = '+' + c + ' ';
+}
+// sign-up country box: A–Z list, type to search (UAE, KSA, UK, USA work too). The agency's own country, so Korea is in this list.
+const G_C = [...COUNTRIES, ['South Korea', 'KOR']].sort((a, b) => a[0].localeCompare(b[0]));
+const gIn = document.getElementById('g-country-in'), gList = document.getElementById('g-country-list'), gHid = document.getElementById('g-country');
+let gHits = [], gAct = 0;
+const isC = x => Array.isArray(x); // a country row (strings are group headings)
+function gFilter(q) {
+  q = q.trim().toLowerCase();
+  if (!q) return G_C;
+  const alias = { uae: 'ARE', emirates: 'ARE', dubai: 'ARE', 'abu dhabi': 'ARE', ksa: 'SAU', saudi: 'SAU', uk: 'GBR', britain: 'GBR', england: 'GBR', usa: 'USA', us: 'USA', america: 'USA', korea: 'KOR', 'south korea': 'KOR' }[q];
+  if (alias) return G_C.filter(x => x[1] === alias);
+  const starts = G_C.filter(([n]) => n.toLowerCase().startsWith(q));
+  return [...starts, ...G_C.filter(x => !starts.includes(x) && (x[0].toLowerCase().split(/[\s,()-]+/).some(w => w.startsWith(q)) || x[1].toLowerCase() === q))];
+}
+function gOpen(q) {
+  gHits = gFilter(q); gAct = gHits.findIndex(x => isC(x) && x[1] === gHid.value);
+  if (gAct < 0) gAct = gHits.findIndex(isC);
+  gList.innerHTML = gHits.length ? gHits.map((x, i) => isC(x) ? `<li role="option" data-c="${x[1]}" aria-selected="${i === gAct}">${x[0]}</li>` : `<li class="none gh-h" role="presentation">${x}</li>`).join('') : '<li class="none">No match</li>';
+  gList.hidden = false; gIn.setAttribute('aria-expanded', 'true');
+  const a = gList.querySelector('[aria-selected="true"]'); if (a) a.scrollIntoView({ block: 'nearest' });
+}
+function gClose() { gList.hidden = true; gIn.setAttribute('aria-expanded', 'false'); }
+function gPick(code) { const x = G_C.find(y => y[1] === code); gClose(); if (!x) return; gHid.value = code; gIn.value = x[0]; gDial(code); }
+function gMove(d) {
+  if (!gHits.some(isC)) return;
+  do { gAct = (gAct + d + gHits.length) % gHits.length; } while (!isC(gHits[gAct]));
+  gList.querySelectorAll('li').forEach((li, i) => li.setAttribute('aria-selected', String(i === gAct)));
+  gList.children[gAct].scrollIntoView({ block: 'nearest' });
+}
+gIn.addEventListener('focus', () => { gIn.select(); gOpen(''); });
+gIn.addEventListener('input', () => { gOpen(gIn.value); gAct = gHits.findIndex(isC); gList.querySelectorAll('li').forEach((li, i) => li.setAttribute('aria-selected', String(i === gAct))); });
+gIn.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); gList.hidden ? gOpen(gIn.value) : gMove(1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); gMove(-1); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (!gList.hidden && isC(gHits[gAct])) gPick(gHits[gAct][1]); }
+  else if (e.key === 'Escape') { e.stopPropagation(); gClose(); }
+});
+gList.addEventListener('mousedown', e => { const li = e.target.closest('li[data-c]'); if (li) { e.preventDefault(); gPick(li.dataset.c); } });
+gIn.addEventListener('blur', () => {
+  if (gList.hidden) return;
+  const q = gIn.value.trim().toLowerCase(), exact = G_C.find(([n, c]) => n.toLowerCase() === q || c.toLowerCase() === q), hits = gFilter(q).filter(isC);
+  if (exact) return gPick(exact[1]);
+  if (q && hits.length === 1) return gPick(hits[0][1]);
+  gClose(); const cur = G_C.find(x => x[1] === gHid.value); gIn.value = cur ? cur[0] : '';
+});
+// company name is taken from the email domain (aurora-holidays.com -> Aurora Holidays); free mail (gmail etc.) uses the person's name
+const FREE_MAIL = ['gmail', 'googlemail', 'outlook', 'hotmail', 'live', 'msn', 'yahoo', 'icloud', 'me', 'aol', 'proton', 'protonmail', 'naver', 'daum', 'hanmail', 'yandex', 'mail', 'gmx', 'zoho', 'rediffmail'];
+function companyOf(email, name) {
+  const p = (email.split('@')[1] || '').toLowerCase().split('.').filter(Boolean);
+  let i = p.length - 2; if (i > 0 && ['co', 'com', 'net', 'org', 'ac', 'gov', 'edu', 'ne', 'or'].includes(p[i])) i--;
+  const w = p[Math.max(0, i)];
+  return !w || FREE_MAIL.includes(w) ? name : w.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+// sign-up email in two parts (name @ domain); typing @ or pasting a full address in the first box fills both
+function gMail() {
+  const a = document.getElementById('g-email-id'), b = document.getElementById('g-email-dom');
+  if (a.value.includes('@')) { const [x, ...y] = a.value.split('@'); a.value = x.trim(); if (y.join('@').trim()) b.value = y.join('@').trim(); b.focus(); }
+  b.value = b.value.replace(/^@+/, '');
+  document.getElementById('g-email').value = a.value.trim() && b.value.trim() ? `${a.value.trim()}@${b.value.trim()}` : '';
+}
+['g-email-id', 'g-email-dom'].forEach(id => document.getElementById(id).addEventListener('input', gMail));
+// PIN in four boxes: each box takes one digit and moves on; the hidden original field keeps the 4-digit value the form reads
+document.querySelectorAll('#gate input.pin').forEach(orig => {
+  const wrap = document.createElement('div'); wrap.className = 'pin-boxes';
+  const boxes = [0, 1, 2, 3].map(k => { const b = document.createElement('input'); b.type = 'password'; b.inputMode = 'numeric'; b.autocomplete = k ? 'off' : orig.autocomplete; b.setAttribute('aria-label', `PIN digit ${k + 1}`); wrap.appendChild(b); return b; });
+  orig.hidden = true; orig.tabIndex = -1; orig.after(wrap);
+  const sync = () => { orig.value = boxes.map(b => b.value).join(''); };
+  const fill = (k, d) => { d.slice(0, 4 - k).split('').forEach((c, j) => { boxes[k + j].value = c; }); boxes[Math.min(3, k + d.length)].focus(); sync(); };
+  boxes.forEach((b, k) => {
+    b.addEventListener('input', () => { const d = b.value.replace(/\D/g, ''); if (d.length > 1) return fill(k, d); b.value = d; if (d && k < 3) boxes[k + 1].focus(); sync(); });
+    b.addEventListener('paste', e => { const d = ((e.clipboardData && e.clipboardData.getData('text')) || '').replace(/\D/g, ''); if (!d) return; e.preventDefault(); fill(k, d); });
+    b.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !b.value && k) { e.preventDefault(); boxes[k - 1].value = ''; boxes[k - 1].focus(); sync(); }
+      else if (e.key === 'ArrowLeft' && k) boxes[k - 1].focus();
+      else if (e.key === 'ArrowRight' && k < 3) boxes[k + 1].focus();
+    });
+    b.addEventListener('focus', () => b.select());
+  });
+});
 var pendingReq = false; // set when "Request a quotation" opened the login, so the request goes ahead after login
 function hideGate() { document.getElementById('gate').hidden = true; document.body.classList.remove('gated'); pendingReq = false; }
 function onAuth(fresh) {
@@ -1816,10 +1907,10 @@ document.getElementById('gate').addEventListener('click', async e => {
   if (b.dataset.g) { showGate(b.dataset.g); gateMsg(''); return; }
   const v = id => document.getElementById(id).value.trim();
   if (b.id === 'g-signup') {
-    const body = { email: v('g-email'), name: v('g-name'), company: v('g-company'), country: v('g-country'), phone: v('g-phone'), password: document.getElementById('g-pw').value, website: v('g-website') };
-    if (!body.name || !body.company || !body.country || !body.phone || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Please fill in every field with a valid email.');
-    if (body.password.length < 8) return gateMsg('Please choose a password of at least 8 characters.');
-    if (body.password !== document.getElementById('g-pw2').value) return gateMsg('The two passwords do not match.');
+    const body = { email: v('g-email'), name: v('g-name'), company: companyOf(v('g-email'), v('g-name')), country: v('g-country'), phone: phoneVal(), password: document.getElementById('g-pw').value, website: v('g-website') };
+    if (!body.name || !body.country || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Please fill in your name, country and a valid email.');
+    if (!/^\d{4}$/.test(body.password)) return gateMsg('Please choose a 4-digit PIN.');
+    if (body.password !== document.getElementById('g-pw2').value) return gateMsg('The two PINs do not match.');
     b.disabled = true; gateMsg('Creating your access code…', true);
     try { const r = await gateCall('/api/signup', body); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(true); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
   }
@@ -1833,15 +1924,15 @@ document.getElementById('gate').addEventListener('click', async e => {
   if (b.id === 'g-r-set') {
     const body = { email: v('g-r-email'), code: v('g-r-code'), password: document.getElementById('g-r-pw').value };
     if (!/^\d{6}$/.test(body.code)) return gateMsg('Enter the 6-digit code from the email.');
-    if (body.password.length < 8) return gateMsg('Please choose a password of at least 8 characters.');
-    if (body.password !== document.getElementById('g-r-pw2').value) return gateMsg('The two passwords do not match.');
+    if (!/^\d{4}$/.test(body.password)) return gateMsg('Please choose a 4-digit PIN.');
+    if (body.password !== document.getElementById('g-r-pw2').value) return gateMsg('The two PINs do not match.');
     b.disabled = true; gateMsg('Saving…', true);
     try { const r = await gateCall('/api/reset', body); BUYER = r.buyer; TOKEN = r.token || ''; gateMsg(''); onAuth(false); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
   }
   if (b.id === 'g-signin') {
     const body = { email: v('g-in-email'), password: document.getElementById('g-in-pw').value };
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Enter the email you signed up with.');
-    if (!body.password) return gateMsg('Enter your password.');
+    if (!/^\d{4}$/.test(body.password)) return gateMsg('Enter your 4-digit PIN.');
     b.disabled = true; gateMsg('Logging in…', true);
     try { const r = await gateCall('/api/login', body); BUYER = r.buyer; TOKEN = r.token || ''; onAuth(false); } catch (err) { gateMsg(err.message); } finally { b.disabled = false; }
   }
