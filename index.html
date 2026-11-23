@@ -505,6 +505,8 @@ body.qv-on main, body.qv-on .intro, body.qv-on .mini { display: none !important;
 #g-country-box input { width: 100%; box-sizing: border-box; }
 .g-mail { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr); align-items: center; gap: 6px; }
 .g-mail input { min-width: 0; }
+.g-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.g-two input { min-width: 0; }
 .g-mail span { color: var(--muted); font-weight: 600; }
 .pin-boxes { display: flex; gap: 8px; }
 .g-form .pin-boxes input { width: 48px; height: 50px; padding: 0; text-align: center; font-size: 1.3rem; box-sizing: border-box; }
@@ -521,7 +523,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
   <h2 id="g-title">Design your Korea tour</h2>
   <p class="g-sub">For travel agencies and tour operators.</p>
   <div id="g-up" class="g-form" hidden>
-    <label>Your name<input id="g-name" autocomplete="name"></label>
+    <div class="g-two"><label>First name<input id="g-first" autocomplete="given-name"></label><label>Last name<input id="g-last" autocomplete="family-name"></label></div><input type="hidden" id="g-name">
     <label for="g-email-id">Email</label><div class="g-mail"><input id="g-email-id" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="name"><span>@</span><input id="g-email-dom" autocapitalize="off" spellcheck="false" placeholder="company.com" list="g-mail-doms"></div><datalist id="g-mail-doms"><option value="gmail.com"><option value="outlook.com"><option value="hotmail.com"><option value="yahoo.com"><option value="icloud.com"></datalist><input type="hidden" id="g-email">
     <label for="g-country-in">Country</label><div class="combo" id="g-country-box"><input id="g-country-in" role="combobox" aria-expanded="false" aria-controls="g-country-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Type to search"><ul class="combo-list" id="g-country-list" role="listbox" hidden></ul></div><input type="hidden" id="g-country">
     <label><span>Phone <span class="g-opt">(optional)</span></span><input id="g-phone" type="tel" autocomplete="tel" placeholder="+82 10 1234 5678"></label>
@@ -1854,6 +1856,8 @@ function gMail() {
   document.getElementById('g-email').value = a.value.trim() && b.value.trim() ? `${a.value.trim()}@${b.value.trim()}` : '';
 }
 ['g-email-id', 'g-email-dom'].forEach(id => document.getElementById(id).addEventListener('input', gMail));
+// first and last name are sent as one name ("First Last")
+['g-first', 'g-last'].forEach(id => document.getElementById(id).addEventListener('input', () => { const f = document.getElementById('g-first').value.trim(), l = document.getElementById('g-last').value.trim(); document.getElementById('g-name').value = f && l ? `${f} ${l}` : ''; }));
 // PIN in four boxes: each box takes one digit and moves on; the hidden original field keeps the 4-digit value the form reads
 document.querySelectorAll('#gate input.pin').forEach(orig => {
   const wrap = document.createElement('div'); wrap.className = 'pin-boxes';
@@ -1908,7 +1912,7 @@ document.getElementById('gate').addEventListener('click', async e => {
   const v = id => document.getElementById(id).value.trim();
   if (b.id === 'g-signup') {
     const body = { email: v('g-email'), name: v('g-name'), company: companyOf(v('g-email'), v('g-name')), country: v('g-country'), phone: phoneVal(), password: document.getElementById('g-pw').value, website: v('g-website') };
-    if (!body.name || !body.country || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Please fill in your name, country and a valid email.');
+    if (!body.name || !body.country || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return gateMsg('Please fill in your first and last name, country and a valid email.');
     if (!/^\d{4}$/.test(body.password)) return gateMsg('Please choose a 4-digit PIN.');
     if (body.password !== document.getElementById('g-pw2').value) return gateMsg('The two PINs do not match.');
     b.disabled = true; gateMsg('Creating your access code…', true);

@@ -1330,6 +1330,8 @@ function planOf(r) {
 }
 const isMix = r => r.options.vehicle === 'Standard' && planOf(r).pickup !== planOf(r).tour;
 const hasLuggage = r => planOf(r).luggage; // luggage van on arrival and departure only
+// everyone travelling on a request (paying + FOC): vehicles, rooms and the vehicle order
+const headsR = r => (r.options.pax | 0) + (r.options.foc | 0);
 function vehicleName(r) {
   if (r.options.vehicle !== 'Standard') return r.options.vehicle;
   return vehicleKo(planOf(r));
@@ -1926,14 +1928,14 @@ function drawBuyers() {
   const keys = Object.keys(groups).sort((a, b) => Math.max(...groups[b].map(x => +new Date(x.createdAt))) - Math.max(...groups[a].map(x => +new Date(x.createdAt))));
   const pending = BUY.buyers.filter(b => !b.approved).length;
   $('buyers').innerHTML = `<div class="bar"><input id="by-q" placeholder="코드·회사·이름·이메일 검색" value="${esc(buyFilter)}"><span class="count">바이어 ${BUY.buyers.length}명 · 차단 ${pending}명</span><button class="btn" id="by-save">저장</button><span class="saved" id="by-msg"></span></div>
-  <p class="hint">가입하면 바로 승인되고(할인 없음), 승인을 해제하면 로그인이 막힙니다. 비밀번호를 잊은 바이어는 로그인 화면의 'Forgot your password?'에서 이메일로 받은 6자리 코드로 직접 바꿉니다. '비번 초기화'는 예외용으로, 저장하면 다음 로그인 때 입력한 비밀번호가 새 비밀번호가 됩니다. 할인은 담당자별 할인이 있으면 그것을, 없으면 회사 할인을 적용하고, 사이트에 원래 가격을 취소선으로 함께 보여줍니다.</p>
+  <p class="hint">가입하면 바로 승인되고(할인 없음), 승인을 해제하면 로그인이 막힙니다. 로그인은 이메일 + 4자리 PIN이고, 5번 틀리면 15분 동안 잠깁니다. PIN을 잊은 바이어는 로그인 화면의 'Forgot your PIN?'에서 이메일로 받은 6자리 코드로 직접 바꿉니다. 'PIN 초기화'는 예외용으로, 저장하면 다음 로그인 때 입력한 4자리가 새 PIN이 됩니다. 할인은 담당자별 할인이 있으면 그것을, 없으면 회사 할인을 적용하고, 사이트에 원래 가격을 취소선으로 함께 보여줍니다.</p>
   ${keys.length ? keys.map(k => { const c = BUY.companies[k] || { name: groups[k][0].company }, cd = compDirty[k] && compDirty[k].discount !== undefined ? compDirty[k].discount : c.discount;
     return `<div class="card bygroup"><div class="byh"><b>${esc(c.name || groups[k][0].company)}</b> <span class="hint">${esc(k)}</span><span class="sp" style="flex:1"></span><label class="hint">회사 할인 ${discInputs(cd, `data-cd="${esc(k)}" data-cf`)}</label></div>
       <table class="ht"><tr><th>코드</th><th>이름</th><th>이메일 · 전화</th><th>가입</th><th>최근 접속</th><th class="num">요청</th><th>승인</th><th>담당자 할인 (회사 할인보다 우선)</th><th>메모</th></tr>
       ${groups[k].map(b => { const u = { ...b, ...(buyDirty[b.code] || {}) };
         return `<tr data-code="${esc(b.code)}"${u.approved ? '' : ' class="pend"'}><td><b>${esc(b.code)}</b></td><td>${esc(b.name)}</td><td><a href="mailto:${esc(b.email)}">${esc(b.email)}</a><br><span class="hint">${esc(b.phone)}</span></td>
           <td>${fmtT(b.createdAt)}</td><td>${b.lastLogin ? fmtT(b.lastLogin) : '–'}</td><td class="num">${b.requests || 0}</td>
-          <td><label class="hint"><input type="checkbox" data-bf="approved"${u.approved ? ' checked' : ''}> ${u.approved ? '승인됨' : '차단'}</label><br><label class="hint"><input type="checkbox" data-bf="resetPassword"${u.resetPassword ? ' checked' : ''}> 비번 초기화</label>${b.hasPassword === false ? '<div class="hint">비밀번호 미설정</div>' : ''}</td>
+          <td><label class="hint"><input type="checkbox" data-bf="approved"${u.approved ? ' checked' : ''}> ${u.approved ? '승인됨' : '차단'}</label><br><label class="hint"><input type="checkbox" data-bf="resetPassword"${u.resetPassword ? ' checked' : ''}> PIN 초기화</label>${b.hasPassword === false ? '<div class="hint">PIN 미설정</div>' : ''}</td>
           <td>${discInputs(u.discount, 'data-bd')}${!u.discount && cd ? `<div class="hint">회사 할인 ${discText(cd)} 적용</div>` : ''}</td>
           <td><input data-bf="note" value="${esc(u.note || '')}" placeholder="메모"></td></tr>`; }).join('')}</table></div>`; }).join('') : '<div class="card empty">아직 가입한 바이어가 없습니다.</div>'}`;
 }
