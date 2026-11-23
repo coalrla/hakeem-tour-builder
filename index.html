@@ -1891,7 +1891,8 @@ function onAuth(fresh) {
   document.getElementById('gate').hidden = true; document.body.classList.remove('gated');
   const acct = document.getElementById('acct');
   document.getElementById('auth-btns').hidden = true;
-  acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
+  acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-my">My quotations<span id="acct-my-n"></span></button> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
+  myCount();
   const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
   if (BUYER.country && !sel.country && COUNTRIES.some(c => c[1] === BUYER.country)) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
   if (fresh) gateWelcome();
@@ -2022,6 +2023,94 @@ function showQuote(d) {
     <div class="card"><p class="q-note" style="margin:0">Prices are in US dollars for private touring, and are confirmed with your booking.</p></div>`;
   qv.hidden = false; document.body.classList.add('qv-on'); window.scrollTo(0, 0);
 }
+// ---- buyer-facing quotation (same layout in the admin PDF and the buyer's "My quotations"); never shows costs or margins
+const QD_CSS = `.hq-doc{--plum:#2A1240;--gold:#9A7420;--line:#E4DCCB;font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;color:#2A1240;background:#FFFFFF;line-height:1.5;font-size:14px;max-width:880px;margin:0 auto;padding:36px 40px;box-sizing:border-box}
+.hq-doc *{box-sizing:border-box}.hq-doc h1,.hq-doc h2,.hq-doc h3{margin:0;letter-spacing:-.01em}
+.hq-doc .qd-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--plum);padding-bottom:16px}
+.hq-doc .qd-brand b{display:block;font-size:22px;letter-spacing:.14em}.hq-doc .qd-brand span{font-size:10px;letter-spacing:.42em;color:var(--gold);font-weight:700}
+.hq-doc .qd-ref{text-align:right;font-size:12px;color:#5B4A6E}.hq-doc .qd-ref b{display:block;font-size:15px;color:var(--plum);letter-spacing:.04em}
+.hq-doc .qd-top{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:22px;align-items:start}
+.hq-doc .qd-ttl h1{font-size:26px;line-height:1.15}.hq-doc .qd-ttl .qd-rt{color:#5B4A6E;margin-top:4px}.hq-doc .qd-ttl .qd-for{margin-top:10px;font-size:13px}
+.hq-doc .qd-pbox{border:1.5px solid var(--plum);border-radius:12px;padding:14px 16px}.hq-doc .qd-pbox .qd-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}
+.hq-doc .qd-pbox .qd-big{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-weight:800;font-size:15px}.hq-doc .qd-pbox .qd-big b{font-size:22px;color:var(--gold)}
+.hq-doc .qd-pbox .qd-row span:last-child,.hq-doc .qd-big b{white-space:nowrap}.hq-doc .qd-pbox s{color:#8A7C99;margin-right:4px}.hq-doc .qd-pbox .qd-tot{font-size:12px;color:#5B4A6E;margin-top:4px}
+.hq-doc h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:26px 0 8px}
+.hq-doc table{width:100%;border-collapse:collapse;font-size:13px}.hq-doc th,.hq-doc td{text-align:left;vertical-align:top;padding:7px 10px 7px 0;border-top:1px solid var(--line)}
+.hq-doc th{width:30%;color:#5B4A6E;font-weight:600}.hq-doc .qd-ht th{width:auto}
+.hq-doc .qd-day{display:grid;grid-template-columns:62px minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);break-inside:avoid}
+.hq-doc .qd-day .qd-n{font-weight:800;font-size:12px;color:var(--gold);letter-spacing:.08em}.hq-doc .qd-day .qd-n b{display:block;font-size:24px;color:var(--plum);letter-spacing:0}
+.hq-doc .qd-day h3{font-size:16px}.hq-doc .qd-day .qd-rt{font-size:12px;color:#6C5D7E}.hq-doc .qd-day ul{margin:6px 0 0;padding-left:18px}.hq-doc .qd-day li{margin:2px 0}
+.hq-doc .qd-day .qd-x{font-size:12px;margin-top:6px;color:#4B3A5C}.hq-doc .qd-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}.hq-doc .qd-cols ul{margin:0;padding-left:18px}
+.hq-doc .qd-note{background:#F6F1E7;border-radius:10px;padding:12px 14px;white-space:pre-line}
+.hq-doc .qd-ft{margin-top:28px;border-top:2px solid var(--plum);padding-top:12px;font-size:11px;color:#5B4A6E;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:640px){.hq-doc{padding:22px 16px}.hq-doc .qd-top,.hq-doc .qd-cols{grid-template-columns:1fr}}
+@media print{.hq-doc{padding:0;max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table{break-inside:avoid}}`;
+function quoteDoc(s) {
+  const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const usd = n => 'US$ ' + Number(n || 0).toLocaleString('en-US');
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dt = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${+d} ${MON[+m - 1]} ${y}`; };
+  const p = s.price || {}, g = s.group || {}, tr = s.trip || {}, st = s.style || {};
+  const per = g.foc ? 'paying guest' : 'guest';
+  const rows = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)} (${tr.nights} nights)` : `${tr.nights} nights / ${tr.days} days · dates to be confirmed`],
+    ['Group', `${g.pax} paying guest${g.pax > 1 ? 's' : ''}${g.foc ? ` + ${g.foc} FOC (free of charge)` : ''}${g.country ? ' from ' + g.country : ''}`],
+    ['Style', [st.tier, st.theme, st.season].filter(Boolean).join(' · ')], ['Transport', s.vehicle]];
+  return `<div class="hq-doc">
+<div class="qd-hd"><div class="qd-brand"><b>HAKEEM</b><span>TRAVEL KOREA</span></div><div class="qd-ref"><b>QUOTATION ${e(s.ref || '')}</b>${s.draft ? 'Draft · ' : ''}${dt((s.sentAt || '').slice(0, 10))}</div></div>
+<div class="qd-top"><div class="qd-ttl"><h1>${e(s.title)}</h1><div class="qd-rt">${e(tr.cities || '')}</div>${s.buyer ? `<div class="qd-for">Prepared for <b>${e(s.buyer.name)}</b>${s.buyer.company ? ', ' + e(s.buyer.company) : ''}${s.buyer.code ? ` (${e(s.buyer.code)})` : ''}</div>` : ''}</div>
+<div class="qd-pbox"><div class="qd-row"><span>Land fee per ${per}</span><span>${p.landWas ? `<s>${usd(p.landWas)}</s>` : ''}${usd(p.landPerPerson)}</span></div>
+${p.hotelPerPerson ? `<div class="qd-row"><span>Hotels per ${per}</span><span>${usd(p.hotelPerPerson)}</span></div>` : ''}
+<div class="qd-row qd-big"><span>Total per ${per}</span><b>${usd(p.totalPerPerson)}</b></div>
+<div class="qd-tot">Total for ${p.pax} paying guest${p.pax > 1 ? 's' : ''}${p.foc ? ` + ${p.foc} FOC` : ''}: <b>${usd(p.total)}</b>${p.hotelPerPerson ? '' : ' · hotels excluded'}</div></div></div>
+<h2>Trip details</h2><table>${rows.filter(r => r[1]).map(([k, v]) => `<tr><th>${k}</th><td>${e(v)}</td></tr>`).join('')}</table>
+${(s.hotels || []).length ? `<h2>Hotels</h2><table class="qd-ht"><tr><th>City</th><th>Dates</th><th>Hotel</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td>${e(h.city)}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : ''} (${h.nights} night${h.nights > 1 ? 's' : ''})</td><td>${e(h.name)}</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
+<h2>Day-by-day itinerary</h2>${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? e(dt(d.date).replace(/ \d{4}$/, '')) : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
+${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
+${(d.extras || []).length ? `<div class="qd-x">Experience: ${e(d.extras.join(', '))}</div>` : ''}${(d.meals || []).length ? `<div class="qd-x">Meals: ${e(d.meals.join(' & '))} at local restaurants</div>` : ''}</div></div>`).join('')}
+<div class="qd-cols"><div><h2>Included</h2><ul>${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul>${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>
+${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` : ''}
+<div class="qd-ft"><span>Prices in US dollars for private touring, confirmed at booking.</span><span>Hakeem Travel Korea · contact@hakeemtravel.com · WhatsApp +82 10 5426 7112</span></div>
+</div>`;
+}
+
+// ---- "My quotations": the buyer's requests and the quotations our team sent, after log-in
+let MY = null;
+(function () { const st = document.createElement('style'); st.textContent = QD_CSS + '.my-list{display:grid;gap:12px}.my-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center}.my-item h3{margin:0;font-size:1.05rem}.my-item .hint{display:block}.my-q{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.my-badge{display:inline-block;margin-left:6px;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:.72rem;line-height:18px;text-align:center}@media (max-width:620px){.my-item{grid-template-columns:1fr}.my-q{justify-content:flex-start}}'; document.head.appendChild(st); })();
+async function myLoad() {
+  if (window.HK_PREVIEW) return { items: [] };
+  const r = await hkFetch('/api/my', 'POST', { auth: authOf() }), d = await r.json().catch(() => ({}));
+  if (r.status === 401) throw Object.assign(new Error('Please log in again.'), { relog: true });
+  if (!r.ok) throw new Error(d.error || 'Could not load your quotations.');
+  return d;
+}
+async function myCount() {
+  try { MY = await myLoad(); const n = MY.items.reduce((a, x) => a + (x.quotes || []).length, 0), el = document.getElementById('acct-my-n'); if (el) el.innerHTML = n ? `<span class="my-badge">${n}</span>` : ''; } catch {}
+}
+async function showMy() {
+  const qv = document.getElementById('qv');
+  qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="qv-back">← Back to the tour builder</button></div><div class="card">Loading your quotations…</div>`;
+  qv.hidden = false; document.body.classList.add('qv-on'); window.scrollTo(0, 0);
+  try { MY = await myLoad(); } catch (e) { qv.querySelector('.card').textContent = e.message; if (e.relog) { BUYER = null; TOKEN = ''; showGate('in'); } return; }
+  const dt = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  const items = MY.items || [];
+  qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="qv-back">← Back to the tour builder</button></div>
+    <div class="card"><div class="qv-ref">${esc(BUYER.company || '')} · ${esc(BUYER.code)}</div><h2 style="margin:4px 0 0">My quotations</h2><p class="q-note" style="margin:6px 0 0">Your requests, and every quotation our tour team has prepared for you. Open one to view or save it as a PDF.</p></div>
+    ${items.length ? `<div class="my-list">${items.map((x, i) => `<div class="card my-item"><div><h3>${esc(x.trip ? `${x.trip.nights}N${x.trip.days}D · ${x.trip.cities}` : x.id)}</h3>
+      <span class="hint">${esc(x.id)} · ${x.source === 'staff' ? 'Prepared by our team' : 'Requested ' + dt(x.createdAt)}${x.pax ? ` · ${x.pax} guests` : ''}${x.trip && x.trip.arrival ? ' · arriving ' + dt(x.trip.arrival) : ''} · <b>${esc(x.status)}</b></span>
+      ${x.price && !(x.quotes || []).length ? `<span class="hint">Land fee shown when you requested: US$ ${Number(x.price).toLocaleString('en-US')} per person</span>` : ''}</div>
+      <div class="my-q">${(x.quotes || []).length ? x.quotes.map((q, j) => `<button type="button" class="btn${j === x.quotes.length - 1 ? '' : ' ghost'}" data-myq="${i}|${j}">${esc(q.no)} · ${dt(q.sentAt)}</button>`).join('') : '<span class="hint">Our team is preparing your quotation.</span>'}</div></div>`).join('')}</div>`
+      : `<div class="card">No quotations yet. Build a tour and press <b>Request a quotation</b>, and it will appear here.</div>`}`;
+}
+function showMyQuote(i, j) {
+  const s = MY.items[i].quotes[j], qv = document.getElementById('qv');
+  qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="my-back">← My quotations</button><span class="sp"></span><button type="button" class="btn ghost" id="qv-pdf">Save as PDF</button><a class="btn ghost" href="${document.getElementById('wa-btn').href}" target="_blank" rel="noopener">WhatsApp us</a></div><div class="card" style="padding:0;overflow:hidden">${quoteDoc(s)}</div>`;
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('#acct-my')) { showMy(); return; }
+  if (e.target.closest('#my-back')) { showMy(); return; }
+  const q = e.target.closest('[data-myq]'); if (q) { const [i, j] = q.dataset.myq.split('|').map(Number); showMyQuote(i, j); }
+});
 function hideQuote() { document.getElementById('qv').hidden = true; document.body.classList.remove('qv-on'); }
 document.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;

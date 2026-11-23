@@ -1105,6 +1105,7 @@ async function open(id) {
   $('sheet').innerHTML = `
     <h2>${esc(r.contact.company || r.contact.name)}</h2>
     <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수${r.builder ? ` · <b style="color:var(--brand)">투어 빌더로 수정됨 ${fmtT(r.builder.savedAt)}${r.builder.by ? ' (' + esc(r.builder.by) + ')' : ''}</b>${r.original ? ` · 원래 ${r.original.trip.nights}박 ${r.original.options.pax}명 1인 ${usd(r.original.price.perPerson)}` : ''}` : ''}</div>
+    ${(r.quotes || []).length ? `<div class="sub" style="margin-top:6px">보낸 견적: ${r.quotes.map((q, i) => `<button class="btn ghost sm" data-qpdf="${i}">${esc(q.no)} · ${fmtT(q.sentAt)}${q.by ? ' · ' + esc(q.by) : ''}</button>`).join(' ')}</div>` : ''}
     <div class="grid">
       ${line('바이어 담당자', `${esc(r.contact.name)}<br><a href="mailto:${esc(r.contact.email)}">${esc(r.contact.email)}</a>`)}
       ${r.buyer ? line('바이어 코드', `<b>${esc(r.buyer.code)}</b> ${r.buyer.approved ? '승인됨' : '<span style="color:#b3261e">승인 대기</span>'}${r.buyer.discount ? `<br>할인 ${r.buyer.discount.type === 'pct' ? r.buyer.discount.value + '%' : 'US$' + r.buyer.discount.value + '/인'}${r.price.discountedPerPerson ? ` → 1인 ${usd(r.price.discountedPerPerson)}` : ''}` : ''}`) : line('바이어 코드', '<span class="hint">가입 전 요청</span>')}
@@ -1738,7 +1739,93 @@ const bNew = () => ({ market: 'other', country: '', season: 'spring', tier: 'R',
 let bSel = bNew(), bEdits = {}, bOrder = {}, bFrom = '', bFromReq = null, bRatesOK = false, bOpen = {};
 // hotels night by night: bHotels[i] = null or { name, star, rooms: [{ type, qty, net }] } (net = KRW per room-night incl. tax)
 let bHotels = [], bArrival = '', bMarkup = 0, bDirAsked = false, bTitle = '', bFold = {}, bAddOpen = {};
+// ---- buyer-facing quotation (same layout in the admin PDF and the buyer's "My quotations"); never shows costs or margins
+const QD_CSS = `.hq-doc{--plum:#2A1240;--gold:#9A7420;--line:#E4DCCB;font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;color:#2A1240;background:#FFFFFF;line-height:1.5;font-size:14px;max-width:880px;margin:0 auto;padding:36px 40px;box-sizing:border-box}
+.hq-doc *{box-sizing:border-box}.hq-doc h1,.hq-doc h2,.hq-doc h3{margin:0;letter-spacing:-.01em}
+.hq-doc .qd-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--plum);padding-bottom:16px}
+.hq-doc .qd-brand b{display:block;font-size:22px;letter-spacing:.14em}.hq-doc .qd-brand span{font-size:10px;letter-spacing:.42em;color:var(--gold);font-weight:700}
+.hq-doc .qd-ref{text-align:right;font-size:12px;color:#5B4A6E}.hq-doc .qd-ref b{display:block;font-size:15px;color:var(--plum);letter-spacing:.04em}
+.hq-doc .qd-top{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:22px;align-items:start}
+.hq-doc .qd-ttl h1{font-size:26px;line-height:1.15}.hq-doc .qd-ttl .qd-rt{color:#5B4A6E;margin-top:4px}.hq-doc .qd-ttl .qd-for{margin-top:10px;font-size:13px}
+.hq-doc .qd-pbox{border:1.5px solid var(--plum);border-radius:12px;padding:14px 16px}.hq-doc .qd-pbox .qd-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}
+.hq-doc .qd-pbox .qd-big{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-weight:800;font-size:15px}.hq-doc .qd-pbox .qd-big b{font-size:22px;color:var(--gold)}
+.hq-doc .qd-pbox .qd-row span:last-child,.hq-doc .qd-big b{white-space:nowrap}.hq-doc .qd-pbox s{color:#8A7C99;margin-right:4px}.hq-doc .qd-pbox .qd-tot{font-size:12px;color:#5B4A6E;margin-top:4px}
+.hq-doc h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:26px 0 8px}
+.hq-doc table{width:100%;border-collapse:collapse;font-size:13px}.hq-doc th,.hq-doc td{text-align:left;vertical-align:top;padding:7px 10px 7px 0;border-top:1px solid var(--line)}
+.hq-doc th{width:30%;color:#5B4A6E;font-weight:600}.hq-doc .qd-ht th{width:auto}
+.hq-doc .qd-day{display:grid;grid-template-columns:62px minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);break-inside:avoid}
+.hq-doc .qd-day .qd-n{font-weight:800;font-size:12px;color:var(--gold);letter-spacing:.08em}.hq-doc .qd-day .qd-n b{display:block;font-size:24px;color:var(--plum);letter-spacing:0}
+.hq-doc .qd-day h3{font-size:16px}.hq-doc .qd-day .qd-rt{font-size:12px;color:#6C5D7E}.hq-doc .qd-day ul{margin:6px 0 0;padding-left:18px}.hq-doc .qd-day li{margin:2px 0}
+.hq-doc .qd-day .qd-x{font-size:12px;margin-top:6px;color:#4B3A5C}.hq-doc .qd-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}.hq-doc .qd-cols ul{margin:0;padding-left:18px}
+.hq-doc .qd-note{background:#F6F1E7;border-radius:10px;padding:12px 14px;white-space:pre-line}
+.hq-doc .qd-ft{margin-top:28px;border-top:2px solid var(--plum);padding-top:12px;font-size:11px;color:#5B4A6E;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:640px){.hq-doc{padding:22px 16px}.hq-doc .qd-top,.hq-doc .qd-cols{grid-template-columns:1fr}}
+@media print{.hq-doc{padding:0;max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table{break-inside:avoid}}`;
+function quoteDoc(s) {
+  const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const usd = n => 'US$ ' + Number(n || 0).toLocaleString('en-US');
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dt = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${+d} ${MON[+m - 1]} ${y}`; };
+  const p = s.price || {}, g = s.group || {}, tr = s.trip || {}, st = s.style || {};
+  const per = g.foc ? 'paying guest' : 'guest';
+  const rows = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)} (${tr.nights} nights)` : `${tr.nights} nights / ${tr.days} days · dates to be confirmed`],
+    ['Group', `${g.pax} paying guest${g.pax > 1 ? 's' : ''}${g.foc ? ` + ${g.foc} FOC (free of charge)` : ''}${g.country ? ' from ' + g.country : ''}`],
+    ['Style', [st.tier, st.theme, st.season].filter(Boolean).join(' · ')], ['Transport', s.vehicle]];
+  return `<div class="hq-doc">
+<div class="qd-hd"><div class="qd-brand"><b>HAKEEM</b><span>TRAVEL KOREA</span></div><div class="qd-ref"><b>QUOTATION ${e(s.ref || '')}</b>${s.draft ? 'Draft · ' : ''}${dt((s.sentAt || '').slice(0, 10))}</div></div>
+<div class="qd-top"><div class="qd-ttl"><h1>${e(s.title)}</h1><div class="qd-rt">${e(tr.cities || '')}</div>${s.buyer ? `<div class="qd-for">Prepared for <b>${e(s.buyer.name)}</b>${s.buyer.company ? ', ' + e(s.buyer.company) : ''}${s.buyer.code ? ` (${e(s.buyer.code)})` : ''}</div>` : ''}</div>
+<div class="qd-pbox"><div class="qd-row"><span>Land fee per ${per}</span><span>${p.landWas ? `<s>${usd(p.landWas)}</s>` : ''}${usd(p.landPerPerson)}</span></div>
+${p.hotelPerPerson ? `<div class="qd-row"><span>Hotels per ${per}</span><span>${usd(p.hotelPerPerson)}</span></div>` : ''}
+<div class="qd-row qd-big"><span>Total per ${per}</span><b>${usd(p.totalPerPerson)}</b></div>
+<div class="qd-tot">Total for ${p.pax} paying guest${p.pax > 1 ? 's' : ''}${p.foc ? ` + ${p.foc} FOC` : ''}: <b>${usd(p.total)}</b>${p.hotelPerPerson ? '' : ' · hotels excluded'}</div></div></div>
+<h2>Trip details</h2><table>${rows.filter(r => r[1]).map(([k, v]) => `<tr><th>${k}</th><td>${e(v)}</td></tr>`).join('')}</table>
+${(s.hotels || []).length ? `<h2>Hotels</h2><table class="qd-ht"><tr><th>City</th><th>Dates</th><th>Hotel</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td>${e(h.city)}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : ''} (${h.nights} night${h.nights > 1 ? 's' : ''})</td><td>${e(h.name)}</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
+<h2>Day-by-day itinerary</h2>${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? e(dt(d.date).replace(/ \d{4}$/, '')) : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
+${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
+${(d.extras || []).length ? `<div class="qd-x">Experience: ${e(d.extras.join(', '))}</div>` : ''}${(d.meals || []).length ? `<div class="qd-x">Meals: ${e(d.meals.join(' & '))} at local restaurants</div>` : ''}</div></div>`).join('')}
+<div class="qd-cols"><div><h2>Included</h2><ul>${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul>${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>
+${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` : ''}
+<div class="qd-ft"><span>Prices in US dollars for private touring, confirmed at booking.</span><span>Hakeem Travel Korea · contact@hakeemtravel.com · WhatsApp +82 10 5426 7112</span></div>
+</div>`;
+}
+
 const B_HAS_FOC = focOf({ foc: 1, pax: 1 }) === 1;
+let bNote = '';
+// the buyer's PDF opens over the admin page (no pop-up window: this page has its own open()); printing shows only the quotation
+function qdShow(snap) {
+  let ov = $('qd-overlay');
+  if (!ov) {
+    const st = document.createElement('style');
+    st.textContent = QD_CSS + '#qd-overlay{position:fixed;inset:0;z-index:200;overflow:auto;background:#ECE8E1}#qd-overlay[hidden]{display:none}.qd-bar{position:sticky;top:0;z-index:2;display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;background:rgba(236,232,225,.92);font-size:.9rem}.qd-bar .sp{flex:1}#qd-overlay .hq-doc{margin:8px auto 40px;box-shadow:0 10px 30px rgba(0,0,0,.12)}@media print{body.qd-on>*:not(#qd-overlay){display:none !important}body.qd-on #qd-overlay{position:static;overflow:visible;background:#fff}body.qd-on .qd-bar{display:none !important}body.qd-on #qd-overlay .hq-doc{box-shadow:none;margin:0}}';
+    document.head.appendChild(st);
+    ov = document.createElement('div'); ov.id = 'qd-overlay'; ov.hidden = true; document.body.appendChild(ov);
+    ov.addEventListener('click', e => { if (e.target.closest('[data-qdclose]')) { ov.hidden = true; document.body.classList.remove('qd-on'); } if (e.target.closest('[data-qdprint]')) window.print(); });
+  }
+  const ko = (snap.hotels || []).some(h => /[가-힣]/.test(h.name));
+  ov.innerHTML = `<div class="qd-bar">${ko ? '<span class="hint" style="color:#b3261e">호텔 이름이 한글입니다. 바이어용은 영문 이름으로 고쳐 주세요 · </span>' : ''}${snap.draft ? '<span class="hint">미리보기 · 아직 바이어에게 보내지 않음</span>' : `<span class="hint">${esc(snap.ref || '')} · ${fmtT(snap.sentAt)} 보냄${snap.by ? ' · ' + esc(snap.by) : ''}</span>`}<span class="sp"></span><button class="btn ghost sm" data-qdclose="1">닫기</button><button class="btn sm" data-qdprint="1">PDF로 저장 / 인쇄</button></div>${quoteDoc(snap)}`;
+  ov.hidden = false; document.body.classList.add('qd-on'); ov.scrollTop = 0;
+}
+async function bEnsureSaved() { if (bFrom) await bSaveToRequest(); else await bSaveNew(); return bFrom; }
+async function bPdf() {
+  const id = await bEnsureSaved(); if (!id) return;
+  try { const d = await api('/api/admin/send?id=' + encodeURIComponent(id), { method: 'POST', body: JSON.stringify({ dry: true, note: bNote }) }); qdShow(d.quote); }
+  catch (err) { alertBox(KERR(err)); }
+}
+async function bSend() {
+  const id = await bEnsureSaved(); if (!id) return;
+  const r = bFromReq || {};
+  if (!r.buyer || !r.buyer.email) { alertBox('가입 바이어가 연결되지 않은 투어입니다. 바이어 칸에 가입 바이어 이메일을 넣고 새로 저장하세요.'); return; }
+  const n = (r.quotes || []).length + 1;
+  if (bHotels.some(h => h && /[가-힣]/.test(h.name || '')) && !confirm('호텔 이름이 한글로 되어 있습니다. 바이어 견적서에 그대로 나갑니다. 그래도 보낼까요?')) return;
+  if (!confirm(`${r.buyer.name} (${r.buyer.company || r.buyer.email})에게 견적 ${id}-Q${n}을 보냅니다. 바이어 계정에 바로 표시됩니다.`)) return;
+  try {
+    const d = await api('/api/admin/send?id=' + encodeURIComponent(id), { method: 'POST', body: JSON.stringify({ note: bNote }) });
+    bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(id)); current = bFromReq; bNote = '';
+    const row = rows.find(x => x.id === id); if (row) row.status = d.status;
+    drawBuilder();
+    alertBox(`${d.quote.ref} 보냄 · 바이어 계정 'My quotations'에 표시${d.mailed ? ' · 알림 메일 발송' : d.emailSet ? ' · 알림 메일 실패(바이어에게 직접 알려 주세요)' : ' · 알림 메일 템플릿 미설정(바이어에게 직접 알려 주세요)'}`);
+  } catch (err) { alertBox(KERR(err)); }
+}
 // buyer typed in the builder as agent @ company domain; a registered buyer fills country and company
 let bBuyer = { id: '', dom: '', country: '' }, bBuyAsked = false;
 const FREE_MAILS = ['gmail', 'googlemail', 'outlook', 'hotmail', 'live', 'msn', 'yahoo', 'icloud', 'me', 'aol', 'proton', 'protonmail', 'naver', 'daum', 'hanmail', 'yandex', 'mail', 'gmx', 'zoho', 'rediffmail'];
@@ -1906,7 +1993,10 @@ function bPrice(days) {
     <div>총액 ${money(q.total)} · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
     <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
     <div class="bchk" style="margin-top:4px"><label><input type="checkbox" data-bb="luggage"${bSel.luggage ? ' checked' : ''}> 짐 추가 (짐차)</label></div>
-    <div class="bpa"><button class="btn sm" data-bsavemain="1">${bFrom ? '이 요청에 저장' : '내 투어로 저장'}</button><button class="btn ghost sm" id="b-copy">일정·가격 복사 (영문)</button><span class="saved" id="b-msg"></span></div>
+    <div class="bpa"><button class="btn sm" data-bsavemain="1">${bFrom ? '이 요청에 저장' : '내 투어로 저장'}</button><button class="btn ghost sm" id="b-copy">일정·가격 복사 (영문)</button></div>
+    <div class="bpa"><button class="btn ghost sm" data-bpdf="1">바이어용 PDF</button>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn sm" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<span class="saved" id="b-msg"></span></div>
+    <textarea data-bnote="1" rows="2" placeholder="견적서에 넣을 메모 (영문, 선택)" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:.82rem">${esc(bNote)}</textarea>
+    ${bFromReq && (bFromReq.quotes || []).length ? `<div class="hint">보낸 견적: ${bFromReq.quotes.map((q, i) => `<button class="linkbtn" data-bqpdf="${i}">${esc(q.no)} ${fmtT(q.sentAt)}</button>`).join(' · ')}</div>` : ''}
     <h4>추가 체험</h4>
     <div class="hint">${(bSel.addons || []).length ? bSel.addons.map(k => { const di = days.findIndex(x => dk(x) === (bSel.addonDay || {})[k]); return `${esc(CONFIG.addonPaid[k])} ${krw(CONFIG.addons[k] || 0)}/인 · ${di >= 0 ? `Day ${di + 1}` : '날짜 미정'}`; }).join('<br>') : '서울 투어일에서 고르면 여기 표시됩니다.'}</div>
     <h4>호텔 <button class="linkbtn" data-bjump="b-hotels">호텔 칸으로</button></h4>
@@ -2018,7 +2108,7 @@ $('builder').addEventListener('change', e => {
   else return;
   drawBuilder();
 });
-$('builder').addEventListener('input', e => { if (e.target.id === 'b-title') bTitle = e.target.value === bAutoTitle() ? '' : e.target.value; });
+$('builder').addEventListener('input', e => { if (e.target.dataset.bnote) bNote = e.target.value; if (e.target.id === 'b-title') bTitle = e.target.value === bAutoTitle() ? '' : e.target.value; });
 $('builder').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.badd) { e.preventDefault(); bAddSight(e.target.dataset.badd, e.target.value); } });
 $('builder').addEventListener('toggle', e => { if (e.target.id === 'b-cost') bOpen.cost = e.target.open; }, true);
 $('builder').addEventListener('click', e => {
@@ -2038,6 +2128,9 @@ $('builder').addEventListener('click', e => {
   if (d.bhx) { const [si, j] = d.bhx.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.splice(+j, 1); bSetStay(s, h); drawBuilder(); }
   if (d.bhest) { const [si, v] = d.bhest.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.forEach(x => { if (!x.net) x.net = +v; }); bSetStay(s, h); drawBuilder(); }
   if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) location.href = u; return; }
+  if (d.bpdf) { bPdf(); return; }
+  if (d.bsend) { bSend(); return; }
+  if (d.bqpdf) { qdShow(bFromReq.quotes[+d.bqpdf]); return; }
   if (d.bmall) { bMealAll(d.bmall); drawBuilder(); }
   if (d.bfold) { bFold[d.bfold] = !bFold[d.bfold]; drawBuilder(); }
   if (d.bfoldall) { bFold = {}; if (d.bfoldall === '1') (bLast || []).forEach(x => { bFold[dk(x)] = true; }); drawBuilder(); }
@@ -2045,13 +2138,14 @@ $('builder').addEventListener('click', e => {
   if (d.bjump) { const el = $(d.bjump); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
   if (d.bsavemain) { if (bFrom) bSaveToRequest(); else bSaveNew(); }
   if (b.id === 'b-reset-edit') { bEdits = {}; bOrder = {}; drawBuilder(); }
-  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
+  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
   if (b.id === 'b-save-req') bSaveToRequest();
   if (b.id === 'b-save-new') bSaveNew();
   if (b.id === 'b-back-req') { const id = bFrom; showTab('list'); open(id); }
   if (b.id === 'b-copy') { const t = bText(bLast); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => alertBox('복사 완료'), () => alertBox('복사 불가')); }
 });
 $('to-builder').onclick = () => openInBuilder(current);
+$('sheet').addEventListener('click', e => { const b = e.target.closest('[data-qpdf]'); if (b && current && current.quotes) qdShow(current.quotes[+b.dataset.qpdf]); });
 
 // ---- company directory (hotels, guides, restaurants, transport, places, buyers) from the server: contacts stay on Wix, never in this file
 let DIR = null, dirTab = 'hotels';
