@@ -422,6 +422,10 @@ body.gated { overflow: hidden; }
 .dp-g button:disabled { color: var(--muted); opacity: .4; cursor: default; }
 .dp-g button.on { background: var(--accent); color: #fff; font-weight: 700; }
 .dp-g button.today { box-shadow: inset 0 0 0 1px var(--accent); }
+.dp-g button.soon { color: #d32f2f; background: rgba(211, 47, 47, .08); }
+.dp-g button.soon.on { background: #d32f2f; color: #fff; }
+#date-hint.late { color: #d32f2f; font-weight: 600; }
+.date-in.late { border-color: #d32f2f; color: #d32f2f; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .btn { border: 1px solid var(--accent); background: var(--accent); color: #fff; padding: 11px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
 :root[data-theme="dark"] .btn { color: #0f1720; }
@@ -600,7 +604,7 @@ footer { max-width: 1240px; margin: 0 auto; padding: 8px 20px 36px; font-size: .
       <div class="field dp-wrap">
         <label class="label" for="f-date-show">Arrival date</label>
         <input id="f-date-show" class="date-in" readonly placeholder="Select a date" aria-haspopup="dialog"><input id="f-dates" type="hidden"><div class="dp" id="dp" hidden role="dialog" aria-label="Choose arrival date"></div>
-        <span class="hint" id="date-hint">Tours can start from 7 days after today.</span>
+        <span class="hint" id="date-hint">Dates in the next 7 days are shown in red: last-minute requests may be hard to arrange.</span>
       </div>
       <div class="field">
         <span class="label">Cities &amp; nights</span>
@@ -1668,7 +1672,10 @@ function travelDates(days) {
 }
 function updateDateHint(days) {
   const s = travelDates(days);
-  document.getElementById('date-hint').textContent = s ? `Departure ${s.split(' – ')[1]}` : 'Tours can start from 7 days after today.';
+  // arrival within 7 days of today: still allowed, shown in red as a last-minute request
+  const a = arrival(), t0 = new Date(), late = !!a && a < new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + 7), h = document.getElementById('date-hint');
+  h.classList.toggle('late', late); document.getElementById('f-date-show').classList.toggle('late', late);
+  h.textContent = !s ? 'Dates in the next 7 days are shown in red: last-minute requests may be hard to arrange.' : `Departure ${s.split(' – ')[1]}` + (late ? ' · Arriving within a week: last-minute requests may be hard to arrange.' : '');
 }
 let lastText = '';
 function updateRequest(days, q) {
@@ -1736,7 +1743,8 @@ document.getElementById('addons').addEventListener('change', e => { const id = e
   const hidden = document.getElementById('f-dates'), show = document.getElementById('f-date-show'), dp = document.getElementById('dp');
   const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const earliest = new Date(today); earliest.setDate(earliest.getDate() + 7); // tours start at least a week from today
+  const earliest = new Date(today); earliest.setDate(earliest.getDate() + 1); // any date from tomorrow
+  const soonEnd = new Date(today); soonEnd.setDate(soonEnd.getDate() + 7); // the next 7 days are shown in red (last-minute)
   let view = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
   const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   function draw() {
@@ -1746,7 +1754,7 @@ document.getElementById('addons').addEventListener('change', e => { const id = e
     h += ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<span class="wd">${d}</span>`).join('');
     h += '<span></span>'.repeat(first);
     for (let d = 1; d <= n; d++) {
-      const dt = new Date(y, m, d), cls = [cur && +cur === +dt ? 'on' : '', +dt === +today ? 'today' : ''].filter(Boolean).join(' ');
+      const dt = new Date(y, m, d), cls = [cur && +cur === +dt ? 'on' : '', +dt === +today ? 'today' : '', dt >= earliest && dt < soonEnd ? 'soon' : ''].filter(Boolean).join(' ');
       h += `<button type="button" data-d="${iso(dt)}"${cls ? ` class="${cls}"` : ''}${dt < earliest ? ' disabled' : ''}>${d}</button>`;
     }
     dp.innerHTML = h + '</div>';
