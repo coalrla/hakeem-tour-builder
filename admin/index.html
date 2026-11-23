@@ -40,11 +40,14 @@ main { max-width: 1280px; margin: 0 auto; padding: 20px 24px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
 #login { max-width: 360px; margin: 80px auto; display: grid; gap: 10px; }
 #login input { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
-.lg { display: grid; gap: 10px; } .lg[hidden] { display: none; }
+#login { box-sizing: border-box; } #login input, #login .btn { box-sizing: border-box; min-width: 0; max-width: 100%; }
+.lg { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; } .lg label { min-width: 0; } .lg label > input { width: 100%; } .lg[hidden] { display: none; }
 .lg label { display: grid; gap: 4px; font-size: .82rem; color: var(--muted); }
 .lg-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
 .lg-t { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 11px; font: inherit; font-size: .8rem; cursor: pointer; color: var(--muted); }
 .lg-t.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.pin-boxes { display: flex; gap: 8px; } .pin-boxes input { width: 44px; height: 48px; padding: 0 !important; text-align: center; font-size: 1.2rem; }
+.em-id { display: flex; align-items: center; gap: 6px; min-width: 0; } .em-id input { flex: 1 1 auto; width: 0; min-width: 0; } .em-id span { color: var(--ink); white-space: nowrap; }
 #login .ok { color: #2e7d32; }
 .err { color: #b3261e; font-size: .9rem; min-height: 1.2em; }
 .bar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
@@ -165,6 +168,15 @@ ul.bst li.ln { display: block; color: var(--muted); font-size: .82rem; border: 0
 ul.bst li.add span:first-child { color: var(--brand); font-weight: 600; }
 ul.bst li em { font-style: normal; font-size: .72rem; color: var(--gold); }
 ul.bst .rx { border: 0; background: none; color: var(--muted); cursor: pointer; }
+.bhot { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--gold-soft); font-size: .85rem; }
+.bhot .bhh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bhot .bhh b { white-space: nowrap; }
+.bhot input, .bhot select { border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; }
+.bhot .bhn { flex: 1; min-width: 200px; }
+.bhot .bhr { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 5px; }
+.bhot .bhr input[type=number] { width: 64px; }
+.bhot .bhr input.net { width: 110px; }
+.bhot .bhf { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
 .badd { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; align-items: center; }
 .badd input { border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px; min-width: 260px; flex: 1; }
 .bnew { display: flex; gap: 6px; align-items: center; font-size: .82rem; color: var(--muted); }
@@ -203,24 +215,24 @@ body.printing-quote #qsheet { display: block; }
     <b>하킴 직원 전용</b>
     <div class="lg-tabs"><button type="button" class="lg-t on" data-lg="in">로그인</button><button type="button" class="lg-t" data-lg="up">가입</button><button type="button" class="lg-t" data-lg="reset">PIN 찾기</button><button type="button" class="lg-t" data-lg="master">관리자 비밀번호</button></div>
     <div class="lg" id="lg-in">
-      <label>회사 이메일<input id="l-email" type="email" autocomplete="username" placeholder="이름@hakeemtravel.com"></label>
-      <label>PIN (숫자 6자리)<input id="l-pin" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"></label>
+      <label>회사 이메일<span class="em-id"><input id="l-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
+      <label>PIN (숫자 4자리)<input id="l-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password"></label>
       <button class="btn" id="l-go">로그인</button>
     </div>
     <div class="lg" id="lg-up" hidden>
-      <label>이름 (견적 요청 '하킴 담당'에 표시)<input id="u-name" autocomplete="name" placeholder="예: 김채민"></label>
-      <label>회사 이메일<input id="u-email" type="email" autocomplete="username" placeholder="이름@hakeemtravel.com"></label>
+      <label>이름<input id="u-name" autocomplete="name" placeholder="예: 유근호"></label>
+      <label>회사 이메일<span class="em-id"><input id="u-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
       <button class="btn ghost" id="u-send">인증코드 받기</button>
-      <label>메일로 받은 인증코드 6자리<input id="u-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
-      <label>PIN 정하기 (숫자 6자리)<input id="u-pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
-      <label>PIN 확인<input id="u-pin2" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+      <label>메일로 받은 인증코드 6자리<input id="u-code" class="code6" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
+      <label>PIN 정하기 (숫자 4자리)<input id="u-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
+      <label>PIN 확인<input id="u-pin2" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
       <button class="btn" id="u-go">가입하고 들어가기</button>
     </div>
     <div class="lg" id="lg-reset" hidden>
-      <label>회사 이메일<input id="r-email" type="email" autocomplete="username" placeholder="이름@hakeemtravel.com"></label>
+      <label>회사 이메일<span class="em-id"><input id="r-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
       <button class="btn ghost" id="r-send">인증코드 받기</button>
-      <label>메일로 받은 인증코드 6자리<input id="r-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
-      <label>새 PIN (숫자 6자리)<input id="r-pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+      <label>메일로 받은 인증코드 6자리<input id="r-code" class="code6" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
+      <label>새 PIN (숫자 4자리)<input id="r-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
       <button class="btn" id="r-go">PIN 바꾸고 들어가기</button>
     </div>
     <div class="lg" id="lg-master" hidden>
@@ -1683,6 +1695,53 @@ const ORDERS = [['seoul', 'jeju', 'busan'], ['seoul', 'busan', 'jeju'], ['jeju',
 const bNew = () => ({ market: 'other', country: '', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3,
   swaps: {}, moveTour: {}, lotte: null, hanbok: null, meals: [], mealOff: {}, mealOn: {}, luggage: false, vehicle: 'std', addons: [] });
 let bSel = bNew(), bEdits = {}, bOrder = {}, bFrom = '', bFromReq = null, bRatesOK = false, bOpen = {};
+// hotels night by night: bHotels[i] = null or { name, star, rooms: [{ type, qty, net }] } (net = KRW per room-night incl. tax)
+let bHotels = [], bArrival = '', bMarkup = 0, bDirAsked = false;
+const ROOMS = [['TWN', '트윈'], ['DBL', '더블'], ['SGL', '싱글'], ['TRP', '트리플'], ['FAM', '패밀리'], ['QUAD', '쿼드'], ['SUITE', '스위트']];
+const bHeads = () => (bSel.pax | 0) + (bSel.foc | 0);
+const bNightDate = i => bArrival ? addDays(bArrival, i) : '';
+const bStarOf = name => { const x = dirHotel(name), m = String((x && x.star) || '').match(/[345]/); return m ? +m[0] : 0; };
+function bHotelsFor(days) { return Array.from({ length: Math.max(0, days.length - 1) }, (_, i) => bHotels[i] || null); }
+// same rule as the server: nets x (1 + markup) at the rate-sheet exchange rate, per paying guest rounded up to US$5
+function bHotelQuote(days) {
+  const nights = bHotelsFor(days), set = nights.filter(n => n && n.rooms.some(x => x.qty > 0 && x.net > 0));
+  const netKRW = set.reduce((a, n) => a + n.rooms.reduce((b, x) => b + (x.qty | 0) * (+x.net || 0), 0), 0);
+  if (!netKRW) return null;
+  const total = Math.ceil(netKRW / CONFIG.fx * (1 + (+bMarkup || 0) / 100)), perPerson = Math.ceil(total / Math.max(1, bSel.pax) / 5) * 5;
+  return { netKRW, perPerson, total: perPerson * bSel.pax, priced: set.length, nights: nights.length };
+}
+// consecutive nights in the same city = one stay; a stay's hotel is written to each of its nights (server keeps nights)
+function bStays(days) {
+  const out = [];
+  for (let i = 0; i < days.length - 1; i++) { const c = days[i].region, last = out[out.length - 1]; if (last && last.city === c) last.to = i; else out.push({ city: c, from: i, to: i }); }
+  return out;
+}
+const bStayHotel = s => bHotels[s.from] || null;
+function bSetStay(s, h) { for (let k = s.from; k <= s.to; k++) bHotels[k] = h ? JSON.parse(JSON.stringify(h)) : null; }
+function bHotelCard(days) {
+  const stays = bStays(days); if (!stays.length) return '';
+  const rowsOf = stays.map((s, si) => {
+    const h = bStayHotel(s), n = s.to - s.from + 1, date = bNightDate(s.from);
+    const est = h && h.name && date ? hotelRateEstimate(s.city, h.star || bStarOf(h.name), date, addDays(date, n)) : null;
+    const sub = h ? h.rooms.reduce((a, x) => a + (x.qty | 0) * (+x.net || 0), 0) : 0, x = h && h.name && dirHotel(h.name);
+    const rooms = h ? h.rooms.map((x, j) => `<div class="bhr"><select data-bhr="${si}|${j}|type">${opt(ROOMS, x.type)}</select><input type="number" min="0" max="60" data-bhr="${si}|${j}|qty" value="${x.qty}">실 × 1박 ₩<input class="net" type="number" min="0" step="1000" data-bhr="${si}|${j}|net" value="${x.net || ''}" placeholder="원가 (세금 포함)"><button class="btn ghost sm" data-bhx="${si}|${j}" title="이 객실 빼기">✕</button></div>`).join('') : '';
+    return `<div class="bhot"><div class="bhh"><b>${CITY[s.city] || s.city} ${n}박 · Day ${s.from + 1}–${s.to + 2}${date ? ` · ${date.slice(5).replace('-', '/')}–${addDays(date, n).slice(5).replace('-', '/')}` : ''}</b>
+      <input class="bhn" list="b-hotel-${s.city}" data-bhn="${si}" value="${esc(h ? h.name : '')}" placeholder="호텔 (업체 목록에서 고르거나 이름 입력)">
+      ${h ? `<button class="btn ghost sm" data-bhdel="${si}">호텔 빼기</button>` : ''}</div>
+      ${x ? `<div class="hint">${esc([x.star, x.area, x.verdict].filter(Boolean).join(' · '))}</div>` : ''}
+      ${rooms}
+      ${h ? `<div class="bhf"><button class="btn ghost sm" data-bhadd="${si}">+ 객실</button>
+        ${est && h.rooms.some(x => !x.net) ? `<button class="btn ghost sm" data-bhest="${si}|${est}">기준요금 ${krw(est)} 넣기</button>` : h.name && !date ? '<span class="hint">도착일을 넣으면 기준요금이 나옵니다</span>' : ''}
+        ${sub ? `<span class="sp" style="flex:1"></span><span class="num">1박 ₩${sub.toLocaleString('ko-KR')} × ${n}박 = ₩${(sub * n).toLocaleString('ko-KR')}</span>` : ''}</div>` : ''}
+    </div>`;
+  }).join('');
+  const hq = bHotelQuote(days);
+  return `<div class="card"><h3 style="margin:0 0 6px">호텔 (${days.length - 1}박)</h3>
+    <div class="row" style="gap:10px;align-items:center"><label>도착일<input type="date" data-barr="1" value="${bArrival}"></label><label>호텔 마진 (%)<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px"></label><span class="hint">환율 ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
+    ${rowsOf}
+    <div class="bhf" style="margin-top:8px">${hq ? `<b>호텔 원가 ₩${hq.netKRW.toLocaleString('ko-KR')} → 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)}</b>` : '<span class="hint">도시별로 호텔과 객실 요금을 넣으면 견적에 합산됩니다.</span>'}</div>
+  </div>`;
+}
 const dk = dayKey;
 const isCustom = k => !(k in (settings && settings.defaults ? settings.defaults.sights : {})) && k !== HANBOK_KEY;
 const sightLabel = k => isCustom(k) ? k : PRETTY(k);
@@ -1748,6 +1807,9 @@ function bPrice(days) {
     <div class="big">${money(q.perPerson)}</div>
     <div>총액 ${money(q.total)} · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
     <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
+    <h4>호텔</h4>
+    ${(() => { const hq = bHotelQuote(days); return `${hq ? `<div>호텔 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)} <span class="hint">(${hq.priced}/${hq.nights}박 요금 입력, 원가 ₩${hq.netKRW.toLocaleString('ko-KR')})</span></div>
+      <div class="big" style="font-size:1.3rem">지상비 + 호텔 1인 ${money(q.perPerson + hq.perPerson)}</div><div>총액 ${money(q.total + hq.total)}</div>` : '<div class="hint">일정 아래 호텔 칸에 넣으면 여기 합산됩니다.</div>'}`; })()}
     <h4>인원 구간별 1인 가격</h4>
     <table class="ht">${tbl.map(t => `<tr${t.bracket[0] === q.bracket[0] ? ' class="on"' : ''}><td style="white-space:nowrap">${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')}명</td><td class="hint">${esc(vehicleKo(t.plan))}</td><td class="num">${money(t.perPerson)}</td></tr>`).join('')}</table>
     <details${bOpen.cost ? ' open' : ''} id="b-cost"><summary>원가 세부내용 (${c.basePax}명 기준)</summary>
@@ -1764,10 +1826,12 @@ function drawBuilder() {
   if (!bRatesOK) { $('builder').innerHTML = '<div class="card">단가를 불러오지 못했습니다. Wix 서버 파일(hakeem-core.js)이 최신인지 확인해 주세요.</div>'; return; }
   const days = builtDays();
   const all = Object.keys(SIGHTS).filter(k => k !== HANBOK_KEY).sort((a, b) => sightLabel(a).localeCompare(sightLabel(b)));
-  $('builder').innerHTML = `${bOptions()}<div class="bgrid"><div class="card"><h3 style="margin:0 0 6px">일정 (${days.length - 1}박 ${days.length}일)</h3>
+  $('builder').innerHTML = `${bOptions()}<div class="bgrid"><div><div class="card"><h3 style="margin:0 0 6px">일정 (${days.length - 1}박 ${days.length}일)</h3>
     <datalist id="b-sights">${all.map(k => `<option value="${esc(sightLabel(k))}">${SIGHTS[k] ? krw(SIGHTS[k]) : '무료'}</option>`).join('')}</datalist>
-    ${days.map((d, i) => bDay(d, i, days)).join('')}</div>${bPrice(days)}</div>`;
+    ${DIR ? Object.keys(DCITY).map(c => `<datalist id="b-hotel-${c}">${hotelsIn(c).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('') : ''}
+    ${days.map((d, i) => bDay(d, i, days)).join('')}</div>${bHotelCard(days)}</div>${bPrice(days)}</div>`;
   bLast = days;
+  if (!DIR && !bDirAsked) { bDirAsked = true; loadDirectory().then(x => { if (x) drawBuilder(); }); }
 }
 let bLast = null;
 const bEdit = k => (bEdits[k] ||= { rm: [], add: [] });
@@ -1794,31 +1858,34 @@ function bText(days) {
   const q = quoteFor(days, bSel), tbl = bracketTable(days, bSel);
   return [`${days.length - 1}N${days.length}D Korea · ${routeOf(bSel).map(c => `${CITY_EN[c]} ${bSel['n' + CITY_EN[c]]}N`).join(' → ')} · ${bSel.pax} pax${focOf(bSel) ? ` + ${focOf(bSel)} FOC` : ''}`, '',
     ...days.map((d, i) => `Day ${i + 1}: ${d.title}${d.kind === 'tour' ? ' – ' + d.stops.map(s => sightLabel(s.key)).join(', ') : (d.adds || []).length ? ' – ' + d.adds.map(a => sightLabel(a.key)).join(', ') : ''}${(d.meals || []).length ? ` (${d.meals.join(' & ')})` : ''}`), '',
-    `Land fee per person (hotel excluded): US$ ${q.perPerson.toLocaleString('en-US')} for ${bSel.pax} paying pax${focOf(bSel) ? ` (+${focOf(bSel)} FOC)` : ''}`, '',
-    'Per person by group size:', ...tbl.map(t => `${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')} pax: US$ ${t.perPerson.toLocaleString('en-US')}`)].join('\n');
+    ...(() => { const hs = bStays(days).map(s => { const h = bStayHotel(s), n = s.to - s.from + 1; return h && h.name ? `${CITY_EN[s.city]} ${n}N${bNightDate(s.from) ? ` (${bNightDate(s.from)} – ${addDays(bNightDate(s.from), n)})` : ''}: ${h.name}${h.rooms.length ? ' – ' + h.rooms.filter(x => x.qty > 0).map(x => `${x.qty} ${x.type}`).join(', ') : ''}` : ''; }).filter(Boolean); return hs.length ? ['', 'Hotels:', ...hs] : []; })(), '',
+    ...(() => { const hq = bHotelQuote(days); return hq ? [`Land fee per person: US$ ${q.perPerson.toLocaleString('en-US')}`, `Hotel per person: US$ ${hq.perPerson.toLocaleString('en-US')}`, `Total per person (land + hotel): US$ ${(q.perPerson + hq.perPerson).toLocaleString('en-US')} for ${bSel.pax} paying pax${focOf(bSel) ? ` (+${focOf(bSel)} FOC)` : ''}`, '', 'Land fee per person by group size (hotel excluded):'] : [`Land fee per person (hotel excluded): US$ ${q.perPerson.toLocaleString('en-US')} for ${bSel.pax} paying pax${focOf(bSel) ? ` (+${focOf(bSel)} FOC)` : ''}`, '']; })(),
+    ...(bHotelQuote(days) ? [] : ['Per person by group size:']), ...tbl.map(t => `${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')} pax: US$ ${t.perPerson.toLocaleString('en-US')}`)].join('\n');
 }
 function openInBuilder(r) {
   if (!r.builderSel) { alert('이 요청은 저장된 선택값이 없어 투어 빌더로 열 수 없습니다.'); return; }
   bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
+  const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0;
   bFrom = r.id; bFromReq = r; showTab('builder');
 }
 // saves the edited tour into the request: itinerary, options and site price are replaced (the first version stays in r.original)
 // a tour built from scratch: saved as its own entry ('직원 작성'), then later saves go to it like a request
+const bHotelPayload = () => ({ arrival: bArrival, markup: +bMarkup || 0, nights: bHotelsFor(builtDays()) });
 async function bSaveNew() {
   try {
-    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, title: $('b-title') ? $('b-title').value.trim() : '' }) });
+    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), title: $('b-title') ? $('b-title').value.trim() : '' }) });
     bFrom = d.id; bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(d.id));
     try { rows = (await api('/api/admin/list')).rows; } catch {}
-    drawBuilder(); $('b-msg').textContent = `${d.id}로 저장 · 1인 ${money(d.price.perPerson)} · '내 투어'에서 볼 수 있음`;
+    drawBuilder(); $('b-msg').textContent = `${d.id}로 저장 · 지상비 1인 ${money(d.price.perPerson)}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''} · '내 투어'에서 볼 수 있음`;
   } catch (err) { if ($('b-msg')) $('b-msg').textContent = KERR(err); }
 }
 async function bSaveToRequest() {
   const msg = $('b-msg');
   try {
-    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, by: $('das') ? $('das').value : '' }) });
+    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), by: $('das') ? $('das').value : '' }) });
     bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(bFrom)); current = bFromReq;
     const row = rows.find(x => x.id === bFrom); if (row) { row.perPerson = d.price.perPerson; row.total = d.price.total; row.pax = bSel.pax; row.edited = true; }
-    drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · 1인 ${money(d.price.perPerson)}`;
+    drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · 지상비 1인 ${money(d.price.perPerson)}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''}`;
   } catch (err) { if (msg) msg.textContent = KERR(err); }
 }
 $('builder').addEventListener('change', e => {
@@ -1832,6 +1899,13 @@ $('builder').addEventListener('change', e => {
   else if (d.bb) bSel[d.bb] = el.checked;
   else if (d.badn) bSel.addons = Object.keys(CONFIG.addonPaid).filter(k => k === d.badn ? el.checked : (bSel.addons || []).includes(k));
   else if (d.bswap) bSel.swaps[d.bswap] = el.value;
+  else if (d.barr) bArrival = el.value;
+  else if (d.bhmk) bMarkup = Math.max(0, Math.min(200, +el.value || 0));
+  else if (d.bhn) {
+    const s = bStays(bLast)[+d.bhn], h = bStayHotel(s), nm = el.value.trim();
+    bSetStay(s, !nm ? null : h ? { ...h, name: nm, star: bStarOf(nm) } : { name: nm, star: bStarOf(nm), rooms: [{ type: 'TWN', qty: Math.ceil(bHeads() / 2), net: 0 }] });
+  }
+  else if (d.bhr) { const [si, j, f] = d.bhr.split('|'), s = bStays(bLast)[+si], h = bStayHotel(s); h.rooms[+j][f] = f === 'type' ? el.value : Math.max(0, +el.value || 0); bSetStay(s, h); }
   else if (d.bmo) { const f = d.edge ? 'mealOn' : 'mealOff', on = d.edge ? el.checked : !el.checked; bSel[f] ||= {}; if (on) bSel[f][d.bmo] = true; else delete bSel[f][d.bmo]; }
   else return;
   drawBuilder();
@@ -1848,8 +1922,13 @@ $('builder').addEventListener('click', e => {
     const i = +(d.bup || d.bdn), day = bLast[i], order = bCityOrder(bLast, day.region), p = order.indexOf(day.slot), q2 = d.bup ? p - 1 : p + 1;
     if (q2 >= 0 && q2 < order.length) { [order[p], order[q2]] = [order[q2], order[p]]; bOrder[day.region] = order; drawBuilder(); }
   }
+  const bS = k => bStays(bLast)[+k];
+  if (d.bhdel) { bSetStay(bS(d.bhdel), null); drawBuilder(); }
+  if (d.bhadd) { const s = bS(d.bhadd), h = bStayHotel(s); h.rooms.push({ type: 'SGL', qty: 1, net: 0 }); bSetStay(s, h); drawBuilder(); }
+  if (d.bhx) { const [si, j] = d.bhx.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.splice(+j, 1); bSetStay(s, h); drawBuilder(); }
+  if (d.bhest) { const [si, v] = d.bhest.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.forEach(x => { if (!x.net) x.net = +v; }); bSetStay(s, h); drawBuilder(); }
   if (b.id === 'b-reset-edit') { bEdits = {}; bOrder = {}; drawBuilder(); }
-  if (b.id === 'b-new') { bSel = bNew(); bEdits = {}; bOrder = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
+  if (b.id === 'b-new') { bSel = bNew(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bFrom = ''; bFromReq = null; drawBuilder(); }
   if (b.id === 'b-save-req') bSaveToRequest();
   if (b.id === 'b-save-new') bSaveNew();
   if (b.id === 'b-back-req') { const id = bFrom; showTab('list'); open(id); }
@@ -2012,6 +2091,8 @@ $('go').onclick = () => { key = $('pw').value; load(); };
 // staff sign-in: email + 6-digit PIN; sign-up and new PIN need a code sent to the @hakeemtravel.com address
 const lgMsg = (t, ok) => { $('err').textContent = t; $('err').className = 'err' + (ok ? ' ok' : ''); };
 const lgVal = id => $(id).value.trim();
+// company email: staff type only the ID, @hakeemtravel.com is added (a full address typed in is cut at @)
+const lgMail = id => { const v = $(id).value.trim().replace(/@.*$/, '').toLowerCase(); return v ? v + '@hakeemtravel.com' : ''; };
 async function staffCall(op, body) {
   const r = await hkFetch('/api/staff/' + op, 'POST', body), d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.error || '오류가 났습니다. 잠시 후 다시 시도하세요.');
@@ -2023,32 +2104,51 @@ document.querySelectorAll('.lg-t').forEach(b => b.onclick = () => {
   ['in', 'up', 'reset', 'master'].forEach(k => { $('lg-' + k).hidden = k !== b.dataset.lg; }); lgMsg('');
 });
 $('l-go').onclick = async () => {
-  if (!/^\d{6}$/.test(lgVal('l-pin'))) return lgMsg('PIN 6자리를 입력하세요.');
-  try { lgMsg('확인 중…', true); staffIn(await staffCall('login', { email: lgVal('l-email'), pin: lgVal('l-pin') })); } catch (e) { lgMsg(e.message); }
+  if (!/^\d{4}$/.test(lgVal('l-pin'))) return lgMsg('PIN 4자리를 입력하세요.');
+  try { lgMsg('확인 중…', true); staffIn(await staffCall('login', { email: lgMail('l-email'), pin: lgVal('l-pin') })); } catch (e) { lgMsg(e.message); }
 };
 $('u-send').onclick = async () => {
   if (!lgVal('u-name')) return lgMsg('이름을 입력하세요.');
-  try { lgMsg('보내는 중…', true); await staffCall('code', { email: lgVal('u-email'), name: lgVal('u-name') }); lgMsg(`${lgVal('u-email')}로 인증코드를 보냈습니다. 15분 안에 입력하세요.`, true); $('u-code').focus(); } catch (e) { lgMsg(e.message); }
+  try { lgMsg('보내는 중…', true); await staffCall('code', { email: lgMail('u-email'), name: lgVal('u-name') }); lgMsg(`${lgMail('u-email')}로 인증코드를 보냈습니다. 15분 안에 입력하세요.`, true); $('u-code').nextElementSibling.querySelector('input').focus(); } catch (e) { lgMsg(e.message); }
 };
 $('u-go').onclick = async () => {
-  if (!/^\d{6}$/.test(lgVal('u-pin'))) return lgMsg('PIN은 숫자 6자리로 정하세요.');
+  if (!/^\d{4}$/.test(lgVal('u-pin'))) return lgMsg('PIN은 숫자 4자리로 정하세요.');
   if (lgVal('u-pin') !== lgVal('u-pin2')) return lgMsg('PIN 두 칸이 다릅니다.');
-  try { lgMsg('가입 중…', true); staffIn(await staffCall('signup', { email: lgVal('u-email'), name: lgVal('u-name'), code: lgVal('u-code'), pin: lgVal('u-pin') })); } catch (e) { lgMsg(e.message); }
+  try { lgMsg('가입 중…', true); staffIn(await staffCall('signup', { email: lgMail('u-email'), name: lgVal('u-name'), code: lgVal('u-code'), pin: lgVal('u-pin') })); } catch (e) { lgMsg(e.message); }
 };
 $('r-send').onclick = async () => {
-  try { lgMsg('보내는 중…', true); await staffCall('code', { email: lgVal('r-email'), purpose: 'reset' }); lgMsg('가입된 이메일이면 인증코드가 갑니다. 메일함을 확인하세요.', true); $('r-code').focus(); } catch (e) { lgMsg(e.message); }
+  try { lgMsg('보내는 중…', true); await staffCall('code', { email: lgMail('r-email'), purpose: 'reset' }); lgMsg('가입된 이메일이면 인증코드가 갑니다. 메일함을 확인하세요.', true); $('r-code').nextElementSibling.querySelector('input').focus(); } catch (e) { lgMsg(e.message); }
 };
 $('r-go').onclick = async () => {
-  if (!/^\d{6}$/.test(lgVal('r-pin'))) return lgMsg('새 PIN은 숫자 6자리로 정하세요.');
-  try { lgMsg('저장 중…', true); staffIn(await staffCall('reset', { email: lgVal('r-email'), code: lgVal('r-code'), pin: lgVal('r-pin') })); } catch (e) { lgMsg(e.message); }
+  if (!/^\d{4}$/.test(lgVal('r-pin'))) return lgMsg('새 PIN은 숫자 4자리로 정하세요.');
+  try { lgMsg('저장 중…', true); staffIn(await staffCall('reset', { email: lgMail('r-email'), code: lgVal('r-code'), pin: lgVal('r-pin') })); } catch (e) { lgMsg(e.message); }
 };
-['l-pin', 'u-code', 'u-pin', 'u-pin2', 'r-code', 'r-pin'].forEach(id => $(id).addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); }));
-$('l-pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('l-go').click(); });
+['l-email', 'u-email', 'r-email'].forEach(id => $(id).addEventListener('input', e => { if (e.target.value.includes('@')) e.target.value = e.target.value.replace(/@.*$/, ''); }));
+// PIN in four boxes, email code in six: one digit each, moving on as you type; the hidden original field keeps the value
+document.querySelectorAll('#login input.pin4, #login input.code6').forEach(orig => {
+  const N = orig.classList.contains('code6') ? 6 : 4, pin = N === 4;
+  const wrap = document.createElement('div'); wrap.className = 'pin-boxes';
+  const boxes = Array.from({ length: N }, (_, k) => { const b = document.createElement('input'); b.type = pin ? 'password' : 'text'; b.inputMode = 'numeric'; b.autocomplete = k ? 'off' : orig.autocomplete; b.setAttribute('aria-label', `${pin ? 'PIN' : '인증코드'} ${k + 1}번째 숫자`); wrap.appendChild(b); return b; });
+  orig.hidden = true; orig.tabIndex = -1; orig.after(wrap);
+  const sync = () => { orig.value = boxes.map(b => b.value).join(''); };
+  const fill = (k, d) => { d.slice(0, N - k).split('').forEach((c, j) => { boxes[k + j].value = c; }); boxes[Math.min(N - 1, k + d.length)].focus(); sync(); };
+  boxes.forEach((b, k) => {
+    b.addEventListener('input', () => { const d = b.value.replace(/\D/g, ''); if (d.length > 1) return fill(k, d); b.value = d; if (d && k < N - 1) boxes[k + 1].focus(); sync(); });
+    b.addEventListener('paste', e => { const d = ((e.clipboardData && e.clipboardData.getData('text')) || '').replace(/\D/g, ''); if (!d) return; e.preventDefault(); fill(k, d); });
+    b.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !b.value && k) { e.preventDefault(); boxes[k - 1].value = ''; boxes[k - 1].focus(); sync(); }
+      else if (e.key === 'ArrowLeft' && k) boxes[k - 1].focus();
+      else if (e.key === 'ArrowRight' && k < N - 1) boxes[k + 1].focus();
+      else if (e.key === 'Enter' && orig.id === 'l-pin') $('l-go').click();
+    });
+    b.addEventListener('focus', () => b.select());
+  });
+});
 // staff accounts: everyone sees the list; only the master password switches accounts on or off
 async function openStaffs() {
   let d; try { d = await api('/api/admin/staffs'); } catch (e) { $('staffs').innerHTML = `<div class="card">${KERR(e)}</div>`; return; }
   const m = d.me && d.me.master;
-  $('staffs').innerHTML = `<div class="card"><h3>직원 계정</h3><p class="hint">@hakeemtravel.com 이메일로 로그인 화면의 '가입'에서 직접 만듭니다 (메일 인증코드 + PIN 6자리). PIN 5번 틀리면 15분 잠김. ${m ? '사용 중지하면 그 직원은 바로 로그아웃됩니다.' : '사용 중지·재사용은 관리자 비밀번호로 들어왔을 때만 바꿀 수 있습니다.'}</p>
+  $('staffs').innerHTML = `<div class="card"><h3>직원 계정</h3><p class="hint">@hakeemtravel.com 이메일로 로그인 화면의 '가입'에서 직접 만듭니다 (메일 인증코드 + PIN 4자리). PIN 5번 틀리면 15분 잠김. ${m ? '사용 중지하면 그 직원은 바로 로그아웃됩니다.' : '사용 중지·재사용은 관리자 비밀번호로 들어왔을 때만 바꿀 수 있습니다.'}</p>
     <table><tr><th>이름</th><th>이메일</th><th>가입</th><th>최근 로그인</th><th>사용</th></tr>${d.staff.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${fmtT(x.createdAt)}</td><td>${x.lastLogin ? fmtT(x.lastLogin) : '–'}</td><td><label class="hint"><input type="checkbox" data-sact="${esc(x.email)}"${x.active ? ' checked' : ''}${m ? '' : ' disabled'}> ${x.active ? '사용 중' : '중지'}</label></td></tr>`).join('') || '<tr><td colspan="5" class="empty">아직 가입한 직원이 없습니다.</td></tr>'}</table></div>`;
 }
 $('staffs').addEventListener('change', async e => {
