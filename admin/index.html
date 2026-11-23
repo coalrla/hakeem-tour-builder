@@ -217,27 +217,27 @@ body.printing-quote #qsheet { display: block; }
     <div class="lg" id="lg-in">
       <label>회사 이메일<span class="em-id"><input id="l-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
       <label>PIN (숫자 4자리)<input id="l-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password"></label>
-      <button class="btn" id="l-go">로그인</button>
+      <button type="button" class="btn" id="l-go">로그인</button>
     </div>
     <div class="lg" id="lg-up" hidden>
       <label>이름<input id="u-name" autocomplete="name" placeholder="예: 유근호"></label>
       <label>회사 이메일<span class="em-id"><input id="u-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
-      <button class="btn ghost" id="u-send">인증코드 받기</button>
+      <button type="button" class="btn ghost" id="u-send">인증코드 받기</button>
       <label>메일로 받은 인증코드 6자리<input id="u-code" class="code6" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
       <label>PIN 정하기 (숫자 4자리)<input id="u-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
       <label>PIN 확인<input id="u-pin2" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
-      <button class="btn" id="u-go">가입하고 들어가기</button>
+      <button type="button" class="btn" id="u-go">가입하고 들어가기</button>
     </div>
     <div class="lg" id="lg-reset" hidden>
       <label>회사 이메일<span class="em-id"><input id="r-email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디"><span>@hakeemtravel.com</span></span></label>
-      <button class="btn ghost" id="r-send">인증코드 받기</button>
+      <button type="button" class="btn ghost" id="r-send">인증코드 받기</button>
       <label>메일로 받은 인증코드 6자리<input id="r-code" class="code6" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></label>
       <label>새 PIN (숫자 4자리)<input id="r-pin" class="pin4" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
-      <button class="btn" id="r-go">PIN 바꾸고 들어가기</button>
+      <button type="button" class="btn" id="r-go">PIN 바꾸고 들어가기</button>
     </div>
     <div class="lg" id="lg-master" hidden>
       <input id="pw" type="password" placeholder="관리자 비밀번호" autocomplete="current-password">
-      <button class="btn" id="go">열기</button>
+      <button type="button" class="btn" id="go">열기</button>
     </div>
     <div class="err" id="err"></div>
   </form>
@@ -2102,6 +2102,12 @@ function staffIn(d) { key = d.key; lgMsg(''); load(); }
 document.querySelectorAll('.lg-t').forEach(b => b.onclick = () => {
   document.querySelectorAll('.lg-t').forEach(x => x.classList.toggle('on', x === b));
   ['in', 'up', 'reset', 'master'].forEach(k => { $('lg-' + k).hidden = k !== b.dataset.lg; }); lgMsg('');
+});
+// Enter runs the button of the open tab (all buttons are type=button, so Enter no longer hits the hidden staff login)
+$('login').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return; e.preventDefault();
+  const tab = document.querySelector('.lg-t.on').dataset.lg, go = { in: 'l-go', up: 'u-go', reset: 'r-go', master: 'go' }[tab];
+  $(go).click();
 });
 $('l-go').onclick = async () => {
   if (!/^\d{4}$/.test(lgVal('l-pin'))) return lgMsg('PIN 4자리를 입력하세요.');
