@@ -124,7 +124,8 @@ tbody tr:hover { background: var(--brand-soft); }
 .hl2 { display: grid; grid-template-columns: 150px 150px 110px minmax(0, 1fr); gap: 8px; align-items: end; }
 .hcard label.chk { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--ink); padding-bottom: 7px; white-space: nowrap; }
 .hcard label.chk input { width: auto; }
-.hbtn { display: flex; gap: 6px; padding-bottom: 3px; justify-content: flex-end; }
+.hbtn { display: flex; gap: 6px; padding-bottom: 3px; justify-content: flex-end; align-items: flex-end; }
+.hask { display: flex; flex-direction: column; gap: 4px; }
 @media (max-width: 1000px) { .hl1, .hl2, .hl3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hl3 .arrow { display: none; } }
 .ops td:nth-child(3) input { min-width: 190px; } .ops td:nth-child(4) input { min-width: 150px; } .ops td:nth-child(5) input, .ops td:nth-child(7) input { min-width: 100px; }
 .ops tr.op-ok td { background: #eef8f0; } .ops tr.op-req td { background: #fff8e6; } .ops tr.op-na td { opacity: .5; }
@@ -1681,7 +1682,7 @@ function drawWorkflow() {
         <label>Check-in<input data-f="checkIn" type="date" value="${h.checkIn}"></label>
         <label>Check-out<input data-f="checkOut" type="date" value="${h.checkOut}"></label>
         <label>Status<select data-f="status">${[['todo', 'To ask'], ['asked', 'Asked'], ['ok', 'Available'], ['no', 'Not available']].map(([v, l]) => `<option value="${v}"${h.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
-        <div class="hbtn"><button class="btn ghost sm" data-ask="${i}" title="호텔 문의 메일">문의 메일 작성</button><button class="btn ghost sm" data-del="${i}" title="이 호텔 삭제">✕</button></div>
+        <div class="hbtn"><span class="hask"><button class="btn ghost sm" data-ask="${i}" title="호텔 문의 메일">문의 메일 작성</button><button class="btn ghost sm" data-askcopy="${i}" title="받는 사람·참조·제목·본문을 클립보드로 복사">내용 복사</button></span><button class="btn ghost sm" data-del="${i}" title="이 호텔 삭제">✕</button></div>
       </div>
       <div class="hrooms"><span class="hr-l">Rooms</span>
         ${h.rooms.map((r, j) => `<span class="rpill"><input data-r="${j}" data-rf="type" value="${esc(r.type)}" placeholder="TWN" aria-label="룸타입"><input data-r="${j}" data-rf="qty" type="number" min="0" value="${r.qty}" aria-label="객실 수"><em>실</em>${h.rooms.length > 1 ? `<button class="rx" data-rdel="${i}:${j}" title="이 룸타입 삭제">✕</button>` : ''}</span>`).join('')}
@@ -1855,6 +1856,15 @@ $('wf').addEventListener('click', e => {
   const b = e.target.closest('button, a'); if (!b) return;
   if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.net = +b.dataset.hest; r.rate = sellRate(r.net); }); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
   if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; location.href = hotelMail(h); drawWorkflow(); return; }
+  if (b.dataset.askcopy !== undefined) {
+    // copy the same inquiry mail as text (to / cc / subject / body) for pasting into any mail app
+    e.preventDefault(); const h = wf.hotels[+b.dataset.askcopy], u = new URL(hotelMail(h)), q = u.searchParams;
+    const txt = [`받는 사람: ${decodeURIComponent(u.pathname) || '-'}`, `참조: ${q.get('cc') || '-'}`, `제목: ${q.get('subject') || ''}`, '', q.get('body') || ''].join('\n');
+    const done = ok => { const t = b.textContent; b.textContent = ok ? '복사됨 ✓' : '복사 실패'; setTimeout(() => { b.textContent = t; }, 1500); };
+    const legacy = () => { const ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); done(ok); };
+    (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => done(true), legacy);
+    return;
+  }
   if (b.dataset.del !== undefined) { wf.hotels.splice(+b.dataset.del, 1); drawWorkflow(); return; }
   if (b.dataset.radd !== undefined) { e.preventDefault(); wf.hotels[+b.dataset.radd].rooms.push({ type: 'DBL', qty: 1, net: 0, rate: 0 }); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
   if (b.dataset.rdel !== undefined) { e.preventDefault(); const [i, j] = b.dataset.rdel.split(':').map(Number); wf.hotels[i].rooms.splice(j, 1); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
