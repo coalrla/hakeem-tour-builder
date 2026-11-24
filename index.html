@@ -176,6 +176,14 @@ html.tall-frame .side .panel { overflow: visible !important; max-height: none !i
 .dest-row .stepper input { width: 40px; }
 .dest-row > .check { margin-right: auto; }
 .ord { display: flex; flex-direction: column; margin: -4px 0 -4px -6px; }
+.day ul.stops li[draggable=true] { cursor: grab; } .day ul.stops li.dragging { opacity: .45; outline: 1px dashed var(--accent); border-radius: 6px; }
+#mailbox { position: fixed; inset: 0; z-index: 300; background: rgba(28, 16, 48, .42); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px; overflow: auto; } #mailbox[hidden] { display: none; }
+#mailbox .mb-card { background: var(--card, #fff); color: var(--ink, #1f1530); border-radius: 14px; width: min(720px, 100%); padding: 18px 20px; box-shadow: 0 20px 60px rgba(30, 10, 60, .25); display: flex; flex-direction: column; gap: 10px; }
+#mailbox .mb-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; } #mailbox .mb-h b { font-size: 1.05rem; color: var(--accent, #5b3d91); } #mailbox .mb-h span { flex: 1; font-size: .8rem; color: var(--muted); }
+#mailbox .mb-f { display: grid; grid-template-columns: 70px 1fr auto; gap: 8px; align-items: center; font-size: .85rem; } #mailbox .mb-f > span { color: var(--muted); font-weight: 600; } #mailbox .mb-b { align-items: start; }
+#mailbox .mb-f input, #mailbox .mb-f textarea { border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font: inherit; width: 100%; box-sizing: border-box; background: transparent; color: inherit; } #mailbox .mb-f textarea { resize: vertical; line-height: 1.5; }
+#mailbox .mb-a { display: flex; gap: 8px; justify-content: flex-end; }
+.dest-row { cursor: grab; } .dest-row input, .dest-row button, .dest-row label { cursor: pointer; } .dest-row.dragging { opacity: .45; outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 8px; }
 .ord button { border: 0; background: transparent; color: var(--muted); font-size: .6rem; line-height: 1; padding: 3px 5px; cursor: pointer; border-radius: 4px; }
 .ord button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
 .ord button:disabled { opacity: .25; cursor: default; }
@@ -1647,10 +1655,10 @@ function renderDays(days) {
   document.getElementById('days').innerHTML = days.map((d, i) => {
     const tag = d.kind === 'tour' ? (d.themeDay ? `<span class="tag theme">${CONCEPT_NAME[sel.concept]} day</span>` : d.seasonDay ? `<span class="tag season">${SEASON_NAME[sel.season].split(' ')[0]} special</span>` : '<span class="tag tour">Guided</span>') + (d.outOfSeoul ? '<span class="tag out">Out of Seoul</span>' : '') + (d.sic ? '<span class="tag out">DMZ: SIC</span>' : '') : d.kind === 'free' ? '<span class="tag free">Free</span>' : '<span class="tag move">Transfer</span>';
     const items = d.kind === 'tour'
-      ? d.stops.map(s => `<li class="${[s.theme && 'theme', s.seasonal && 'seasonal'].filter(Boolean).join(' ')}">${pretty(s.key)}${s.theme && !d.themeDay ? `<span class="tt">${CONCEPT_NAME[sel.concept]}</span>` : ''}${s.seasonal && !d.seasonDay ? `<span class="st">${SEASON_NAME[sel.season].split(' ')[0]}</span>` : ''}${s.note ? `<em>${s.note}</em>` : ''}</li>`).join('')
+      ? d.stops.map(s => `<li class="${[s.theme && 'theme', s.seasonal && 'seasonal'].filter(Boolean).join(' ')}"${d.stops.length > 1 ? ` draggable="true" data-k="${encodeURIComponent(s.key)}" title="Drag to change the order"` : ''}>${pretty(s.key)}${s.theme && !d.themeDay ? `<span class="tt">${CONCEPT_NAME[sel.concept]}</span>` : ''}${s.seasonal && !d.seasonDay ? `<span class="st">${SEASON_NAME[sel.season].split(' ')[0]}</span>` : ''}${s.note ? `<em>${s.note}</em>` : ''}</li>`).join('')
       : moveLines(d).join('');
     const dd = dayDate(i), ctl = [swapSelect(d, days), movePanel(d)].join('');
-    return `<article class="day${d.kind !== 'tour' ? ' move' : ''}"><div class="dn">Day<b>${i + 1}</b>${dd ? `<span class="dd">${dd}</span>` : ''}</div><div class="dbody">
+    return `<article class="day${d.kind !== 'tour' ? ' move' : ''}"${d.kind === 'tour' ? ` data-dk="${encodeURIComponent(d.slot || 't:' + d.title)}"` : ''}><div class="dn">Day<b>${i + 1}</b>${dd ? `<span class="dd">${dd}</span>` : ''}</div><div class="dbody">
       <div class="dtop"><h4>${d.title}</h4>${ctl}</div><div class="dmeta">${tag}${d.swapped ? '<span class="tag chg">Changed</span>' : ''}${d.route ? `<span class="rt">${d.route}</span>` : ''}</div>${d.blurb ? `<p class="bl">${d.blurb}</p>` : ''}<ul class="stops">${items}${reqItems(d)}</ul><div class="dctl">${d.lotteOpt ? `<label class="lotte-opt"><input type="checkbox" id="lotte-on"${d.stops.some(s => s.key === 'LOTTE WORLD THEME PARK') ? ' checked' : ''}> Add Lotte World theme park (rides & parades, about half a day)</label>` : ''}${d.hanbokOpt ? `<label class="lotte-opt"><input type="checkbox" id="hanbok-on"${d.stops.some(s => s.key === HANBOK_KEY) ? ' checked' : ''}> Wear hanbok at Gyeongbokgung Palace</label>` : ''}${mealOpt(d)}${reqInput(d)}</div></div></article>`;
   }).join('');
 
@@ -1790,7 +1798,79 @@ document.getElementById('addons').addEventListener('change', e => { const id = e
 })();
 document.getElementById('f-diet-other-on').addEventListener('change', e => { const o = document.getElementById('f-diet-other'); o.hidden = !e.target.checked; if (e.target.checked) o.focus(); });
 document.getElementById('f-diet-other').addEventListener('input', () => updateRequest());
-document.getElementById('swap-reset').addEventListener('click', () => { sel.swaps = {}; sel.moveTour = {}; render(); });
+// drag a city row to change the visiting order (the ▲▼ buttons stay for touch screens and keyboards)
+{ const destEl = document.querySelector('.dest'); let dragCity = '';
+  destEl.addEventListener('pointerdown', e => { const r = e.target.closest('.dest-row'); if (r) r.draggable = !e.target.closest('input, button, select'); });
+  destEl.addEventListener('dragstart', e => { const r = e.target.closest('.dest-row'); if (!r) return; dragCity = r.id.slice(4); r.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragCity); } catch (_) {} });
+  destEl.addEventListener('dragover', e => { if (!dragCity) return; const r = e.target.closest('.dest-row'); if (!r) return; e.preventDefault(); const c = r.id.slice(4); if (c === dragCity) return; const o = sel.order, to = o.indexOf(c); o.splice(o.indexOf(dragCity), 1); o.splice(to, 0, dragCity); syncButtons(); });
+  destEl.addEventListener('drop', e => { if (dragCity) e.preventDefault(); });
+  destEl.addEventListener('dragend', () => { destEl.querySelectorAll('.dest-row').forEach(r => { r.classList.remove('dragging'); r.draggable = false; }); if (dragCity) { dragCity = ''; render(); } }); }
+document.getElementById('addons').addEventListener('change', e => { const id = e.target.dataset.addon; if (!id) return; e.target.checked ? addonPick.add(id) : addonPick.delete(id); sel.addons = [...addonPick]; updateRequest(); });
+// ---- English calendar for the arrival date (the browser's own date picker follows the visitor's language)
+(function () {
+  const hidden = document.getElementById('f-dates'), show = document.getElementById('f-date-show'), dp = document.getElementById('dp');
+  const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const earliest = new Date(today); earliest.setDate(earliest.getDate() + 1); // any date from tomorrow
+  const soonEnd = new Date(today); soonEnd.setDate(soonEnd.getDate() + 7); // the next 7 days are shown in red (last-minute)
+  let view = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  function draw() {
+    const y = view.getFullYear(), m = view.getMonth(), first = new Date(y, m, 1).getDay(), n = new Date(y, m + 1, 0).getDate();
+    const cur = arrival(), prevOK = new Date(y, m, 1) > new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+    let h = `<div class="dp-h"><button type="button" data-nav="-1" aria-label="Previous month"${prevOK ? '' : ' disabled'}>‹</button><span>${MON[m]} ${y}</span><button type="button" data-nav="1" aria-label="Next month">›</button></div><div class="dp-g">`;
+    h += ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<span class="wd">${d}</span>`).join('');
+    h += '<span></span>'.repeat(first);
+    for (let d = 1; d <= n; d++) {
+      const dt = new Date(y, m, d), cls = [cur && +cur === +dt ? 'on' : '', +dt === +today ? 'today' : '', dt >= earliest && dt < soonEnd ? 'soon' : ''].filter(Boolean).join(' ');
+      h += `<button type="button" data-d="${iso(dt)}"${cls ? ` class="${cls}"` : ''}${dt < earliest ? ' disabled' : ''}>${d}</button>`;
+    }
+    dp.innerHTML = h + '</div>';
+  }
+  const open = () => { const a = arrival(); if (a) view = new Date(a.getFullYear(), a.getMonth(), 1); draw(); dp.hidden = false; };
+  show.addEventListener('click', e => { e.preventDefault(); dp.hidden ? open() : (dp.hidden = true); });
+  show.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } if (e.key === 'Escape') dp.hidden = true; });
+  dp.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.nav) { view = new Date(view.getFullYear(), view.getMonth() + +b.dataset.nav, 1); draw(); return; }
+    hidden.value = b.dataset.d; dp.hidden = true;
+    const a = arrival(); show.value = fmtDate(a);
+    const mo = a.getMonth(), s = mo >= 2 && mo <= 4 ? 'spring' : mo >= 5 && mo <= 7 ? 'summer' : mo >= 8 && mo <= 10 ? 'autumn' : 'winter';
+    if (s !== sel.season) { sel.season = s; syncButtons(); render(); return; } // match the season to the arrival month
+    render();
+  });
+  document.addEventListener('click', e => { if (!dp.hidden && !e.target.closest('.dp-wrap')) dp.hidden = true; });
+})();
+document.getElementById('f-diet-other-on').addEventListener('change', e => { const o = document.getElementById('f-diet-other'); o.hidden = !e.target.checked; if (e.target.checked) o.focus(); });
+document.getElementById('f-diet-other').addEventListener('input', () => updateRequest());
+document.addEventListener('click', e => { const a = e.target.closest('[data-maildraft]'); if (!a) return; e.preventDefault(); try { window.open(a.href, '_blank'); } catch (_) {}
+  const u = new URL(a.href), q = u.searchParams, to = decodeURIComponent(u.pathname), subj = q.get('subject') || '', body = q.get('body') || '', all = [`To: ${to}`, `Subject: ${subj}`, '', body].join('\n');
+  let m = document.getElementById('mailbox'); if (!m) { m = document.createElement('div'); m.id = 'mailbox'; document.body.appendChild(m);
+    m.addEventListener('click', ev => { if (ev.target === m || ev.target.closest('[data-mbx]')) { m.hidden = true; return; } const c = ev.target.closest('[data-mbc]'); if (!c) return;
+      const v = c.dataset.mbc === 'all' ? m._all : m.querySelector(`[data-mbv="${c.dataset.mbc}"]`).value, done = ok => { const t = c.textContent; c.textContent = ok ? 'Copied ✓' : 'Copy failed'; setTimeout(() => { c.textContent = t; }, 1400); };
+      const legacy = () => { const ta = document.createElement('textarea'); ta.value = v; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); done(ok); };
+      (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
+  const x = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  m._all = all; m.innerHTML = `<div class="mb-card" role="dialog" aria-label="Email draft"><div class="mb-h"><b>Email draft</b><span>If your mail app did not open, copy this and send it to ${x(to)}.</span><button type="button" class="btn ghost" data-mbx>Close</button></div>
+    <label class="mb-f"><span>To</span><input readonly data-mbv="to" value="${x(to)}"><button type="button" class="btn ghost" data-mbc="to">Copy</button></label>
+    <label class="mb-f"><span>Subject</span><input readonly data-mbv="subject" value="${x(subj)}"><button type="button" class="btn ghost" data-mbc="subject">Copy</button></label>
+    <label class="mb-f mb-b"><span>Message</span><textarea readonly data-mbv="body" rows="12">${x(body)}</textarea><button type="button" class="btn ghost" data-mbc="body">Copy</button></label>
+    <div class="mb-a"><a class="btn" href="${x(a.href)}" target="_blank" rel="noopener">Open mail app</a><button type="button" class="btn ghost" data-mbc="all">Copy all</button></div></div>`;
+  m.hidden = false; });
+document.getElementById('swap-reset').addEventListener('click', () => { sel.swaps = {}; sel.moveTour = {}; sel.stopOrd = {}; render(); });
+// the order of places inside a day: drag a place up or down (kept in sel.stopOrd, sent with the request like the other choices)
+buildItinerary = (orig => s => { const days = orig(s), so = s.stopOrd || {};
+  days.forEach(d => { const ord = d.kind === 'tour' && so[d.slot || 't:' + d.title]; if (!Array.isArray(ord) || !ord.length) return;
+    const before = d.stops.map(x => x.key).join('|'); d.stops = d.stops.map((x, i) => ({ x, i })).sort((a, b) => (((ord.indexOf(a.x.key) + 1) || 999) - ((ord.indexOf(b.x.key) + 1) || 999)) || a.i - b.i).map(o => o.x);
+    if (d.stops.map(x => x.key).join('|') !== before) { d.swapped = true; d.reordered = true; } });
+  return days; })(buildItinerary);
+{ const daysEl = document.getElementById('days'); let drag = null;
+  daysEl.addEventListener('dragstart', e => { const li = e.target.closest && e.target.closest('li[data-k]'); if (!li) return; drag = li; li.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', li.dataset.k); } catch (_) {} });
+  daysEl.addEventListener('dragover', e => { if (!drag) return; const li = e.target.closest('li[data-k]'); if (!li || li === drag || li.parentNode !== drag.parentNode) return; e.preventDefault(); const r = li.getBoundingClientRect(); li.parentNode.insertBefore(drag, e.clientY > r.top + r.height / 2 ? li.nextSibling : li); });
+  daysEl.addEventListener('drop', e => { if (drag) e.preventDefault(); });
+  daysEl.addEventListener('dragend', () => { if (!drag) return; const ul = drag.parentNode, art = ul.closest('[data-dk]'); drag.classList.remove('dragging'); drag = null;
+    if (!art) return; sel.stopOrd = { ...(sel.stopOrd || {}), [decodeURIComponent(art.dataset.dk)]: [...ul.querySelectorAll('li[data-k]')].map(x => decodeURIComponent(x.dataset.k)) }; render(); }); }
 ['f-hotel', 'f-diet'].forEach(id => document.getElementById(id).addEventListener('change', () => updateRequest()));
 ['f-notes'].forEach(id => document.getElementById(id).addEventListener('input', () => updateRequest()));
 // compact summary bar at the top once the quote card has scrolled out of view
@@ -1995,7 +2075,7 @@ async function doRequest(btn) {
     if (!r.ok) throw new Error(d.error || 'Error');
     lastReq = { key, d }; if (REVISE) { REVISE = ''; reviseBar(); } showQuote(d);
   } catch (e) {
-    st.innerHTML = `${e.message === 'Error' ? 'Sorry, the request could not be sent.' : esc(e.message)} You can also <a href="${window.mailHref}">email it to us</a>.`;
+    st.innerHTML = `${e.message === 'Error' ? 'Sorry, the request could not be sent.' : esc(e.message)} You can also <a href="${window.mailHref}" data-maildraft>email it to us</a>.`;
     document.getElementById('ask').scrollIntoView({ behavior: 'smooth', block: 'center' });
   } finally { btns.forEach(b => { b.disabled = false; }); if (btn) btn.textContent = was; }
 }
@@ -2073,6 +2153,7 @@ const QD_CSS = `.hq-doc{--plum:#2A1240;--plum2:#4A2A73;--gold:#A87A24;--gold2:#C
 .hq-doc .qd-note{background:var(--gsoft);border-left:3px solid var(--gold2);border-radius:0 10px 10px 0;padding:12px 16px;white-space:pre-line}
 .hq-doc .qd-ft{margin-top:30px;background:var(--plum);color:#D9CCEA;border-radius:12px;padding:14px 18px;font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.hq-doc .qd-ft b{color:#fff}
 @media (max-width:640px){.hq-doc .qd-hd,.hq-doc .qd-hero,.hq-doc .qd-body{padding-left:18px;padding-right:18px}.hq-doc .qd-hero,.hq-doc .qd-cols{grid-template-columns:1fr}.hq-doc .qd-facts{grid-template-columns:1fr 1fr}}
+.hq-doc .qd-day li.hl-t,.hq-doc .qd-day li.hl-s{background:var(--gsoft);border-radius:6px;margin:1px 0 1px 6px;padding:3px 8px 3px 12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.hq-doc .qd-day li.hl-s:not(.hl-t){background:var(--qzb,#f3eefb)}.hq-doc .qd-day li.hl-t:before{background:var(--gold)}.hq-doc .qd-day li.hl-s:not(.hl-t):before{background:var(--qz,var(--plum2))}.hq-doc .qd-hl{display:inline-block;margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:0 6px;vertical-align:1px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.hq-doc .qd-hl.t{color:var(--gold);border:1px solid var(--gold2)}.hq-doc .qd-hl.s{color:var(--qz,var(--plum2));border:1px solid var(--qz,var(--plum2));background:var(--qzb,transparent)}.hq-doc .qd-hlk{font-size:11.5px;color:var(--mut);margin:-2px 0 6px}.hq-doc .qd-hlk .qd-hl{margin:0 2px 0 0}
 @media print{.hq-doc{max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table,.hq-doc .qd-facts{break-inside:avoid}}`;
 function quoteDoc(s) {
   const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2080,6 +2161,8 @@ function quoteDoc(s) {
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const dt = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${+d} ${MON[+m - 1]} ${y}`; };
   const p = s.price || {}, g = s.group || {}, tr = s.trip || {}, st = s.style || {};
+  // theme / seasonal highlights (same as the buyer page): s.highlight = { theme, season, seasonKey }, day.hl = { theme: [stop], season: [stop] }
+  const H = s.highlight || {}, SZ = ({ spring: ['#b2456b', '#fbe9ef'], summer: ['#9a6f1c', '#f7efdf'], autumn: ['#b35a1f', '#fbeadd'], winter: ['#3c639b', '#e6eef8'] })[H.seasonKey] || null, hasT = (s.itinerary || []).some(d => ((d.hl || {}).theme || []).length), hasS = (s.itinerary || []).some(d => ((d.hl || {}).season || []).length);
   const per = g.foc ? 'paying guest' : 'guest', cap = x => String(x || '').replace(/^\w/, c => c.toUpperCase());
   const facts = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)}` : 'To be confirmed'], ['Duration', `${tr.nights} nights / ${tr.days} days`],
     ['Group', `${g.pax} PAX${g.foc ? ` + ${g.foc} FOC` : ''}${g.country ? ' · ' + g.country : ''}`]];
@@ -2098,10 +2181,10 @@ ${svcCats.length > 1 || (svcCats.length && p.hotelPerPerson) ? svcCats.map(([k, 
 <div class="qd-body">
 <h2>Trip details</h2><div class="qd-facts">${facts.filter(r => r[1]).map(([k, v]) => `<div class="qd-fact"><span>${k}</span><b>${e(v)}</b></div>`).join('')}</div>
 ${s.vehicle ? `<div class="qd-tags" style="margin-top:10px"><span class="qd-tag exp">Transport: ${e(s.vehicle)}</span></div>` : ''}
-${(s.hotels || []).length ? `<h2>Hotels</h2><table><tr><th>City</th><th>Hotel</th><th>Check-in – Check-out</th><th>Stay</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td><b>${e(h.city)}</b></td><td><b>${e(h.name)}</b>${+h.star ? `<div class="qd-star">${'★'.repeat(+h.star)} <span>${+h.star}-star</span></div>` : ''}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : 'To be confirmed'}</td><td style="white-space:nowrap">${h.nights} night${h.nights > 1 ? 's' : ''} / ${h.nights + 1} days</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
+${(s.hotels || []).length ? `<h2>Hotels</h2><table><tr><th>City</th><th>Hotel</th><th>Check-in – Check-out</th><th>Stay</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td><b>${e(h.city)}</b></td><td><b>${e(h.name)}</b>${+h.star ? `<div class="qd-star">${'★'.repeat(+h.star)} <span>${+h.star}-star</span></div>` : ''}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : 'To be confirmed'}</td><td style="white-space:nowrap">${h.nights} night${h.nights > 1 ? 's' : ''}</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
 ${sv.length ? `<h2>Services</h2><table><tr><th>Date</th><th>Service</th><th>City</th><th style="text-align:right">Rate</th><th style="text-align:right">Qty</th><th style="text-align:right">Amount</th></tr>${sv.map(x => `<tr><td>${x.date ? e(dt(x.date)) : x.day ? 'Day ' + x.day : '–'}</td><td><b>${e(x.label)}</b></td><td>${e(x.city || '')}</td><td style="text-align:right">${usd(x.unit)}</td><td style="text-align:right">${x.qty}${x.per === 'pax' ? ' pax' : x.per === 'day' ? (/extra/i.test(x.label) ? ' hrs' : ' days') : ' veh.'}</td><td style="text-align:right"><b>${usd(x.amount)}</b></td></tr>`).join('')}<tr><td colspan="5" style="text-align:right"><b>Services total</b></td><td style="text-align:right"><b>${usd(p.servicesTotal || sv.reduce((a, x) => a + x.amount, 0))}</b></td></tr></table>` : ''}
-${(s.itinerary || []).length ? '<h2>Day-by-day itinerary</h2>' : ''}${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? `<em>${e(dt(d.date).replace(/ \d{4}$/, ''))}</em>` : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
-${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
+${(s.itinerary || []).length ? '<h2>Day-by-day itinerary</h2>' : ''}${hasT || hasS ? `<div class="qd-hlk">${[hasT && H.theme ? `<span class="qd-hl t">${e(H.theme)}</span> stops are chosen for your theme` : '', hasS && H.season ? `<span class="qd-hl s"${SZ ? ` style="--qz:${SZ[0]};--qzb:${SZ[1]}"` : ''}>${e(H.season)}</span> stops are seasonal highlights` : ''].filter(Boolean).join(' · ')}</div>` : ''}${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? `<em>${e(dt(d.date).replace(/ \d{4}$/, ''))}</em>` : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
+${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => { const t = ((d.hl || {}).theme || []).includes(x), z = ((d.hl || {}).season || []).includes(x); return `<li${t || z ? ` class="${[t && 'hl-t', z && 'hl-s'].filter(Boolean).join(' ')}"${z && SZ ? ` style="--qz:${SZ[0]};--qzb:${SZ[1]}"` : ''}` : ''}>${e(x)}${t && H.theme ? `<span class="qd-hl t">${e(H.theme)}</span>` : ''}${z && H.season ? `<span class="qd-hl s">${e(H.season)}</span>` : ''}</li>`; }).join('')}</ul>` : ''}
 ${(d.extras || []).length || (d.meals || []).length ? `<div class="qd-tags">${(d.extras || []).map(x => `<span class="qd-tag exp">${e(x)}</span>`).join('')}${(d.meals || []).length ? `<span class="qd-tag">${e(d.meals.join(' & '))} at local restaurants</span>` : ''}</div>` : ''}</div></div>`).join('')}
 ${(s.included || []).length || (s.excluded || []).length ? `<div class="qd-cols"><div><h2>Included</h2><ul class="qd-in">${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul class="qd-out">${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>` : ''}
 ${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` : ''}

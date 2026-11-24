@@ -64,6 +64,27 @@ tbody tr:hover { background: var(--brand-soft); }
 .st.new { background: var(--brand); color: #fff; } .st.quoted { background: var(--gold-soft); color: var(--gold); }
 .st.land, .st.hotel { background: var(--gold-soft); color: var(--gold); } .st.hotel { background: #e6eef8; color: #3c639b; }
 .st.booked { background: var(--ok-soft); color: var(--ok); } .st.closed { background: #eceff1; color: var(--muted); }
+/* request list dashboard: one card per status, click = filter */
+.dash { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 0 0 14px; }
+.dc { text-align: left; font: inherit; cursor: pointer; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 2px; position: relative; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.dc::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--dc, var(--brand)); opacity: .85; }
+.dc:hover { border-color: #cfc4e3; }
+.dc.on { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-soft), 0 6px 18px rgba(60, 30, 110, .08); }
+.dc .dl { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.dc .dn { font-family: var(--font-display, inherit); font-size: 1.9rem; line-height: 1.1; color: var(--ink); }
+.dc .ds { font-size: .76rem; color: var(--muted); } .dc .dn small { font-size: .9rem; margin-left: 3px; color: var(--muted); font-family: inherit; }
+.dc .ds b { color: #b3261e; font-weight: 700; }
+.dc[data-dst=""] { --dc: #2a1240; } .dc[data-dst=new] { --dc: var(--brand); } .dc[data-dst=land] { --dc: #c9a24b; } .dc[data-dst=hotel] { --dc: #3c639b; } .dc[data-dst=booked] { --dc: var(--ok); } .dc[data-dst=closed] { --dc: #9aa3ab; } .dc[data-dst=deleted] { --dc: #b3261e; background: #fdf7f7; }
+.rdel { border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 8px; font: inherit; font-size: .75rem; padding: 3px 8px; cursor: pointer; white-space: nowrap; }
+.rdel:hover, .rdel.armed { border-color: #b3261e; color: #b3261e; } .rdel.armed { background: #fdecea; font-weight: 700; }
+tr.gone td { color: var(--muted); }
+.dstars { display: inline-flex; gap: 4px; flex-wrap: wrap; } .dstar { border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 99px; padding: 5px 12px; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; } .dstar:hover { border-color: #cfc4e3; color: var(--ink); } .dstar.on { background: var(--brand); border-color: var(--brand); color: #fff; } .dstar small { opacity: .6; font-weight: 500; } .dchips { flex-basis: 100%; } .dchl { min-width: 34px; font-size: .75rem; color: var(--muted); align-self: center; margin-right: 2px; }
+#mailbox { position: fixed; inset: 0; z-index: 300; background: rgba(28, 16, 48, .42); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px; overflow: auto; } #mailbox[hidden] { display: none; }
+#mailbox .mb-card { background: #fff; border-radius: 14px; width: min(760px, 100%); padding: 18px 20px; box-shadow: 0 20px 60px rgba(30, 10, 60, .25); display: flex; flex-direction: column; gap: 10px; }
+#mailbox .mb-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; } #mailbox .mb-h b { font-size: 1.05rem; color: var(--brand); } #mailbox .mb-h .hint { flex: 1; font-size: .8rem; }
+#mailbox .mb-f { display: grid; grid-template-columns: 80px 1fr auto; gap: 8px; align-items: center; font-size: .85rem; } #mailbox .mb-f span { color: var(--muted); font-weight: 600; }
+#mailbox .mb-f input, #mailbox .mb-f textarea { border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font: inherit; background: #faf9fc; width: 100%; box-sizing: border-box; } #mailbox .mb-b { align-items: start; } #mailbox .mb-f textarea { resize: vertical; line-height: 1.5; }
+#mailbox .mb-a { display: flex; gap: 8px; justify-content: flex-end; }
 .empty { text-align: center; color: var(--muted); padding: 40px; }
 /* detail */
 #detail { display: none; }
@@ -207,7 +228,7 @@ ul.bst small.pm { display: block; font-size: .75rem; color: var(--gold); font-we
 .bdh select { border: 1px solid var(--line); border-radius: 7px; padding: 4px 6px; font-size: .82rem; max-width: 260px; }
 .bmv { display: inline-flex; gap: 2px; }
 ul.bst { list-style: none; padding: 0; margin: 6px 0; }
-ul.bst li { display: grid; grid-template-columns: minmax(0, 1fr) auto 46px 24px; gap: 8px; align-items: center; padding: 3px 0; border-bottom: 1px dashed var(--line); font-size: .9rem; }
+ul.bst li { display: grid; grid-template-columns: minmax(0, 1fr) auto 24px; gap: 8px; align-items: center; padding: 3px 0; border-bottom: 1px dashed var(--line); font-size: .9rem; }
 ul.bst li.ln { display: block; color: var(--muted); font-size: .82rem; border: 0; }
 ul.bst li.add span:first-child { color: var(--brand); font-weight: 600; }
 ul.bst li em { font-style: normal; font-size: .72rem; color: var(--gold); }
@@ -435,7 +456,9 @@ tbody tr:hover { background: #faf8fd; }
 .bmain { display: grid; gap: 16px; min-width: 0; }
 #builder .card { border-radius: 14px; padding: 20px 22px; }
 .bquote { display: grid !important; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 24px; position: sticky; top: 12px; z-index: 5; box-shadow: 0 6px 20px rgba(40, 20, 80, .06); }
-#wk-trip .bquote { top: 108px; }
+#wk-trip .bquote, #builder .bk-head ~ .bwrap .bquote { top: 108px; }
+#builder > .bk-head { margin-top: 0 !important; } #builder .bk-head .wk-id { flex: 1; } .bk-title { font-family: var(--font-display); font-size: 1.35rem; border: 1px solid transparent; border-radius: 8px; padding: 2px 8px; margin-left: -8px; width: min(100%, 760px); background: transparent; color: var(--ink); } .bk-title:hover, .bk-title:focus { border-color: var(--line); background: #fff; outline: none; }
+@media (min-width: 1001px) { #builder .bk-head ~ .bwrap .bprice { max-height: calc(100vh - 124px); } }
 .bq-t { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; margin: 0; letter-spacing: -.01em; }
 .bq-in { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem !important; width: 100%; height: 40px !important; border-radius: 10px !important; }
 .bq-route { color: var(--muted); font-size: .9rem; margin-top: 6px; }
@@ -468,6 +491,12 @@ tbody tr:hover { background: #faf8fd; }
 #builder .bst li::before { content: ""; position: absolute; left: -5px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 #builder .bst li.ln::before { background: var(--muted); }
 #builder .bst li.add::before { background: var(--gold); }
+.bz-spring { --bz: #b2456b; --bzb: #fbe9ef; } .bz-summer { --bz: #9a6f1c; --bzb: #f7efdf; } .bz-autumn { --bz: #b35a1f; --bzb: #fbeadd; } .bz-winter { --bz: #3c639b; --bzb: #e6eef8; }
+#builder .bst li.hl-s { background: var(--bzb); border-radius: 6px; } #builder .bst li.hl-s::before { background: var(--bz); }
+#builder .bst li.hl-t { background: var(--gold-soft); border-radius: 6px; } #builder .bst li.hl-t::before { background: var(--gold); }
+.bhl { display: inline-block; margin-left: 6px; font-size: .66rem; font-weight: 800; letter-spacing: .04em; border-radius: 99px; padding: 0 6px; vertical-align: 1px; }
+.bhl.t { color: var(--gold); border: 1px solid #d9bf86; background: #fff; } .bhl.s { color: var(--bz, #5b3d91); border: 1px solid var(--bz, #5b3d91); background: #fff; }
+.bhlk { font-size: .74rem; color: var(--muted); margin-left: 10px; } .bhlk .bhl { margin: 0 2px 0 0; }
 .bmore-g { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
 @media (max-width: 900px) { .bmore-g { grid-template-columns: 1fr; } }
 .bmore textarea { width: 100%; margin-top: 8px; border-radius: 10px; }
@@ -495,6 +524,7 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
 .bq-p, #builder .day.bday .n, .sd h2, .sd-price b { font-family: var(--font-display); font-weight: 400; }
 .bq-p { font-size: 2.3rem; }
 #builder .day.bday .n::before { font-family: var(--font-body); }
+#builder .day.bday .n .bdt { display: block; margin-top: 6px; font-family: var(--font-body); font-size: .72rem; font-weight: 700; color: var(--muted); letter-spacing: 0; white-space: nowrap; }
 .sd h2 { font-size: 1.6rem; }
 .hf b, .hs-c > b { font-family: var(--font-body); }
 .ops-h { margin: 14px 0 8px; font-size: .9rem; display: flex; gap: 10px; align-items: baseline; } .ops-h .hint { font-weight: 400; font-size: .78rem; }
@@ -567,10 +597,11 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
 .sv-u{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted)}.sv-u input{width:80px}.sv-amt{font-weight:700;text-align:right}
 .opg{border:1px solid var(--line);border-radius:12px;padding:10px 12px 4px;margin:14px 0 0;background:#fff}.opg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:6px}.opg-h b{font-size:.95rem;color:var(--purple,#4a2a73)}.opg-h .sp{flex:1}.opg-c{display:flex;gap:4px}.opc{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;font:inherit;font-size:.8rem;cursor:pointer}.opc em{font-style:normal;color:var(--muted);font-size:.75rem}.opc[aria-pressed=true]{background:var(--accent-soft,#f1ecf9);border-color:var(--accent,#5b3a8c);color:var(--accent,#5b3a8c);font-weight:700}.opc.solo{cursor:default}.opg .ht.ops{margin:0}
 .op-it{display:flex;gap:4px;align-items:center}.op-it select{width:74px;flex:none;padding-left:6px;padding-right:2px}.op-it input{flex:1;min-width:0}
+.wk-sum .bq-name{max-width:min(46vw,620px);overflow:hidden;text-overflow:ellipsis;font-size:.9rem !important}
 </style>
 </head>
 <body>
-<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="mine">내 투어</button><button class="tab" data-tab="buyers">바이어</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button><button class="tab" data-tab="staffs">직원</button></nav><span class="sp"></span><span class="hint" id="whoami"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
+<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="mine">내 투어</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button><button class="tab" data-tab="staffs">직원</button><button class="tab" data-tab="buyers">바이어</button></nav><span class="sp"></span><span class="hint" id="whoami"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
 <main>
   <form id="login" class="card" onsubmit="return false">
     <b>하킴 직원 전용</b>
@@ -605,16 +636,17 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
   <section id="staffs" hidden></section>
 
   <section id="list" hidden>
+    <div class="dash" id="dash"></div>
     <div class="bar">
       <input id="q" placeholder="회사·이름·이메일 검색">
-      <select id="fst"><option value="">전체 상태</option><option value="new">New</option><option value="land">Land quoted</option><option value="hotel">Hotel quoted</option><option value="booked">Confirmed</option><option value="closed">Closed</option></select>
+      <select id="fst" hidden><option value="">전체 상태</option><option value="new">New</option><option value="land">Land quoted</option><option value="hotel">Hotel quoted</option><option value="booked">Confirmed</option><option value="closed">Closed</option><option value="deleted">삭제됨</option></select>
       <select id="fas"><option value="">전체 담당</option></select>
       <button class="btn ghost" id="reload">새로고침</button>
       <button class="btn ghost" id="csv">CSV 내보내기</button>
       <span class="count" id="count"></span>
     </div>
     <div class="card" style="padding:0;overflow:auto">
-      <table><thead><tr><th>접수</th><th>회사 / 담당자</th><th>일정</th><th>Arrival</th><th class="num">PAX</th><th>Tier · Theme</th><th class="num">Land / pax</th><th class="num">Total</th><th>Status</th><th>담당</th></tr></thead>
+      <table><thead><tr><th>접수</th><th>회사 / 담당자</th><th>일정</th><th>Arrival</th><th class="num">PAX</th><th>Tier · Theme</th><th class="num">Land / pax</th><th class="num">Total</th><th>Status</th><th>담당</th><th></th></tr></thead>
       <tbody id="rows"></tbody></table>
     </div>
   </section>
@@ -634,6 +666,7 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
       <a class="btn ghost" id="reply" href="#">메일 답장</a>
       <button class="btn ghost" id="wk-toview" hidden>보낸 그대로 보기</button>
       <button class="btn" id="wk-edit">수정하기</button>
+      <button class="btn ghost rdel" id="wk-del" hidden>삭제</button>
       <button class="btn ghost" id="wk-tour" hidden>투어 수정</button>
     </div>
     <div id="wk-sent"></div>
@@ -1401,11 +1434,40 @@ async function load() {
     try { sessionStorage.removeItem('hk-admin'); } catch {}
   }
 }
-function filtered() {
-  const q = $('q').value.trim().toLowerCase(), f = $('fst').value, a = $('fas').value;
-  const mine = r => !!ME && ((ME.email && r.builtByEmail === ME.email) || (!!ME.name && r.assignee === ME.name));
-  return rows.filter(r => (!mineOnly || mine(r)) && (!f || r.status === f) && (!a || (a === '-' ? !r.assignee : r.assignee === a)) && (!q || [r.company, r.name, r.email].join(' ').toLowerCase().includes(q)));
+// status groups for the dashboard cards ('quoted' is the old name of Land quoted)
+const stOf = r => r.deletedAt ? 'deleted' : r.status === 'quoted' ? 'land' : r.status;
+function baseRows() {
+  const q = $('q').value.trim().toLowerCase(), a = $('fas').value;
+  const mine = r => !!ME && ((ME.email && (r.firstByEmail || r.builtByEmail) === ME.email) || (!!ME.name && r.assignee === ME.name));
+  return rows.filter(r => (!mineOnly || mine(r)) && (!a || (a === '-' ? !r.assignee : r.assignee === a)) && (!q || [r.id, r.company, r.name, r.email, r.buyerCode].join(' ').toLowerCase().includes(q)));
 }
+function filtered() {
+  const f = $('fst').value;
+  return baseRows().filter(r => f ? stOf(r) === f : !r.deletedAt && stOf(r) !== 'closed'); // default = in progress (everything but Closed)
+}
+// who may hide a request: its own builder (staff tour, nothing sent or invoiced yet) or the master password
+const isSent = r => (r.quoteCount || (r.quotes || []).length || 0) > 0 || !!r.invoiceNo || !!(r.workflow && r.workflow.invoice) || r.status === 'booked';
+const canDel = r => !!ME && !r.deletedAt && (ME.master || (r.source === 'staff' && !!ME.email && ((r.firstByEmail || (r.builder && r.builder.firstByEmail) || r.builtByEmail) === ME.email) && !isSent(r)));
+const delArmed = {};
+async function delReq(id, btn, restore) {
+  if (!restore && Date.now() - (delArmed[id] || 0) > 4000) { delArmed[id] = Date.now(); btn.classList.add('armed'); btn.textContent = '한 번 더 누르면 삭제'; setTimeout(() => { if (btn.isConnected && Date.now() - delArmed[id] >= 4000) { btn.classList.remove('armed'); btn.textContent = '삭제'; } }, 4100); return false; }
+  delete delArmed[id];
+  try { await api('/api/admin/delete?id=' + encodeURIComponent(id), { method: 'POST', body: JSON.stringify(restore ? { restore: true } : {}) }); }
+  catch (e) { alert(e.status === 403 || e.status === 404 ? e.message : KERR(e)); return false; }
+  const row = rows.find(x => x.id === id); if (row) { if (restore) { delete row.deletedAt; delete row.deletedBy; } else { row.deletedAt = new Date().toISOString(); row.deletedBy = (ME && ME.name) || '관리자'; } }
+  return true;
+}
+function drawDash() {
+  const base = baseRows(), f = $('fst').value, live = base.filter(r => !r.deletedAt), soon = Date.now() + 14 * 864e5;
+  // every request is counted in each line: GRP/FIT, and arrival (within 14 days / later / past / no date)
+  const card = (k, label, list) => { const grp = list.filter(r => (+r.pax || 0) >= 10).length, now = Date.now(), at = r => new Date(r.arrival + 'T23:59:59').getTime();
+    const none = list.filter(r => !r.arrival).length, past = list.filter(r => r.arrival && at(r) < now).length, near = list.filter(r => r.arrival && at(r) >= now && at(r) <= soon + 864e5).length, later = list.length - none - past - near;
+    const arr = [near ? `<b>14일 내 ${near}</b>` : '14일 내 0', `이후 ${later}`, past ? `지남 ${past}` : '', none ? `미정 ${none}` : ''].filter(Boolean).join(' · ');
+    return `<button type="button" class="dc${f === k ? ' on' : ''}" data-dst="${k}"><span class="dl">${label}</span><span class="dn">${list.length}<small>건</small></span>${k === 'deleted' ? '<span class="ds">관리자만 복구</span>' : ''}</button>`; };
+  const by = k => live.filter(r => stOf(r) === k), del = base.filter(r => r.deletedAt);
+  $('dash').innerHTML = card('', 'In progress', live.filter(r => stOf(r) !== 'closed')) + card('new', 'New', by('new')) + card('land', 'Land quoted', by('land')) + card('hotel', 'Hotel quoted', by('hotel')) + card('booked', 'Confirmed', by('booked')) + card('closed', 'Closed', by('closed')) + (ME && ME.master && del.length ? card('deleted', 'Deleted', del) : '');
+}
+$('dash').onclick = e => { const b = e.target.closest('[data-dst]'); if (!b) return; $('fst').value = b.dataset.dst; draw(); };
 function fillStaff() {
   const names = [...new Set([...staff, ...rows.map(r => r.assignee).filter(Boolean)])];
   const cur = $('fas').value;
@@ -1423,10 +1485,12 @@ function exportCSV() {
   a.download = `hakeem-quote-requests-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 function draw() {
-  const list = filtered(), f = $('fst').value;
-  $('count').textContent = mineOnly ? `내 투어 ${list.length}건 (내가 빌드했거나 담당인 것)` : `전체 ${rows.length}건 중 ${list.length}건 · 신규 ${rows.filter(r => r.status === 'new').length}건`;
-  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.revisionOf ? ` <span class="tag" title="이전 요청 ${esc(r.revisionOf)}">재요청</span>` : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
-    : '<tr><td colspan="10" class="empty">견적 요청 없음.</td></tr>';
+  if ($('fst').value === 'deleted' && !(ME && ME.master)) $('fst').value = '';
+  const list = filtered(), f = $('fst').value, live = rows.filter(r => !r.deletedAt);
+  drawDash();
+  $('count').textContent = mineOnly ? `내 투어 ${list.length}건 (내가 빌드했거나 담당인 것)` : `전체 ${live.length}건 중 ${list.length}건 · 신규 ${live.filter(r => r.status === 'new').length}건`;
+  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.revisionOf ? ` <span class="tag" title="이전 요청 ${esc(r.revisionOf)}">재요청</span>` : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td><td>${r.deletedAt ? `<span class="hint">${fmtT(r.deletedAt)} · ${esc(r.deletedBy || '')}</span>${ME && ME.master ? ` <button class="rdel" data-rrestore="${esc(r.id)}">복구</button>` : ''}` : canDel(r) ? `<button class="rdel" data-rdel="${esc(r.id)}" title="${r.source === 'staff' ? '내가 만든 투어 삭제 (목록에서 숨김, 관리자가 복구 가능)' : '관리자 삭제 (목록에서 숨김, 복구 가능)'}">삭제</button>` : ''}</td></tr>`).join('')
+    : `<tr><td colspan="11" class="empty">${f === 'deleted' ? '삭제된 요청 없음.' : '견적 요청 없음.'}</td></tr>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-openreq]'); if (b) open(b.dataset.openreq).catch(err => alert(KERR(err))); });
 async function open(id) {
@@ -1512,7 +1576,8 @@ function wkSetMode(m) {
   const r = current; if (!r) return;
   if (m === 'view' && r.source === 'staff') m = 'edit'; // our own tours have no 'as sent' page
   wkMode = m; $('detail').dataset.mode = m;
-  $('wk-edit').hidden = m === 'edit'; $('wk-toview').hidden = m === 'view' || r.source === 'staff'; $('wk-tour').hidden = !USE_STAFF_TOUR || !r.builderSel;
+  $('wk-edit').hidden = m === 'edit';
+  { const row = rows.find(x => x.id === r.id) || {}; $('wk-del').hidden = !canDel({ ...row, ...r, workflow: r.workflow, quotes: r.quotes }); $('wk-del').textContent = '삭제'; $('wk-del').classList.remove('armed'); } $('wk-toview').hidden = m === 'view' || r.source === 'staff'; $('wk-tour').hidden = !USE_STAFF_TOUR || !r.builderSel;
   $('wk-sent').innerHTML = m === 'view' ? sentDoc(r) : '';
   $('wk-todo').innerHTML = m === 'edit' && r.source !== 'staff' ? todoStrip(r) : '';
   if (m === 'edit') wkTab(wkCur === 'req' ? 'trip' : wkCur); else { $('builder').hidden = true; }
@@ -1525,8 +1590,26 @@ const USE_STAFF_TOUR = false;
 function goTour(id) { location.href = 'tour.html' + (id ? '?id=' + encodeURIComponent(id) : ''); }
 $('wk-tour').onclick = () => goTour(current && current.id);
 $('wk-toview').onclick = () => wkSetMode('view');
-function wkMeta(r) {
-  const o = r.options || {}, tr = r.trip || {};
+// mail drafts: try the mail app, and always show the draft in the page (mailto is blocked in some frames)
+function openMail(u) {
+  try { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); } catch (_) {}
+  const x = new URL(u), q = x.searchParams, to = decodeURIComponent(x.pathname || ''), cc = q.get('cc') || '', subj = q.get('subject') || '', body = q.get('body') || '';
+  let m = $('mailbox'); if (!m) { m = document.createElement('div'); m.id = 'mailbox'; document.body.appendChild(m);
+    m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-mbx=close]')) { m.hidden = true; return; }
+      const c = e.target.closest('[data-mbc]'); if (!c) return; const v = c.dataset.mbc === 'all' ? m._all : (m.querySelector(`[data-mbv="${c.dataset.mbc}"]`) || {}).value || '';
+      const done = ok => { const t = c.textContent; c.textContent = ok ? '복사됨 ✓' : '복사 실패'; setTimeout(() => { c.textContent = t; }, 1400); };
+      const legacy = () => { const ta = document.createElement('textarea'); ta.value = v; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); done(ok); };
+      (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
+  m._all = [`받는 사람: ${to || '-'}`, `참조: ${cc || '-'}`, `제목: ${subj}`, '', body].join('\n');
+  const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" readonly value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">메일 앱이 열리지 않으면 아래 내용을 복사해 보내세요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+    ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
+    <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" readonly rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
+    <div class="mb-a"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button></div></div>`;
+  m.hidden = false;
+}
+function wkMeta(r, live) {
+  const o = { ...(r.options || {}), ...(live ? { pax: live.pax, foc: live.foc } : {}) }, tr = { ...(r.trip || {}), ...(live ? { nights: live.n, days: live.n + 1, arrival: live.arrival || (r.trip || {}).arrival } : {}) };
   $('wk-title').textContent = (r.contact && (r.contact.company || r.contact.name)) || r.id;
   $('wk-meta').innerHTML = [esc(r.id), r.buyer ? esc(r.buyer.code) : '', o.pax ? `${o.pax}명${o.foc ? ` + FOC ${o.foc}` : ''}` : '', tr.nights ? `${tr.nights}박 ${tr.days}일` : '', tr.arrival ? `${fmt(tr.arrival)} 도착` : '도착일 미정', r.source === 'staff' ? '직원 작성' : r.revisionOf ? `재요청 (이전 ${esc(r.revisionOf)})` : ''].filter(Boolean).join(' · ');
 }
@@ -1545,8 +1628,8 @@ async function wkEnter(r) {
   document.querySelector('#wk-tabs [data-wk=trip]').hidden = USE_STAFF_TOUR || !r.builderSel;
   if (!USE_STAFF_TOUR && r.builderSel) {
     if (!settings || !settings.defaults || !settings.defaults.vehicles) { try { settings = await api('/api/admin/settings'); } catch {} }
-    bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
-    const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
+    bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); for (const [k, o] of Object.entries(bSel.stopOrd || {})) { const e = (bEdits[k] ||= { rm: [], add: [] }); if (Array.isArray(o) && !(e.ord || []).length) e.ord = o.slice(); } /* buyer's own order of places (buyer page drag) */ bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
+    const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup ?? 10; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
     bFold = {}; bAddOpen = {}; bTitle = ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
     $('wk-trip').appendChild($('builder')); drawBuilder();
   }
@@ -1556,14 +1639,20 @@ async function wkEnter(r) {
 function wkLeave(toBuilder) {
   const b = $('builder'); if (b.parentNode !== $('wk-trip')) return;
   document.querySelector('main').insertBefore(b, $('dir'));
-  if (wkFromReq) { wkFromReq = false; bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; }
+  if (wkFromReq) { wkFromReq = false; bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 10; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; }
   b.hidden = !toBuilder; if ($('wk-sum')) $('wk-sum').innerHTML = '';
 }
 $('wk-tabs').addEventListener('click', e => { const b = e.target.closest('[data-wk]'); if (b) { wkTab(b.dataset.wk); window.scrollTo(0, 0); } });
 // ---- ① land fee quotation and ② hotels, stored on the request as r.workflow
 const CITY = { seoul: '서울', jeju: '제주', busan: '부산' }, CITY_EN = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+// English hotel names for buyer quotations (the company directory keeps Korean names)
+const HOTEL_EN = {"롯데호텔 서울": "Lotte Hotel Seoul", "더플라자 서울": "The Plaza Seoul, Autograph Collection", "노보텔 앰버서더 동대문": "Novotel Ambassador Seoul Dongdaemun", "노보텔 앰버서더 용산": "Novotel Ambassador Seoul Yongsan", "노보텔 앰버서더 강남": "Novotel Ambassador Seoul Gangnam", "포시즌스 호텔 서울": "Four Seasons Hotel Seoul", "더 신라호텔 서울": "The Shilla Seoul", "그랜드 하얏트 서울": "Grand Hyatt Seoul", "오크우드 프리미어 코엑스 센터": "Oakwood Premier Coex Center", "몬드리안 이태원": "Mondrian Seoul Itaewon", "웨스틴 조선 서울": "The Westin Josun Seoul", "더블트리 바이 힐튼 서울 판교": "DoubleTree by Hilton Seoul Pangyo", "시그니엘 서울": "Signiel Seoul", "그랜드 머큐어 앰버서더 호텔 앤 레지던스 서울 용산": "Grand Mercure Ambassador Hotel and Residences Seoul Yongsan", "페어몬트 앰배서더 서울 호텔": "Fairmont Ambassador Seoul", "JW 매리어트 호텔 서울": "JW Marriott Hotel Seoul", "앰배서더 풀만": "Pullman Ambassador Seoul Eastpole", "소피텔 앰버서더 서울": "Sofitel Ambassador Seoul Hotel & Serviced Residences", "그랜드 워커힐": "Grand Walkerhill Seoul", "파크 하얏트 서울": "Park Hyatt Seoul", "매리어트 이그제큐티브 아파트먼트": "Marriott Executive Apartments Seoul", "그랜드 인터컨티넨탈 서울 파르나스": "Grand InterContinental Seoul Parnas", "호텔 나루 서울 엠갤러리": "Hotel Naru Seoul - MGallery", "JW 메리어트 동대문 스퀘어": "JW Marriott Dongdaemun Square Seoul", "조선 팰리스 서울 강남": "Josun Palace, a Luxury Collection Hotel, Seoul Gangnam", "르메르디앙 서울 명동": "Le Méridien Seoul Myeongdong", "롯데호텔 월드": "Lotte Hotel World", "포포인츠 바이 쉐라톤 서울 구로": "Four Points by Sheraton Seoul, Guro", "나인트리 바이 파르나스 서울 명동 II": "Nine Tree by Parnas Seoul Myeongdong II", "코트야드 바이 메리어트 서울 타임스퀘어": "Courtyard by Marriott Seoul Times Square", "이비스 스타일 앰배서더 서울 용산": "ibis Styles Ambassador Seoul Yongsan", "롯데시티명동": "Lotte City Hotel Myeongdong", "롯데시티마포": "Lotte City Hotel Mapo", "롯데시티김포": "Lotte City Hotel Gimpo Airport", "L7 명동 바이 롯데": "L7 Myeongdong by Lotte", "L7 홍대 바이 롯데": "L7 Hongdae by Lotte", "L7 강남 바이 롯데": "L7 Gangnam by Lotte", "보코 서울 명동": "voco Seoul Myeongdong", "프레이저 플레이스 센트럴, 남대문": "Fraser Place Central Seoul", "소테츠 호텔즈 더 스프라지르 서울 명동": "Sotetsu Hotels The Splaisir Seoul Myeongdong", "글래드 마포/여의도": "GLAD Mapo / GLAD Yeouido", "삼정호텔": "Samjung Hotel", "머큐어 앰배서더 서울 마곡": "Mercure Ambassador Seoul Magok", "알로프트 명동": "Aloft Seoul Myeongdong", "포포인츠 바이 쉐라톤 서울 명동": "Four Points by Sheraton Josun, Seoul Myeongdong", "포포인츠 바이 쉐라톤 서울역": "Four Points by Sheraton Josun, Seoul Station", "포포인츠 바이 쉐라톤 서울 강남": "Four Points by Sheraton Seoul, Gangnam", "코트야드 메리어트 메리어트 서울 남대문": "Courtyard by Marriott Seoul Namdaemun", "서울가든 호텔": "Seoul Garden Hotel", "켄싱턴 호텔 여의도": "Kensington Hotel Yeouido", "나인트리 프리미어 로카우스 호텔 서울 용산": "Nine Tree Premier ROKAUS Hotel Seoul Yongsan", "L'escape Hotel 레스케이프, 럭셔리 컬렉션 호텔": "L'Escape Hotel", "신라스테이 전 지점": "Shilla Stay", "오라카이 인사동 스위츠": "Orakai Insadong Suites", "오라카이 송도 파크 호텔": "Orakai Songdo Park Hotel", "홀리데이 인 인천 송도 호텔": "Holiday Inn Incheon Songdo", "브릿지호텔인천송도": "Bridge Hotel Incheon Songdo", "롯데시티대전": "Lotte City Hotel Daejeon", "롯데시티구로": "Lotte City Hotel Guro", "롯데시티울산": "Lotte City Hotel Ulsan", "프레지던트 서울 호텔": "Hotel President Seoul", "오라카이 대학로 호텔": "Orakai Daehakro Hotel", "트래블로지 호텔": "Travelodge Seoul", "크라운 파크 호텔": "Crown Park Hotel Seoul", "스카이파크": "Hotel Skypark", "메이플레이스": "Mayplace Seoul", "베르누이 호텔": "Bernoulli Hotel", "호텔 카푸치노": "Hotel Cappuccino", "이비스 스타일 앰배서더 서울 강남": "ibis Styles Ambassador Seoul Gangnam", "알로프트 서울 강남": "Aloft Seoul Gangnam", "글래드 강남 삼성 코엑스 지점": "GLAD Gangnam COEX Center", "라마다 호텔 앤 스위트 서울 남대문": "Ramada Hotel & Suites by Wyndham Seoul Namdaemun", "호텔 아트리움": "Hotel Atrium Jongno", "WECO STAY (위코스테이)": "WECO STAY", "호텔 더 보타닉 세운 명동": "Hotel The Botanik Sewoon Myeongdong", "그랜드 머큐어 임피리얼 팰리스 서울 강남": "Grand Mercure Imperial Palace Seoul Gangnam", "세종호텔": "Sejong Hotel Seoul Myeongdong", "경원재 바이 워커힐": "Gyeongwonjae by Walkerhill", "스탠포드호텔 서울": "Stanford Hotel Seoul", "롯데호텔 부산": "Lotte Hotel Busan", "윈덤그랜드부산": "Wyndham Grand Busan", "파라다이스 부산": "Paradise Hotel Busan", "그랜드조선 부산": "Grand Josun Busan", "시그니엘 부산": "Signiel Busan", "파크 하얏트 부산": "Park Hyatt Busan", "웨스틴 조선 부산": "The Westin Josun Busan", "아스티 부산": "Asti Hotel Busan Station", "아바니 부산": "Avani Central Busan", "코오롱 씨클라우드": "Kolon Seacloud Hotel", "L7 해운대": "L7 Haeundae by Lotte", "신라스테이 해운대": "Shilla Stay Haeundae", "영무 파라드 호텔 해운대 비치": "Youngmoo Parade Hotel Haeundae Beach", "스탠포드 부산": "Stanford Hotel Busan", "부산 코모도 호텔": "Commodore Hotel Busan", "켄싱턴 호텔 부산": "Kensington Hotel Busan", "라마다 앙코르 부산역": "Ramada Encore by Wyndham Busan Station", "라발스 호텔 (La Valse)": "Lavalse Hotel", "솔라리아 니시테츠 부산 호텔": "Solaria Nishitetsu Hotel Busan", "라마다앙코르 바이 윈덤 부산 해운대": "Ramada Encore by Wyndham Busan Haeundae", "하얏트 플레이스 부산 연산": "Hyatt Place Busan Yeonsan", "롯데제주리조트": "Lotte Resort Jeju", "롯데리조트 아트 빌라스": "Lotte Resort Jeju Art Villas", "메종글래드 제주": "Maison Glad Jeju", "신라스테이": "Shilla Stay", "제주라마다플라자": "Ramada Plaza by Wyndham Jeju Ocean Front", "제주그랜드하얏트": "Grand Hyatt Jeju", "파르나스 호텔 제주": "Parnas Hotel Jeju", "롯데시티호텔 제주": "Lotte City Hotel Jeju", "라마다함덕": "Ramada Jeju Hamdeok", "아스타 제주": "Asta Hotel Jeju", "스카이파크 제주": "Hotel Skypark Jeju", "오션스위츠 제주 호텔": "Ocean Suites Jeju Hotel", "엠버퓨어힐 호텔&리조트": "Amber Pure Hill Hotel & Resort", "시리우스": "Sirius Hotel Jeju", "JW 마리어트": "JW Marriott Jeju Resort & Spa", "글로스터 제주": "Gloucester Hotel Jeju", "베스트 웨스턴 제주": "Best Western Jeju Hotel", "씨에스 호텔 앤 리조트": "The Seaes Hotel & Resort", "제주신화월드": "Jeju Shinhwa World", "제주 골드원 호텔 앤 스위트": "Jeju Gold One Hotel & Suites", "베이힐풀앤빌라": "Bay Hill Pool & Villa", "세인트존스 호텔": "St. John's Hotel Gangneung", "카시아 속초": "Cassia Sokcho", "라마다 속초": "Ramada by Wyndham Sokcho", "홀리데이인/인터콘티넨탈 알펜시아 리조트": "Holiday Inn / InterContinental Alpensia Pyeongchang Resort"};
+const hotelEn = n => HOTEL_EN[String(n || '').trim()] || n;
 const COUNTRY_DEFAULT = { India: 'IND' };
+// nationality code shown to suppliers: the short codes the trade uses (UAE, KSA, UK), ISO3 for the rest
+const CC_COMMON = { ARE: 'UAE', SAU: 'KSA', GBR: 'UK' }, ccShow = c => { const x = String(c || '').trim().toUpperCase(); return CC_COMMON[x] || x; };
+const CC_FREQ = [['UAE', 'United Arab Emirates'], ['KSA', 'Saudi Arabia'], ['KWT', 'Kuwait'], ['QAT', 'Qatar'], ['BHR', 'Bahrain'], ['OMN', 'Oman'], ['IND', 'India'], ['ESP', 'Spain'], ['USA', 'United States'], ['PHL', 'Philippines'], ['UK', 'United Kingdom'], ['KOR', 'Korea']];
 const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const nightsBetween = (a, b) => a && b ? Math.round((new Date(b) - new Date(a)) / 864e5) : 0;
 const koDate = iso => { if (!iso) return ''; const d = new Date(iso + 'T00:00:00'); return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일(${'일월화수목금토'[d.getDay()]})`; };
@@ -1599,7 +1688,7 @@ function hotelGroups(hrow) {
 function wfSyncBuilder() {
   if (typeof bFrom === 'undefined' || !bFrom || !current || bFrom !== current.id || !wf) return false;
   const days = builtDays(), before = JSON.stringify([bHotels, bMarkup]);
-  bMarkup = +wf.hotelMarkup || 0; bHotels = Array.from({ length: Math.max(0, days.length - 1) }, () => null);
+  bMarkup = +(wf.hotelMarkup ?? 10); bHotels = Array.from({ length: Math.max(0, days.length - 1) }, () => null);
   bStays(days).forEach(st => {
     const h = wf.hotels.find(x => x.city === st.city && x.offer && x.status !== 'no' && x.name && hotelNet(x) > 0);
     if (!h) return;
@@ -1620,10 +1709,10 @@ function stays(r) {
 function defaultWorkflow(r) {
   return {
     land: { perPerson: r.price.perPerson, pax: r.options.pax, note: '', sentAt: '' },
-    country: r.options.country || COUNTRY_DEFAULT[r.options.market] || '',
+    country: ccShow(r.options.country || COUNTRY_DEFAULT[r.options.market] || ''),
     hotels: stays(r).map(s => ({ city: s.city, star: reqStar(r), name: '', manager: '', email: '', checkIn: s.checkIn, checkOut: s.checkOut,
       rooms: (r.rooms && r.rooms.length ? r.rooms : [{ type: 'TWN', qty: Math.ceil(headsR(r) / 2) }]).map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })), breakfast: true, status: 'todo', offer: true })),
-    hotelNote: '', hotelSentAt: '', hotelFx: (r.cost && r.cost.fx) || 1250, hotelMarkup: 0,
+    hotelNote: '', hotelSentAt: '', hotelFx: (r.cost && r.cost.fx) || 1250, hotelMarkup: 10,
   };
 }
 let wf = null;
@@ -1727,7 +1816,7 @@ function drawWorkflow() {
       <div class="hs-c main"><span>Tour Fee / pax</span><b id="w-app">${money(L.perPerson + t.pp)}</b><em>Total <b id="w-atot">${money(t.landTotal + t.total)}</b></em></div>
     </div>
     <div class="row">
-      <label>국적 코드 (메일 제목)<input id="w-cty" value="${esc(wf.country)}" placeholder="KWT, SAU, UAE…" maxlength="3" style="width:110px;text-transform:uppercase"></label>
+      <label>국적 코드 (메일 제목)<input id="w-cty" value="${esc(ccShow(wf.country))}" list="dl-cty" placeholder="UAE, KSA, KWT…" maxlength="3" style="width:110px;text-transform:uppercase"><datalist id="dl-cty">${CC_FREQ.map(([c, n]) => `<option value="${c}">${n}</option>`).join('')}</datalist></label>
       <label>FX (₩/US$)<input id="w-hfx" type="number" min="500" step="10" value="${wf.hotelFx || 1250}" style="width:100px"></label>
       <label>Hotel markup (%)<input id="w-hmk" type="number" min="0" step="1" value="${wf.hotelMarkup || 0}" style="width:80px"></label>
       <span class="hint">회신 요금(₩)을 넣으면 환율·마진으로 판매가(US$) 자동 계산 · Include in quote 체크한 호텔이 Itinerary 견적·PDF에 들어갑니다</span>
@@ -1750,12 +1839,12 @@ function drawWorkflow() {
 // ---- emails (opened in the mail app; nothing is sent automatically)
 function hotelMail(h) {
   const n = nightsBetween(h.checkIn, h.checkOut), pax = headsR(current);
-  const subject = `[하킴트래블코리아] 객실 문의_${h.checkIn ? MON[+h.checkIn.slice(5, 7) - 1] : 'TBD'}_${n}N_${(wf.country || 'TBD').toUpperCase()}_${pax}PAX_${h.name || '호텔명'}`;
+  const subject = `[하킴트래블코리아] 객실 문의_${h.checkIn ? MON[+h.checkIn.slice(5, 7) - 1] : 'TBD'}_${n}N_${ccShow(wf.country) || 'TBD'}_${pax}PAX_${h.name || '호텔명'}`;
   const body = [`안녕하십니까 ${h.manager ? h.manager + ' 지배인님' : '담당자님'},`, '하킴 트래블 코리아 김채민입니다.', '',
     '아래와 같은 일정으로 예약 가능 여부와 단체 금액 확인 부탁드립니다.', '',
     `* 지점: ${h.name || '-'}`, `* 체크인: ${koDate(h.checkIn) || '미정'}`, `* 체크아웃: ${koDate(h.checkOut) || '미정'} (${n}박)`,
     `* 객실 타입: ${roomsKo(h)} (객실 구성 변동 가능)`, `* 투숙 인원: 성인 ${pax}명${h.breakfast ? ', 조식 포함' : ''}`,
-    `* 손님 국적: ${wf.country || MARKET[current.options.market] || '-'}`, '', '감사합니다.'].join('\n');
+    `* 손님 국적: ${ccShow(wf.country) || MARKET[current.options.market] || '-'}`, '', '감사합니다.'].join('\n');
   return `mailto:${encodeURIComponent(h.email)}?cc=contact@hakeemtravel.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 function buyerMail(withHotel) {
@@ -1828,7 +1917,7 @@ $('wf').addEventListener('input', e => {
   else if (el.id === 'w-pax') wf.land.pax = Math.max(1, +el.value || 1);
   else if (el.id === 'w-note') wf.land.note = el.value;
   else if (el.id === 'w-hnote') wf.hotelNote = el.value;
-  else if (el.id === 'w-cty') wf.country = el.value.toUpperCase();
+  else if (el.id === 'w-cty') wf.country = ccShow(el.value);
   else if (el.id === 'w-hfx' || el.id === 'w-hmk') {
     if (el.id === 'w-hfx') wf.hotelFx = +el.value || 0; else wf.hotelMarkup = +el.value || 0;
     wf.hotels.forEach((h, i) => h.rooms.forEach((r, j) => { if (r.net > 0) { r.rate = sellRate(r.net); const x = document.querySelector(`tr[data-i="${i}"] [data-r="${j}"][data-rf="rate"]`); if (x) x.value = r.rate; } }));
@@ -1855,7 +1944,7 @@ $('wf').addEventListener('change', e => { if (e.target.matches('select, input[ty
 $('wf').addEventListener('click', e => {
   const b = e.target.closest('button, a'); if (!b) return;
   if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.net = +b.dataset.hest; r.rate = sellRate(r.net); }); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
-  if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; location.href = hotelMail(h); drawWorkflow(); return; }
+  if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; openMail(hotelMail(h)); drawWorkflow(); return; }
   if (b.dataset.askcopy !== undefined) {
     // copy the same inquiry mail as text (to / cc / subject / body) for pasting into any mail app
     e.preventDefault(); const h = wf.hotels[+b.dataset.askcopy], u = new URL(hotelMail(h)), q = u.searchParams;
@@ -2323,7 +2412,7 @@ const bNew = () => ({ market: 'other', country: '', season: 'spring', tier: 'R',
   swaps: {}, moveTour: {}, lotte: null, hanbok: null, meals: [], mealOff: {}, mealOn: {}, luggage: false, vehicle: 'std', addons: [] });
 let bSel = bNew(), bEdits = {}, bOrder = {}, bFrom = '', bFromReq = null, bRatesOK = false, bOpen = {};
 // hotels night by night: bHotels[i] = null or { name, star, rooms: [{ type, qty, net }] } (net = KRW per room-night incl. tax)
-let bHotels = [], bArrival = '', bMarkup = 0, bDirAsked = false, bTitle = '', bFold = {}, bAddOpen = {};
+let bHotels = [], bArrival = '', bMarkup = 10, bDirAsked = false, bTitle = '', bFold = {}, bAddOpen = {};
 // ---- buyer-facing quotation (same layout in the admin PDF and the buyer's "My quotations"); never shows costs or margins
 window.QD_LOGO = '../logo.png';
 const QD_CSS = `.hq-doc{--plum:#2A1240;--plum2:#4A2A73;--gold:#A87A24;--gold2:#C9A24B;--gsoft:#F7EFDF;--line:#E7E1EE;--mut:#6B6178;font-family:"SUIT Variable","Pretendard Variable",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1F1530;background:#FFFFFF;line-height:1.55;font-size:13.5px;max-width:880px;margin:0 auto;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -2361,6 +2450,7 @@ const QD_CSS = `.hq-doc{--plum:#2A1240;--plum2:#4A2A73;--gold:#A87A24;--gold2:#C
 .hq-doc .qd-note{background:var(--gsoft);border-left:3px solid var(--gold2);border-radius:0 10px 10px 0;padding:12px 16px;white-space:pre-line}
 .hq-doc .qd-ft{margin-top:30px;background:var(--plum);color:#D9CCEA;border-radius:12px;padding:14px 18px;font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.hq-doc .qd-ft b{color:#fff}
 @media (max-width:640px){.hq-doc .qd-hd,.hq-doc .qd-hero,.hq-doc .qd-body{padding-left:18px;padding-right:18px}.hq-doc .qd-hero,.hq-doc .qd-cols{grid-template-columns:1fr}.hq-doc .qd-facts{grid-template-columns:1fr 1fr}}
+.hq-doc .qd-day li.hl-t,.hq-doc .qd-day li.hl-s{background:var(--gsoft);border-radius:6px;margin:1px 0 1px 6px;padding:3px 8px 3px 12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.hq-doc .qd-day li.hl-s:not(.hl-t){background:var(--qzb,#f3eefb)}.hq-doc .qd-day li.hl-t:before{background:var(--gold)}.hq-doc .qd-day li.hl-s:not(.hl-t):before{background:var(--qz,var(--plum2))}.hq-doc .qd-hl{display:inline-block;margin-left:7px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:0 6px;vertical-align:1px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.hq-doc .qd-hl.t{color:var(--gold);border:1px solid var(--gold2)}.hq-doc .qd-hl.s{color:var(--qz,var(--plum2));border:1px solid var(--qz,var(--plum2));background:var(--qzb,transparent)}.hq-doc .qd-hlk{font-size:11.5px;color:var(--mut);margin:-2px 0 6px}.hq-doc .qd-hlk .qd-hl{margin:0 2px 0 0}
 @media print{.hq-doc{max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table,.hq-doc .qd-facts{break-inside:avoid}}`;
 function quoteDoc(s) {
   const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2368,6 +2458,8 @@ function quoteDoc(s) {
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const dt = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${+d} ${MON[+m - 1]} ${y}`; };
   const p = s.price || {}, g = s.group || {}, tr = s.trip || {}, st = s.style || {};
+  // theme / seasonal highlights (same as the buyer page): s.highlight = { theme, season, seasonKey }, day.hl = { theme: [stop], season: [stop] }
+  const H = s.highlight || {}, SZ = ({ spring: ['#b2456b', '#fbe9ef'], summer: ['#9a6f1c', '#f7efdf'], autumn: ['#b35a1f', '#fbeadd'], winter: ['#3c639b', '#e6eef8'] })[H.seasonKey] || null, hasT = (s.itinerary || []).some(d => ((d.hl || {}).theme || []).length), hasS = (s.itinerary || []).some(d => ((d.hl || {}).season || []).length);
   const per = g.foc ? 'paying guest' : 'guest', cap = x => String(x || '').replace(/^\w/, c => c.toUpperCase());
   const facts = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)}` : 'To be confirmed'], ['Duration', `${tr.nights} nights / ${tr.days} days`],
     ['Group', `${g.pax} PAX${g.foc ? ` + ${g.foc} FOC` : ''}${g.country ? ' · ' + g.country : ''}`]];
@@ -2386,10 +2478,10 @@ ${svcCats.length > 1 || (svcCats.length && p.hotelPerPerson) ? svcCats.map(([k, 
 <div class="qd-body">
 <h2>Trip details</h2><div class="qd-facts">${facts.filter(r => r[1]).map(([k, v]) => `<div class="qd-fact"><span>${k}</span><b>${e(v)}</b></div>`).join('')}</div>
 ${s.vehicle ? `<div class="qd-tags" style="margin-top:10px"><span class="qd-tag exp">Transport: ${e(s.vehicle)}</span></div>` : ''}
-${(s.hotels || []).length ? `<h2>Hotels</h2><table><tr><th>City</th><th>Hotel</th><th>Check-in – Check-out</th><th>Stay</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td><b>${e(h.city)}</b></td><td><b>${e(h.name)}</b>${+h.star ? `<div class="qd-star">${'★'.repeat(+h.star)} <span>${+h.star}-star</span></div>` : ''}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : 'To be confirmed'}</td><td style="white-space:nowrap">${h.nights} night${h.nights > 1 ? 's' : ''} / ${h.nights + 1} days</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
+${(s.hotels || []).length ? `<h2>Hotels</h2><table><tr><th>City</th><th>Hotel</th><th>Check-in – Check-out</th><th>Stay</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td><b>${e(h.city)}</b></td><td><b>${e(h.name)}</b>${+h.star ? `<div class="qd-star">${'★'.repeat(+h.star)} <span>${+h.star}-star</span></div>` : ''}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : 'To be confirmed'}</td><td style="white-space:nowrap">${h.nights} night${h.nights > 1 ? 's' : ''}</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
 ${sv.length ? `<h2>Services</h2><table><tr><th>Date</th><th>Service</th><th>City</th><th style="text-align:right">Rate</th><th style="text-align:right">Qty</th><th style="text-align:right">Amount</th></tr>${sv.map(x => `<tr><td>${x.date ? e(dt(x.date)) : x.day ? 'Day ' + x.day : '–'}</td><td><b>${e(x.label)}</b></td><td>${e(x.city || '')}</td><td style="text-align:right">${usd(x.unit)}</td><td style="text-align:right">${x.qty}${x.per === 'pax' ? ' pax' : x.per === 'day' ? (/extra/i.test(x.label) ? ' hrs' : ' days') : ' veh.'}</td><td style="text-align:right"><b>${usd(x.amount)}</b></td></tr>`).join('')}<tr><td colspan="5" style="text-align:right"><b>Services total</b></td><td style="text-align:right"><b>${usd(p.servicesTotal || sv.reduce((a, x) => a + x.amount, 0))}</b></td></tr></table>` : ''}
-${(s.itinerary || []).length ? '<h2>Day-by-day itinerary</h2>' : ''}${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? `<em>${e(dt(d.date).replace(/ \d{4}$/, ''))}</em>` : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
-${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
+${(s.itinerary || []).length ? '<h2>Day-by-day itinerary</h2>' : ''}${hasT || hasS ? `<div class="qd-hlk">${[hasT && H.theme ? `<span class="qd-hl t">${e(H.theme)}</span> stops are chosen for your theme` : '', hasS && H.season ? `<span class="qd-hl s"${SZ ? ` style="--qz:${SZ[0]};--qzb:${SZ[1]}"` : ''}>${e(H.season)}</span> stops are seasonal highlights` : ''].filter(Boolean).join(' · ')}</div>` : ''}${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? `<em>${e(dt(d.date).replace(/ \d{4}$/, ''))}</em>` : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
+${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => { const t = ((d.hl || {}).theme || []).includes(x), z = ((d.hl || {}).season || []).includes(x); return `<li${t || z ? ` class="${[t && 'hl-t', z && 'hl-s'].filter(Boolean).join(' ')}"${z && SZ ? ` style="--qz:${SZ[0]};--qzb:${SZ[1]}"` : ''}` : ''}>${e(x)}${t && H.theme ? `<span class="qd-hl t">${e(H.theme)}</span>` : ''}${z && H.season ? `<span class="qd-hl s">${e(H.season)}</span>` : ''}</li>`; }).join('')}</ul>` : ''}
 ${(d.extras || []).length || (d.meals || []).length ? `<div class="qd-tags">${(d.extras || []).map(x => `<span class="qd-tag exp">${e(x)}</span>`).join('')}${(d.meals || []).length ? `<span class="qd-tag">${e(d.meals.join(' & '))} at local restaurants</span>` : ''}</div>` : ''}</div></div>`).join('')}
 ${(s.included || []).length || (s.excluded || []).length ? `<div class="qd-cols"><div><h2>Included</h2><ul class="qd-in">${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul class="qd-out">${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>` : ''}
 ${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` : ''}
@@ -2554,12 +2646,15 @@ function bAutoTitle() {
   // Hakeem Travel Korea_Package_SEL_BUS_CJU_3N4D(261105-261108)_Agency_261124 (cities, nights/days, travel dates, agency, request date KST)
   const s = bSel, route = routeOf(s), n = route.reduce((a, c) => a + (+s['n' + CITY_EN[c]] || 0), 0);
   const CODE = { seoul: 'SEL', busan: 'BUS', jeju: 'CJU' }, yymmdd = iso => iso.slice(2, 10).replace(/-/g, '');
-  const today = yymmdd(new Date(Date.now() + 9 * 3600e3).toISOString());
+  const today = yymmdd(new Date((bFromReq && bFromReq.createdAt ? Date.parse(bFromReq.createdAt) : Date.now()) + 9 * 3600e3).toISOString()); // request date (KST)
   let dates = '';
   if (bArrival) { const end = new Date(bArrival + 'T00:00:00Z'); end.setUTCDate(end.getUTCDate() + n); dates = `(${yymmdd(bArrival)}-${yymmdd(end.toISOString())})`; }
   const hit = bBuyerHit(), w = bDomWord();
-  const agency = ((hit && hit.company) || (w && !FREE_MAILS.includes(w) ? w[0].toUpperCase() + w.slice(1) : '') || (hit && hit.name) || '').replace(/[_\s]+/g, ' ').trim();
-  return ['Hakeem Travel Korea', 'Package', ...route.map(c => CODE[c]), `${n}N${n + 1}D${dates}`, agency, today].filter(Boolean).join('_');
+  const rq = bFromReq && bFromReq.source !== 'staff' ? bFromReq : null, rw = rq ? (((rq.contact || {}).email || '').split('@')[1] || '').split('.')[0].toLowerCase() : '';
+  const agency = ((hit && hit.company) || (rq && (rq.contact || {}).company) || (w && !FREE_MAILS.includes(w) ? w[0].toUpperCase() + w.slice(1) : '') || (rw && !FREE_MAILS.includes(rw) ? rw[0].toUpperCase() + rw.slice(1) : '') || (hit && hit.name) || (rq && (rq.contact || {}).name) || '').replace(/[_\s]+/g, ' ').trim();
+  const kind = bSvc.on.itin ? 'Package' : bSvcNames('+').replace(/ · /g, '') || 'Services', nc = bNoCity();
+  if (nc && bArrival) dates = `(${yymmdd(bArrival)})`;
+  return ['Hakeem Travel Korea', kind, ...(nc ? [] : route.map(c => CODE[c])), nc ? dates : `${n}N${n + 1}D${dates}`, agency, today].filter(Boolean).join('_');
 }
 const bStep = (attr, v, min, max, w) => `<div class="stepper"><button type="button" data-bstep="-1" aria-label="빼기">−</button><input type="number" min="${min}" max="${max}" ${attr} value="${v}"${w ? ` style="width:${w}px"` : ''}><button type="button" data-bstep="1" aria-label="더하기">+</button></div>`;
 const bSeg = (key, list, v, cls) => `<div class="seg ${cls}">${list.map(([k, l, sm]) => `<button type="button" class="opt" data-bseg="${key}" data-v="${k}" aria-pressed="${k === v}">${l}${sm ? `<small>${sm}</small>` : ''}</button>`).join('')}</div>`;
@@ -2570,7 +2665,7 @@ function bOptions(days) {
     : `<span class="em-id bem"><input data-bbuy="id" value="${esc(bBuyer.id)}" placeholder="agent" autocapitalize="off" spellcheck="false"><span>@</span><input data-bbuy="dom" value="${esc(bBuyer.dom)}" placeholder="company.com" autocapitalize="off" spellcheck="false"></span>
       ${hit ? `<div class="hint"><b>${esc(hit.code)}</b> · ${esc(hit.name)} · ${esc(hit.company)} · ${esc(bCountryName(hit.country))} (가입 바이어)</div>`
         : `<input data-bbuy="country" list="b-cc-list" class="bcc" value="${esc((bBuyer.country || s.country) ? bCountryName(bBuyer.country || s.country) : '')}" placeholder="국가" autocomplete="off" spellcheck="false" title="국가명·코드(UAE, KSA, KOR…) 입력"><datalist id="b-cc-list">${CC_TOP.map(c => `<option value="${esc(bCountryName(c))}">${c}</option>`).join('')}${COUNTRIES.filter(x => !CC_TOP.includes(x[1])).map(([n, c]) => `<option value="${esc(n)}">${c}</option>`).join('')}</datalist>${bBuyerEmail() ? '<div class="hint">미가입 바이어</div>' : ''}`}`;
-  const cityRow = c => { const on = c === 'seoul' ? s.seoul !== false : !!s[c]; return `<div class="bcrow${on ? '' : ' off'}" draggable="true" data-bcity="${c}" title="끌어서 도시 순서 바꾸기"><i class="bgrip" aria-hidden="true">⠿</i><label class="bc"><input type="checkbox" data-bk="${c}"${on ? ' checked' : ''}> ${CITY[c]}</label><span class="bnl">박</span>${bStep(`data-bn="n${CITY_EN[c]}"`, s['n' + CITY_EN[c]], 1, c === 'seoul' ? 8 : 6)}</div>`; };
+  const cityRow = c => { const on = !bNoCity() && (c === 'seoul' ? s.seoul !== false : !!s[c]); return `<div class="bcrow${on ? '' : ' off'}" draggable="true" data-bcity="${c}" title="끌어서 도시 순서 바꾸기"><i class="bgrip" aria-hidden="true">⠿</i><label class="bc"><input type="checkbox" data-bk="${c}"${on ? ' checked' : ''}> ${CITY[c]}</label><span class="bnl">박</span>${bStep(`data-bn="n${CITY_EN[c]}"`, s['n' + CITY_EN[c]], 1, c === 'seoul' ? 8 : 6)}</div>`; };
   const VEH = [['std', '기본'], ...Object.entries(CONFIG.upgrades).map(([k, u]) => [k, u.short, `~${u.maxPax}명`])];
   return `<aside class="panel bpanel">
     ${bSvcSwitch()}
@@ -2593,7 +2688,7 @@ function bOptions(days) {
 function bHotelsCard(days) {
   if (wkFromReq) return '';
   const stays = bStays(days);
-  return `<div class="card bhotels" id="b-hotels"><div class="bsh"><span class="label">Hotels (by stay)</span><span class="sp"></span><label class="hint">Hotel markup %<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px;margin-left:6px"></label><span class="hint">FX ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
+  return `<div class="card bhotels" id="b-hotels"><div class="bsh"><span class="label">Hotels</span><span class="sp"></span><label class="hint">Hotel markup %<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px;margin-left:6px"></label><span class="hint">FX ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
     ${bFromReq && bFromReq.source !== 'staff' ? `<div class="bh-req"><span>바이어 요청</span><b>${esc((bFromReq.hotel || []).join(' / ') || '등급 미정')}</b><b>${esc((bFromReq.rooms || []).filter(x => x.qty > 0).map(x => `${x.type} ${x.qty}`).join(', ') || '객실 미정')}</b><em>${bFromReq.options ? `${bFromReq.options.pax} PAX${bFromReq.options.foc ? ` + ${bFromReq.options.foc} FOC` : ''}` : ''}</em></div>` : ''}
     ${stays.map((st, si) => `<div class="bhcity"><div class="bhc-n"><b>${CITY[st.city] || st.city}</b><span>${st.to - st.from + 1}박</span></div>${bStayHotelHTML(st, si)}</div>`).join('')}</div>`;
 }
@@ -2613,7 +2708,7 @@ function bDay(d, i, days) {
   const swap = d.slot ? `<select data-bswap="${d.slot}">${swapOptions(d.region, bSel).map(o => `<option value="${o.id}"${o.id === d.moduleId ? ' selected' : ''}>${esc(o.title)}${o.out ? ' (근교)' : ''}</option>`).join('')}<option value="free"${d.moduleId === 'free' ? ' selected' : ''}>자유일 (가이드·차량 없음)</option></select>` : '';
   const sn = (d.kind === 'tour' ? d.stops : (d.adds || [])).length;
   const so = j => sn > 1 ? `<span class="bso"><button title="위로" data-bso="${esc(fk)}|${j}|-1"${j === 0 ? ' disabled' : ''}>▲</button><button title="아래로" data-bso="${esc(fk)}|${j}|1"${j === sn - 1 ? ' disabled' : ''}>▼</button></span>` : '<span></span>';
-  const stop = (s, where, j) => `<li${s.added ? ' class="add"' : ''}${sn > 1 ? ` draggable="true" data-bdrag="${esc(fk)}|${j}" title="끌어서 순서 바꾸기"` : ''}><span>${sn > 1 ? '<i class="bgrip" aria-hidden="true">⠿</i>' : ''}${esc(sightLabel(s.key))}${where ? ` <em>${where}</em>` : ''}${placeMemo(s.key) ? `<small class="pm">${esc(placeMemo(s.key))}</small>` : ''}${d.hanbokOpt && /^GYEONGBOKGUNG PALACE/.test(s.key) ? `<label class="bhb"><input type="checkbox" data-bb="hanbok"${hanbokOf(bSel) ? ' checked' : ''}>한복 +US$${CONFIG.hanbokUSD}/인</label>` : ''}</span><span class="num">${s.price ? krw(s.price) : '–'}${s.key === HANBOK_KEY ? ` + US$${CONFIG.hanbokUSD}` : ''}</span>${so(j)}<button class="rx" title="빼기" data-brm="${esc(dk(d))}|${esc(s.key)}">✕</button></li>`;
+  const stop = (s, where, j) => `<li${s.added || s.theme || s.seasonal ? ` class="${[s.added && 'add', s.theme && 'hl-t', s.seasonal && 'hl-s'].filter(Boolean).join(' ')}"` : ''}${sn > 1 ? ` draggable="true" data-bdrag="${esc(fk)}|${j}" title="끌어서 순서 바꾸기"` : ''}><span>${sn > 1 ? '<i class="bgrip" aria-hidden="true">⠿</i>' : ''}${esc(sightLabel(s.key))}${s.theme ? `<b class="bhl t">${esc(THEME[bSel.concept] || bSel.concept)}</b>` : ''}${s.seasonal ? `<b class="bhl s">${esc(SEASON[bSel.season] || bSel.season)}</b>` : ''}${where ? ` <em>${where}</em>` : ''}${placeMemo(s.key) ? `<small class="pm">${esc(placeMemo(s.key))}</small>` : ''}${d.hanbokOpt && /^GYEONGBOKGUNG PALACE/.test(s.key) ? `<label class="bhb"><input type="checkbox" data-bb="hanbok"${hanbokOf(bSel) ? ' checked' : ''}>한복 +US$${CONFIG.hanbokUSD}/인</label>` : ''}</span><span class="num">${s.price ? krw(s.price) : '–'}${s.key === HANBOK_KEY ? ` + US$${CONFIG.hanbokUSD}` : ''}</span><button class="rx" title="빼기" data-brm="${esc(dk(d))}|${esc(s.key)}">✕</button></li>`;
   const list = d.kind === 'tour' ? d.stops.map((s, j) => stop(s, '', j)).join('') : (d.adds || []).map((a, j) => stop(a, '이동일 관광', j)).join('') + (d.kind !== 'tour' ? (d.lines || []).map(l => `<li class="ln">${esc(l)}</li>`).join('') : '');
   const removed = e.rm.length ? `<div class="hint">뺀 곳: ${e.rm.map(k => `${esc(sightLabel(k))} <button class="linkbtn" data-bback="${esc(dk(d))}|${esc(k)}">되돌리기</button>`).join(' · ')}</div>` : '';
   const canAdd = d.kind === 'tour' || d.kind === 'free' || (d.kind === 'transfer' && d.moveFrom);
@@ -2623,7 +2718,7 @@ function bDay(d, i, days) {
   const head = `<div class="bdh"><button class="bfold" data-bfold="${esc(fk)}" title="${folded ? '펼치기' : '접기'}">${folded ? '▸' : '▾'}</button><h4>${esc(d.title)} <span class="tag">${d.kind === 'tour' ? '투어' : d.kind === 'free' ? '자유' : '이동'}</span></h4>${swap}${move}${bMovePanel(d)}</div>`;
   if (folded) return `<div class="day bday folded" id="bd-${i}"><div class="n">${i + 1}</div><div>${head}
     <div class="bsum">${stopsAll.length ? `<b>${stopsAll.length}곳</b> · ${esc(stopsAll.slice(0, 4).map(s => sightLabel(s.key)).join(', '))}${stopsAll.length > 4 ? ' 외' : ''}${fee ? ` · 입장 ${krw(fee)}/인` : ''}` : esc(d.route || '')}${d.meals && d.meals.length ? ` · ${d.meals.map(m => m === 'lunch' ? '점심' : '저녁').join('·')}` : ''}${e.rm.length + e.add.length ? ` · <b>편집 ${e.rm.length + e.add.length}</b>` : ''}${(bSel.addons || []).filter(k => (bSel.addonDay || {})[k] === fk).map(k => ` · ${esc(CONFIG.addonPaid[k])}`).join('')}</div></div></div>`;
-  return `<div class="day bday" id="bd-${i}"><div class="n">${i + 1}</div><div>
+  return `<div class="day bday" id="bd-${i}"><div class="n">${i + 1}${bArrival ? (dt => `<span class="bdt">${+dt.slice(5, 7)}/${+dt.slice(8, 10)} (${'일월화수목금토'[new Date(dt + 'T00:00:00Z').getUTCDay()]})</span>`)(addDays(bArrival, i)) : ''}</div><div>
     ${head}
     <div class="rt">${esc(d.route || '')}</div>${(() => { const q = bFromReq && bFromReq.dayRequests && bFromReq.dayRequests[d.slot || 't:' + d.title]; return q && q.length ? `<div class="breq">고객 요청 · ${q.map(esc).join(' · ')}</div>` : ''; })()}
     <ul class="bst">${list}</ul>${removed}
@@ -2636,20 +2731,24 @@ function bPrice(days) {
   const sq = bSvcQuote(), q = bSvc.on.itin ? q0 : { ...q0, perPerson: 0, total: 0 };
   const n = days.length - 1, TH = Object.fromEntries(BTHEME), SE = Object.fromEntries(BSEASON), TI = Object.fromEntries(BTIER);
   const veh = s.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan);
-  const title = bFrom ? `<h2 class="bq-t">${n}박 ${n + 1}일 · ${route.map(c => `${CITY[c]} ${s['n' + CITY_EN[c]]}박`).join(' → ')}</h2>`
+  const routeEn = [bSvc.on.itin ? '' : bSvcNames(' + '), bNoCity() ? '' : `${n}N${n + 1}D · ${route.map(c => `${CITY_EN[c]} ${s['n' + CITY_EN[c]]}N`).join(' → ')}`].filter(Boolean).join(' · ');
+  const title = bFrom ? `<h2 class="bq-t bq-name" title="${esc(routeEn)}">${esc(bTitle || bAutoTitle())}</h2>`
     : `<input id="b-title" class="bq-in" placeholder="투어 이름" title="기본 정보로 자동 지정 · 직접 고치면 그 이름으로 저장 (지우면 자동 이름으로 돌아감)" value="${esc(bTitle || bAutoTitle())}"><div class="bq-route">${n}박 ${n + 1}일 · ${route.map(c => `${CITY[c]} ${s['n' + CITY_EN[c]]}박`).join(' → ')}</div>`;
-  const left = `${title}
-      <div class="chips">${bSvc.on.itin ? '' : `${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => `<span class="chip">${l}</span>`).join('')}<span class="chip">${s.pax}명</span>`}${!bSvc.on.itin ? '' : `<span class="chip">${SE[s.season] || s.season}</span><span class="chip">${TI[s.tier] || s.tier}</span><span class="chip">${TH[s.concept] || s.concept}</span><span class="chip">${s.pax}명${focOf(s) ? ` + FOC ${focOf(s)}` : ''}</span><span class="chip">${esc(veh)}${q.plan.extraLuggage ? ' + 짐차' : ''}</span>
+  const chips = `<div class="chips">${bSvc.on.itin ? '' : `${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => `<span class="chip">${l}</span>`).join('')}<span class="chip">${s.pax}명</span>`}${!bSvc.on.itin ? '' : `<span class="chip">${SE[s.season] || s.season}</span><span class="chip">${TI[s.tier] || s.tier}</span><span class="chip">${TH[s.concept] || s.concept}</span><span class="chip">${s.pax}명${focOf(s) ? ` + FOC ${focOf(s)}` : ''}</span><span class="chip">${esc(veh)}${q.plan.extraLuggage ? ' + 짐차' : ''}</span>
         <label class="chip chk"><input type="checkbox" data-bb="luggage"${s.luggage ? ' checked' : ''}> 짐 추가</label>`}</div>`;
+  const left = `${title}
+      ${chips}`, routeTxt = routeEn;
   bSumHTML = wkFromReq ? left : '';
-  return `<div class="card bquote${wkFromReq ? ' nol' : ''}">
-    ${wkFromReq ? '' : `<div class="bq-l">${left}</div>`}
+  // the menu's tour builder gets the same header + tab bar as a request's work screen (title on top, summary beside the tab)
+  bHeadHTML = wkFromReq ? '' : `<div class="wk-head dtop bk-head"><div class="wk-id">${bFrom ? `<div class="wk-t">${esc(bTitle || bFrom)}</div>` : `<input id="b-title" class="bk-title" placeholder="투어 이름" title="기본 정보로 자동 지정 · 직접 고치면 그 이름으로 저장 (지우면 자동 이름으로 돌아감)" value="${esc(bTitle || bAutoTitle())}">`}</div></div>
+    <nav class="wk-tabs bk-tabs"><button type="button" class="on">Itinerary</button><div class="wk-sum"><h2 class="bq-t">${routeTxt}</h2>${chips}</div></nav>`;
+  return `<div class="card bquote nol">
     <div class="bq-r">
       ${bSvc.on.itin ? `<div class="bq-k">Tour Fee <small>/ pax · Land + Hotel</small></div><div class="bq-p">${money(q.perPerson + hp)}</div><div class="bq-s">Total ${money(q.total + ht)}</div>
       <div class="bq-split"><span>Land <b>${money(q.perPerson)}</b></span>${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(hp) : '<i>미입력</i>'}</b></span>` : '<span>Hotel <b>제외</b></span>'}</div>`
       : `<div class="bq-k">Total Fee <small>/ pax · ${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => l).join(' + ')}</small></div><div class="bq-p">${money((sq ? sq.perPerson : 0) + hp)}</div><div class="bq-s">Total ${money((sq ? sq.total : 0) + ht)}</div>
       <div class="bq-split">${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(ht) : '<i>미입력</i>'}</b></span>` : ''}${['veh', 'guide', 'flight'].filter(k => bSvc.on[k]).map(k => `<span>${Object.fromEntries(SVC_LBL)[k]} <b>${money(sq ? sq.lines.filter(l => l.type === k).reduce((a, l) => a + l.amount, 0) : 0)}</b></span>`).join('')}</div>`}</div>
-    <div class="bq-a"><button class="btn" data-bsavemain="1" title="${bFrom ? '이 요청에 저장' : '내 투어로 저장'}">Save</button>${!bSvc.on.itin ? '<button class="btn ghost" data-bpdfm="tour" title="바이어용 견적서 미리보기 · PDF로 저장">PDF</button>' : ''}<span class="bpdf-w"${bSvc.on.itin ? '' : ' hidden'}><button class="btn ghost" data-bpdf="1" title="바이어용 견적서 미리보기 · PDF로 저장">PDF ▾</button><span class="bpdf-m" id="bpdf-m" hidden><button type="button" data-bpdfm="tour">Tour Fee <small>Land + Hotel</small></button><button type="button" data-bpdfm="land">Land Fee only</button><button type="button" data-bpdfm="hotel"${bHotelQuote(days) ? '' : ' disabled title="호텔 요금을 먼저 넣어 주세요"'}>Hotel Fee only</button></span></span>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn ghost" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<button class="btn ghost" id="b-copy" title="일정·가격을 영문 텍스트로 복사">Text</button><span class="saved" id="b-msg">${bFrom && bFromReq && bFromReq.builder ? `마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span></div>
+    <div class="bq-a"><button class="btn" data-bsavemain="1" title="${bFrom ? '이 요청에 저장' : '내 투어로 저장'}">Save</button>${!bSvc.on.itin ? '<button class="btn ghost" data-bpdfm="tour" title="바이어용 견적서 미리보기 · PDF로 저장">PDF</button>' : ''}<span class="bpdf-w"${bSvc.on.itin ? '' : ' hidden'}><button class="btn ghost" data-bpdf="1" title="바이어용 견적서 미리보기 · PDF로 저장">PDF ▾</button><span class="bpdf-m" id="bpdf-m" hidden><button type="button" data-bpdfm="tour">Tour Fee <small>Land + Hotel</small></button><button type="button" data-bpdfm="land">Land Fee only</button><button type="button" data-bpdfm="hotel"${bHotelQuote(days) ? '' : ' disabled title="호텔 요금을 먼저 넣어 주세요"'}>Hotel Fee only</button></span></span>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn ghost" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<button class="btn ghost" id="b-copy" title="일정·가격을 영문 텍스트로 복사">Copy</button><span class="saved" id="b-msg">${bFrom && bFromReq && bFromReq.builder ? `마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span></div>
   </div>`;
 }
 function bPriceMore(days) {
@@ -2685,17 +2784,19 @@ function drawBuilder() {
   if (!bRatesOK) { $('builder').innerHTML = '<div class="card">단가를 불러오지 못했습니다. Wix 서버 파일(hakeem-core.js)이 최신인지 확인해 주세요.</div>'; return; }
   const days = builtDays();
   const all = Object.keys(SIGHTS).filter(k => k !== HANBOK_KEY).sort((a, b) => sightLabel(a).localeCompare(sightLabel(b)));
-  $('builder').innerHTML = `<div class="bwrap${bSvc.on.itin ? '' : ' noitin'}">${bOptions(days)}<div class="bmain">${bPrice(days)}${bSvc.on.hotel ? bHotelsCard(days) : ''}${bSvcCard(days)}<div class="bitin"><div class="bith"><span class="label">Day-by-day itinerary · ${days.length - 1}박 ${days.length}일</span><span class="sp"></span>${bStays(days).map(s => `<button class="bchip" data-bjump="bd-${s.from}">${CITY[s.city] || s.city} · D${s.from + 1}</button>`).join('')}<button class="bchip" data-bfoldall="1">모두 접기</button><button class="bchip" data-bfoldall="0">모두 펼치기</button></div>
+  $('builder').innerHTML = `<div class="bwrap${bSvc.on.itin ? '' : ' noitin'}">${bOptions(days)}<div class="bmain">${bPrice(days)}${bSvc.on.hotel ? bHotelsCard(days) : ''}${bSvcCard(days)}<div class="bitin bz-${bSel.season}"><div class="bith"><span class="label">Day-by-day itinerary · ${days.length - 1}박 ${days.length}일</span>${(() => { const all = days.flatMap(d => [...(d.kind === 'tour' ? d.stops || [] : []), ...(d.adds || [])]), t = all.some(x => x.theme), z = all.some(x => x.seasonal); return t || z ? `<span class="bhlk">${t ? `<b class="bhl t">${esc(THEME[bSel.concept])}</b> 테마 추천` : ''}${t && z ? ' · ' : ''}${z ? `<b class="bhl s">${esc(SEASON[bSel.season])}</b> 계절 한정` : ''}</span>` : ''; })()}<span class="sp"></span>${bStays(days).map(s => `<button class="bchip" data-bjump="bd-${s.from}">${CITY[s.city] || s.city} · D${s.from + 1}</button>`).join('')}<button class="bchip" data-bfoldall="1">모두 접기</button><button class="bchip" data-bfoldall="0">모두 펼치기</button></div>
     <datalist id="b-sights">${all.map(k => `<option value="${esc(sightLabel(k))}">${SIGHTS[k] ? krw(SIGHTS[k]) : '무료'}</option>`).join('')}</datalist>
     ${DIR ? Object.keys(DCITY).map(c => ['', '3', '4', '5'].map(n => `<datalist id="b-hotel-${c}${n ? '-' + n : ''}">${hotelsIn(c).filter(h => !n || String(bStarOf(h.name)) === n).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('')).join('') : ''}
     <div class="bdays">${days.map((d, i) => bDay(d, i, days)).join('')}</div></div>${bPriceMore(days)}</div></div>`;
   bLast = days;
+  if (wkFromReq && current && current.id === bFrom) wkMeta(current, { n: days.length - 1, pax: bSel.pax, foc: focOf(bSel), arrival: bArrival });
+  if (bHeadHTML) $('builder').insertAdjacentHTML('afterbegin', bHeadHTML);
   if ($('wk-sum')) $('wk-sum').innerHTML = bSumHTML;
   bPlaceHotels();
   if (!BUY && !bBuyAsked) { bBuyAsked = true; api('/api/admin/buyers').then(x => { BUY = x; drawBuilder(); }).catch(() => {}); }
   if (!DIR && !bDirAsked) { bDirAsked = true; loadDirectory().then(x => { if (x) drawBuilder(); }); }
 }
-let bLast = null, bSumHTML = '';
+let bLast = null, bSumHTML = '', bHeadHTML = '';
 const bEdit = k => (bEdits[k] ||= { rm: [], add: [] });
 function bCityOrder(days, city) { return days.filter(d => d.slot && d.region === city).map(d => d.slot); }
 async function bAddSight(k, name, priceEl) {
@@ -2727,8 +2828,8 @@ function bText(days) {
 function openInBuilder(r) {
   if (r && r.id) { showTab('list'); open(r.id); return; }
   if (!r.builderSel) { alert('이 요청은 저장된 선택값이 없어 투어 빌더로 열 수 없습니다.'); return; }
-  bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
-  const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
+  bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); for (const [k, o] of Object.entries(bSel.stopOrd || {})) { const e = (bEdits[k] ||= { rm: [], add: [] }); if (Array.isArray(o) && !(e.ord || []).length) e.ord = o.slice(); } /* buyer's own order of places (buyer page drag) */ bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
+  const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup ?? 10; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
   bFold = {}; bAddOpen = {}; bFrom = r.id; bFromReq = r; showTab('builder');
 }
 // saves the edited tour into the request: itinerary, options and site price are replaced (the first version stays in r.original)
@@ -2737,6 +2838,9 @@ function openInBuilder(r) {
 const SVC_DEF = () => ({ on: { itin: true, hotel: true, veh: false, guide: false, flight: false }, veh: { cls: 'minivan', qty: 1, lang: 'en', items: [] }, guide: { lang: 'en', days: 0, xh: 0, usd: null }, flight: { segs: [] } });
 let bSvc = SVC_DEF();
 const SVC_LBL = [['itin', 'Itinerary'], ['hotel', 'Hotel'], ['veh', 'Vehicle'], ['guide', 'Guide'], ['flight', 'Flight · KTX']];
+// services-only quote (Itinerary off) may have no city at all: SEL·CJU·BUS all unticked
+const bNoCity = () => !bSvc.on.itin && !!bSel.noCity;
+const bSvcNames = sep => SVC_LBL.filter(([k]) => k !== 'itin' && bSvc.on[k]).map(([, l]) => l).join(sep);
 const KIND_KO = { icn: '인천공항 편도', gmp: '김포공항 편도', pus: '김해공항 편도', cju: '제주공항 편도', day: '10시간 (150km)', xh: '추가 시간' };
 const ROUTE_KO = { SEL: '서울', CJU: '제주', PUS: '김해', BUS: '부산', MOK: '목포', ULS: '울산', GYE: '경주', DAE: '대구' };
 const routeKo = k => { const [t, a, b] = k.split('-'); return `${t === 'K' ? 'KTX' : '국내선'} ${ROUTE_KO[a] || a} → ${ROUTE_KO[b] || b}`; };
@@ -2775,7 +2879,7 @@ function bSvcCard(days) {
   const vline = i => q.lines.find(l => l.type === 'veh' && l.i === i), fline = i => q.lines.find(l => l.type === 'flight' && l.i === i);
   const veh = !bSvc.on.veh ? '' : `<div class="sv-sec"><div class="sv-h"><b>Vehicle</b>${sel('veh.cls', L.classes.map(([k, l, n]) => [k, `${l} · ${n}인`]), bSvc.veh.cls)}${sel('veh.lang', [['en', '영어 기사'], ['ko', '한국어 기사']], bSvc.veh.lang)}<label class="hint">대수 <input type="number" min="1" max="20" data-sv="veh.qty" value="${bSvc.veh.qty}" style="width:56px"></label></div>
     <div class="hint">${bSvc.veh.cls === 'bus' ? '버스는 요금표에 없어(On request) 우리 견적 단가(단가 관리 버스 픽업·샌딩 / 종일)를 환율로 바꾼 금액이 기본값. 추가 시간은 직접 입력' : '영어 기사 요금은 서울 인천공항·10시간만 다름 (김포·부산·제주는 같은 요금). 하루 150km, 시내 기준 · 시외는 따로 견적'}</div>
-    ${route.map(c => { const items = bSvc.veh.items.map((x, i) => ({ x, i })).filter(o => o.x.city === c);
+    ${(bNoCity() ? CITY_ORDER : route).map(c => { const items = bSvc.veh.items.map((x, i) => ({ x, i })).filter(o => o.x.city === c);
       return `<div class="sv-city"><div class="sv-ch">${CITY[c]}</div>${items.map(({ x, i }) => { const l = vline(i); return `<div class="sv-row">${sel(`veh.items.${i}.day`, days.map((d, k) => [k, `D${k + 1}${bNightDate(k) ? ' · ' + bNightDate(k).slice(5).replace('-', '/') : ''}`]), x.day)}
         ${sel(`veh.items.${i}.kind`, L.kinds[c].map(k => [k, KIND_KO[k]]), x.kind)}
         ${x.kind === 'xh' ? `<label class="hint"><input type="number" min="1" max="24" data-sv="veh.items.${i}.n" value="${x.n || 1}" style="width:52px"> 시간</label>` : '<span></span>'}
@@ -2827,7 +2931,7 @@ bOn('change', e => {
   if (d.b) { if (d.b === 'order') bSel.order = el.value.split(','); else { bSel[d.b] = el.value; if (d.b === 'market' && marketOf(bSel.country) !== el.value) bSel.country = ''; } if (bSel.tier !== 'L') bSel.vehicle = 'std'; }
   else if (d.bnum === 'foc') bSel.foc = Math.min(5, Math.max(0, +el.value || 0));
   else if (d.bnum) bSel.pax = Math.min(40, Math.max(1, +el.value || 1));
-  else if (d.bk) { bSel[d.bk] = el.checked; if (!bSel.seoul && !bSel.jeju && !bSel.busan) bSel.seoul = true; }
+  else if (d.bk) { bSel[d.bk] = el.checked; if (bSel.seoul === false && !bSel.jeju && !bSel.busan) { if (bSvc.on.itin) bSel.seoul = true; else bSel.noCity = true; } else bSel.noCity = false; }
   else if (d.bn) bSel[d.bn] = Math.max(1, Math.min(+el.max, +el.value || 1));
   else if (d.bmeal) bSel.meals = ['lunch', 'dinner'].filter(m => m === d.bmeal ? el.checked : bSel.meals.includes(m));
   else if (d.bb) bSel[d.bb] = el.checked;
@@ -2924,9 +3028,9 @@ bOn('click', e => {
   if (d.bhadd) { const s = bS(d.bhadd), h = bStayHotel(s); h.rooms.push({ type: 'SGL', qty: 1, net: 0 }); bSetStay(s, h); drawBuilder(); }
   if (d.bhx) { const [si, j] = d.bhx.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.splice(+j, 1); bSetStay(s, h); drawBuilder(); }
   if (d.bhest) { const [si, v] = d.bhest.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.forEach(x => { if (!x.net) x.net = +v; }); bSetStay(s, h); drawBuilder(); }
-  if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) location.href = u; return; }
+  if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) openMail(u); return; }
   if (d.bpdf) { const m = $('bpdf-m'); if (m) m.hidden = !m.hidden; return; }
-  if (d.bsvc) { const k = d.bsvc; bSvc.on[k] = !bSvc.on[k]; if (k === 'itin' && bSvc.on.itin) bSvc.on.veh = bSvc.on.guide = bSvc.on.flight = false;
+  if (d.bsvc) { const k = d.bsvc; bSvc.on[k] = !bSvc.on[k]; if (k === 'itin' && bSvc.on.itin) { bSvc.on.veh = bSvc.on.guide = bSvc.on.flight = false; if (bSel.noCity) { bSel.noCity = false; bSel.seoul = true; } }
     if (!SVC_LBL.some(([x]) => bSvc.on[x])) bSvc.on.hotel = true; drawBuilder(); return; }
   if (d.svadd) { const [t, c] = d.svadd.split('|'), days = builtDays(), st = bStays(days).find(x => x.city === c);
     if (t === 'veh') { const L = bLimo(), has = bSvc.veh.items.some(x => x.city === c); bSvc.veh.items.push({ day: st ? (has ? Math.min(st.to + 1, st.from + 1) : st.from) : 0, city: c, kind: has ? 'day' : L.kinds[c][0], n: 1, usd: null }); }
@@ -2943,7 +3047,7 @@ bOn('click', e => {
   if (d.bjump) { const el = $(d.bjump); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
   if (d.bsavemain) { if (bFrom) bSaveToRequest(); else bSaveNew(); }
   if (b.id === 'b-reset-edit') { bEdits = {}; bOrder = {}; drawBuilder(); }
-  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
+  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 10; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
   if (b.id === 'b-save-req') bSaveToRequest();
   if (b.id === 'b-save-new') bSaveNew();
   
@@ -3304,21 +3408,31 @@ async function openDirectory() {
   if (!DIR) { $('dir').innerHTML = '<div class="card">업체·호텔 목록을 불러오지 못했습니다. Wix에 backend/hakeem-directory.js가 있는지 확인해 주세요.</div>'; return; }
   drawDirectory();
 }
+// hotel star chips (hotels and hotel rates tabs): '' = all, '5' / '4' / '3', 'x' = not graded
+let dirStar = '', dirDrive = ''; // dirDrive (guides): '' all, 'y' can drive, 'n' cannot
+const driveOk = v => !dirDrive || (dirDrive === 'y' ? /가능/.test(v || '') && !/불가/.test(v || '') : /불가/.test(v || ''));
+const starOk = v => { if (!dirStar) return true; const n = parseInt(String(v || ''), 10); return dirStar === 'x' ? !(n >= 1) : n === +dirStar; };
+// type / area chips: restaurants (cuisine · area), places (kind · region). Values are grouped (text in brackets dropped); the less common ones go under '기타'
+const DCHIP = { restaurants: [['cuisine', '종류'], ['area', '지역']], places: [['kind', '종류'], ['region', '지역']] };
+let dirChip = {}; // { field: value }
+const chipVal = v => String(v || '').replace(/\s*\(.*$/, '').trim();
+function chipList(rows, f) { const c = {}; rows.forEach(x => { const v = chipVal(x[f]); if (v) c[v] = (c[v] || 0) + 1; }); const all = Object.entries(c).sort((a, b) => b[1] - a[1]); const top = all.slice(0, 8).map(([v, n]) => [v, n]); const rest = all.slice(8).reduce((a, [, n]) => a + n, 0); return rest ? [...top, ['기타', rest]] : top; }
+const chipTop = (rows, f) => new Set(chipList(rows, f).map(([v]) => v).filter(v => v !== '기타'));
 function drawDirectory() {
   const q = ($('d-q') && $('d-q').value) || '', city = ($('d-city') && $('d-city').value) || '';
   let body;
   if (dirTab === 'hotelRates') {
     const R = DIR.hotelRates;
-    body = `<div class="sub">${esc(R.note || '')}</div><div style="overflow:auto"><table class="ht"><tr><th>지역</th><th>요일</th><th>성급</th>${R.headers.map(h => `<th class="num">${esc(h)}</th>`).join('')}</tr>${R.rows.filter(r => !city || r.city === ({ Seoul: '서울', Busan: '부산', Jeju: '제주' })[city]).map(r => `<tr><td>${esc(r.city)}</td><td>${esc(r.day)}</td><td>${r.star}성</td>${r.rates.map(v => `<td class="num">${v ? Number(v).toLocaleString('ko-KR') : ''}</td>`).join('')}</tr>`).join('')}</table></div>${R.extras ? `<p class="sub">${esc(R.extras)}</p>` : ''}`;
+    body = `<div class="sub">${esc(R.note || '')}</div><div style="overflow:auto"><table class="ht"><tr><th>지역</th><th>요일</th><th>성급</th>${R.headers.map(h => `<th class="num">${esc(h)}</th>`).join('')}</tr>${R.rows.filter(r => (!city || r.city === ({ Seoul: '서울', Busan: '부산', Jeju: '제주' })[city]) && starOk(r.star)).map(r => `<tr><td>${esc(r.city)}</td><td>${esc(r.day)}</td><td>${r.star}성</td>${r.rates.map(v => `<td class="num">${v ? Number(v).toLocaleString('ko-KR') : ''}</td>`).join('')}</tr>`).join('')}</table></div>${R.extras ? `<p class="sub">${esc(R.extras)}</p>` : ''}`;
   } else {
-    const cols = DCOLS[dirTab], rows = (DIR[dirTab] || []).filter(x => (!city || !x.city || x.city === city) && (!q || Object.values(x).join(' ').toLowerCase().includes(q.toLowerCase())));
-    body = `<div class="sub">${rows.length}건</div><div style="overflow:auto"><table class="ht dirt"><tr>${cols.map(([, l]) => `<th>${l}</th>`).join('')}</tr>${rows.map(x => `<tr>${cols.map(([k]) => `<td>${k === 'email' && x[k] ? `<a href="mailto:${esc(x[k])}">${esc(x[k])}</a>` : k === 'website' && /^https?:/.test(x[k] || '') ? `<a href="${esc(x[k])}" target="_blank" rel="noopener">열기</a>` : esc(x[k] ?? '')}</td>`).join('')}</tr>`).join('')}</table></div>`;
+    const cols = DCOLS[dirTab], rows = (DIR[dirTab] || []).filter(x => (!city || !x.city || x.city === city) && (dirTab !== 'hotels' || starOk(x.star)) && (dirTab !== 'guides' || driveOk(x.drive)) && (DCHIP[dirTab] || []).every(([f]) => { const want = dirChip[f]; if (!want) return true; const v = chipVal(x[f]); return want === '기타' ? !chipTop(DIR[dirTab] || [], f).has(v) : v === want; }) && (!q || Object.values(x).join(' ').toLowerCase().includes(q.toLowerCase())));
+    body = `<div class="sub">${rows.length}건</div><div style="overflow:auto"><table class="ht dirt"><tr>${cols.map(([, l]) => `<th>${l}</th>`).join('')}</tr>${rows.map(x => `<tr>${cols.map(([k]) => `<td>${k === 'email' && x[k] ? `<a href="mailto:${esc(x[k])}">${esc(x[k])}</a>` : k === 'website' && /^https?:/.test(x[k] || '') ? `<a href="${esc(x[k])}" target="_blank" rel="noopener">열기</a>` : esc(x[k] ?? '')}${k === 'name' && dirTab === 'hotels' && hotelEn(x.name) !== x.name ? `<div class="hint" style="font-size:.78rem">${esc(hotelEn(x.name))}</div>` : ''}</td>`).join('')}</tr>`).join('')}</table></div>`;
   }
   $('dir').innerHTML = `<div class="card"><div class="bar">${DTABS.map(([k, l]) => `<button class="tab${k === dirTab ? ' on' : ''}" data-dtab="${k}">${l}</button>`).join('')}</div>
-    <div class="bar"><input id="d-q" placeholder="검색 (이름·메모·언어 등)" value="${esc(q)}"><select id="d-city"><option value="">전체 도시</option>${['Seoul', 'Busan', 'Jeju'].map(c => `<option${c === city ? ' selected' : ''}>${c}</option>`).join('')}</select><span class="count">기준: ${esc(DIR.updated || '')} · 수정은 사내 시트를 고친 뒤 Claude에게 반영 요청</span></div>
+    <div class="bar"><input id="d-q" placeholder="검색 (이름·메모·언어 등)" value="${esc(q)}"><select id="d-city"><option value="">전체 도시</option>${['Seoul', 'Busan', 'Jeju'].map(c => `<option${c === city ? ' selected' : ''}>${c}</option>`).join('')}</select>${dirTab === 'hotels' || dirTab === 'hotelRates' ? `<span class="dstars">${[['', '전체'], ['5', '5성'], ['4', '4성'], ['3', '3성'], ...(dirTab === 'hotels' ? [['x', '미지정']] : [])].map(([k, l]) => `<button type="button" class="dstar${dirStar === k ? ' on' : ''}" data-dstar="${k}">${l}</button>`).join('')}</span>` : ''}${dirTab === 'guides' ? `<span class="dstars">${[['', '전체'], ['y', '드라이빙 가능'], ['n', '드라이빙 불가']].map(([k, l]) => `<button type="button" class="dstar${dirDrive === k ? ' on' : ''}" data-ddrive="${k}">${l}</button>`).join('')}</span>` : ''}${(DCHIP[dirTab] || []).map(([f, l]) => `<span class="dstars dchips"><b class="dchl">${l}</b>${[['', 0], ...chipList(DIR[dirTab] || [], f)].map(([v, n]) => `<button type="button" class="dstar${(dirChip[f] || '') === v ? ' on' : ''}" data-dchip="${esc(f)}|${esc(v)}">${esc(v || '전체')}${n ? ` <small>${n}</small>` : ''}</button>`).join('')}</span>`).join('')}<span class="count">기준: ${esc(DIR.updated || '')} · 수정은 사내 시트를 고친 뒤 Claude에게 반영 요청</span></div>
     ${body}</div>`;
 }
-$('dir').addEventListener('click', e => { const b = e.target.closest('[data-dtab]'); if (b) { dirTab = b.dataset.dtab; drawDirectory(); } });
+$('dir').addEventListener('click', e => { const b = e.target.closest('[data-dtab]'); if (b) { dirTab = b.dataset.dtab; dirChip = {}; if (dirTab !== 'hotels' && dirStar === 'x') dirStar = ''; drawDirectory(); return; } const st = e.target.closest('[data-dstar]'); if (st) { dirStar = st.dataset.dstar; drawDirectory(); return; } const dr = e.target.closest('[data-ddrive]'); if (dr) { dirDrive = dr.dataset.ddrive; drawDirectory(); return; } const dc = e.target.closest('[data-dchip]'); if (dc) { const [f, ...v] = dc.dataset.dchip.split('|'); dirChip[f] = v.join('|'); drawDirectory(); } });
 $('dir').addEventListener('input', e => { if (e.target.id === 'd-q') { const p = e.target.selectionStart; drawDirectory(); const q = $('d-q'); q.focus(); q.setSelectionRange(p, p); } });
 $('dir').addEventListener('change', e => { if (e.target.id === 'd-city') drawDirectory(); });
 
@@ -3447,7 +3561,12 @@ $('logout').onclick = () => { key = ''; try { sessionStorage.removeItem('hk-admi
 $('reload').onclick = load;
 $('q').oninput = draw; $('fst').onchange = draw; $('fas').onchange = draw; $('csv').onclick = exportCSV;
 $('das').onchange = async () => { const v = $('das').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ assignee: v }) }); current.assignee = v; const row = rows.find(x => x.id === current.id); if (row) row.assignee = v; } catch (e) { $('das').value = current.assignee || ''; } };
-$('rows').onclick = e => { const tr = e.target.closest('tr[data-id]'); if (tr) open(tr.dataset.id).catch(err => { $('count').textContent = KERR(err); }); };
+$('rows').onclick = async e => {
+  const d = e.target.closest('[data-rdel],[data-rrestore]');
+  if (d) { e.stopPropagation(); if (await delReq(d.dataset.rdel || d.dataset.rrestore, d, !!d.dataset.rrestore)) draw(); return; }
+  const tr = e.target.closest('tr[data-id]'); if (tr) open(tr.dataset.id).catch(err => { $('count').textContent = KERR(err); }); };
+// delete from the work screen header: same rule as the list button, then back to the list
+$('wk-del').onclick = async () => { const b = $('wk-del'); if (!current) return; if (await delReq(current.id, b)) $('back').click(); };
 $('back').onclick = () => { $('detail').style.display = 'none'; showTab('list'); load(); };
 $('dst').onchange = async () => { const v = $('dst').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ status: v }) }); current.status = v; const row = rows.find(x => x.id === current.id); if (row) row.status = v; } catch (e) { $('dst').value = current.status; return; } if (v === 'booked' && wf && !wf.invoice) issueInvoice(true).catch(e => { if ($('i-msg')) $('i-msg').textContent = '인보이스 자동 발급 실패: ' + KERR(e); }); };
 if (key) load();
