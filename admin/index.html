@@ -16,7 +16,7 @@
 body { margin: 0; font-family: "SUIT Variable", "Pretendard Variable", "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--paper); }
 header { background: #fff; border-bottom: 1px solid var(--line); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
 header img.logo { height: 44px; }
-header h1 { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-weight: 400; font-size: 1.5rem; margin: 0; }
+header h1 { font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; margin: 0; }
 header .sp { flex: 1; }
 .tabs { display: flex; gap: 4px; margin-left: 12px; }
 .tab { font: inherit; font-weight: 600; font-size: .92rem; border: 0; background: none; color: var(--muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
@@ -69,13 +69,13 @@ tbody tr:hover { background: var(--brand-soft); }
 #detail { display: none; }
 .dtop { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
 .sheet { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 28px; }
-.sheet h2 { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-weight: 400; font-size: 1.8rem; margin: 0 0 4px; }
+.sheet h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.8rem; margin: 0 0 4px; }
 .sub { color: var(--muted); }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 24px; margin: 20px 0; }
 .grid div b { display: block; font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-bottom: 2px; }
-.price { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-size: 2rem; color: var(--gold); }
+.price { font-family: var(--font-display); font-size: 2rem; color: var(--gold); }
 .day { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); break-inside: avoid; }
-.day .n { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-size: 1.6rem; line-height: 1; }
+.day .n { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; }
 .day h4 { margin: 0; font-size: 1rem; }
 .day .rt { color: var(--muted); font-size: .8rem; }
 .day ul { margin: 6px 0 0; padding-left: 18px; }
@@ -91,7 +91,7 @@ tbody tr:hover { background: var(--brand-soft); }
 .row label { display: grid; gap: 3px; font-size: .78rem; color: var(--muted); font-weight: 600; }
 .row input, .row select, .step textarea, .ht input, .ht select { border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-size: .9rem; color: var(--ink); background: #fff; }
 .step textarea { width: 100%; min-height: 54px; font: inherit; font-size: .9rem; }
-.big { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-size: 1.5rem; color: var(--gold); }
+.big { font-family: var(--font-display); font-size: 1.5rem; color: var(--gold); }
 .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .ht { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 6px 0; }
 .ht th { font-size: .7rem; padding: 6px 4px; }
@@ -120,7 +120,7 @@ tbody tr:hover { background: var(--brand-soft); }
 .hl3 .hsum { padding-bottom: 8px; }
 .hcard label { display: grid; gap: 3px; font-size: .72rem; color: var(--muted); font-weight: 600; min-width: 0; }
 .hcard input, .hcard select { width: 100%; min-width: 0; }
-.hl1 { display: grid; grid-template-columns: 90px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; }
+.hl1 { display: grid; grid-template-columns: 90px 80px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; }
 .hl2 { display: grid; grid-template-columns: 150px 150px 110px minmax(0, 1fr); gap: 8px; align-items: end; }
 .hcard label.chk { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--ink); padding-bottom: 7px; white-space: nowrap; }
 .hcard label.chk input { width: auto; }
@@ -129,7 +129,7 @@ tbody tr:hover { background: var(--brand-soft); }
 .ops td:nth-child(3) input { min-width: 190px; } .ops td:nth-child(4) input { min-width: 150px; } .ops td:nth-child(5) input, .ops td:nth-child(7) input { min-width: 100px; }
 .ops tr.op-ok td { background: #eef8f0; } .ops tr.op-req td { background: #fff8e6; } .ops tr.op-na td { opacity: .5; }
 .sum { display: flex; gap: 24px; flex-wrap: wrap; font-size: .92rem; margin-top: 8px; }
-.sum b { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-size: 1.25rem; color: var(--gold); font-weight: 400; }
+.sum b { font-family: var(--font-display); font-size: 1.25rem; color: var(--gold); font-weight: 400; }
 .hint { font-size: .8rem; color: var(--muted); }
 .saved { font-size: .82rem; color: var(--ok); }
 .btn.sm { padding: 3px 9px; font-size: .8rem; }
@@ -232,7 +232,7 @@ ul.bst .bso button:disabled { opacity: .3; cursor: default; }
 #qsheet { display: none; }
 #qsheet .qh { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--brand); padding-bottom: 10px; margin-bottom: 16px; }
 #qsheet .qh img { height: 54px; }
-#qsheet h2 { font-family: "ZEN SERIF", "Pretendard Variable", Georgia, serif; font-weight: 400; margin: 0; font-size: 1.7rem; }
+#qsheet h2 { font-family: var(--font-display); font-weight: 400; margin: 0; font-size: 1.7rem; }
 #qsheet table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 6px 0 14px; }
 #qsheet th, #qsheet td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line); }
 #qsheet .tot td { font-weight: 700; }
@@ -304,6 +304,268 @@ ul.bst .bso button:disabled { opacity: .3; cursor: default; }
 body.printing-quote #qsheet { display: block; }
 @media print { body.printing-quote header, body.printing-quote main { display: none !important; } body.printing-quote #qsheet { display: block !important; } }
 @media print { header, .dtop, #list { display: none !important; } body { background: #fff; } main { padding: 0; } .sheet { border: 0; padding: 0; } }
+/* ---- work-tool look (11-24): one type scale, quiet buttons, white cards, chips instead of checkboxes */
+:root { --paper: #f6f6f8; --line: #e4e4ea; --ink: #1c1d22; --muted: #6b6f7a; --brand: #5b3d91; --brand-soft: #f1ecf9; --r: 10px; }
+body { font-size: 14px; -webkit-font-smoothing: antialiased; }
+header { padding: 10px 24px; gap: 14px; }
+header img.logo { height: 34px; }
+header h1 { font-size: 1.15rem; font-family: inherit; font-weight: 700; letter-spacing: -.01em; }
+.tab { font-size: .88rem; padding: 7px 12px; }
+main { padding: 18px 24px 40px; }
+.card, .step, .sheet { border-radius: var(--r); border-color: var(--line); box-shadow: none; }
+.btn { height: 32px; padding: 0 12px; border-radius: 8px; font-size: .86rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; white-space: nowrap; }
+.btn.ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: #c9c9d3; background: #fafafb; }
+.btn:not(.ghost):hover { filter: brightness(1.08); }
+.btn.sm { height: 26px; padding: 0 9px; font-size: .78rem; border-radius: 7px; }
+.linkbtn { text-decoration: none !important; color: var(--brand) !important; font-weight: 600; font-size: .82rem; }
+.linkbtn:hover { text-decoration: underline !important; }
+input:not([type=checkbox]):not([type=radio]), select, textarea { border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-size: .88rem; }
+input:not([type=checkbox]):not([type=radio]), select { height: 32px; padding: 0 9px; }
+textarea { padding: 8px 10px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand-soft); border-color: var(--brand); }
+th { font-size: .72rem; letter-spacing: .03em; }
+td { padding: 10px; }
+tbody tr:hover { background: #faf8fd; }
+.hint, .sub { color: var(--muted); }
+/* work page header + tabs */
+.wk-head { position: sticky; top: 0; z-index: 30; background: var(--paper); padding: 10px 0 8px; margin: -6px 0 0 !important; gap: 12px !important; }
+.wk-id { min-width: 0; }
+.wk-t { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+.wk-m { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+.wk-f { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); font-weight: 600; }
+.wk-tabs { position: sticky; top: 58px; z-index: 29; background: var(--paper); display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 0 0 16px; }
+.wk-tabs button { border: 0; background: none; font: inherit; font-size: .88rem; font-weight: 600; color: var(--muted); padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.wk-tabs button.on { color: var(--brand); border-bottom-color: var(--brand); }
+.wk-tabs button:hover:not(.on) { color: var(--ink); }
+#detail .wf { margin-top: 0; }
+#detail[data-wk] #wf, #detail[data-wk] #wfinv, #detail[data-wk] #sheet, #detail[data-wk] .wk-print { display: none; }
+#detail[data-wk=hotel] #wf, #detail[data-wk=quote] #wf, #detail[data-wk=ops] #wf, #detail[data-wk=trip] #wf { display: block; }
+#detail[data-wk=trip] #wf .step:not([data-wk=quote]) { display: none; } #detail[data-wk=trip] #wf { margin-top: 16px; }
+#detail[data-wk=hotel] #wf .step:not([data-wk=hotel]):not(.land-here), #detail[data-wk=quote] #wf .step:not([data-wk=quote]), #detail[data-wk=ops] #wf .step:not([data-wk=ops]) { display: none; }
+#detail[data-wk=inv] #wfinv { display: block; }
+#wk-bhot { display: none; } #detail[data-wk=hotel] #wk-bhot { display: block; margin-bottom: 16px; } #detail[data-mode=view] #wk-bhot { display: none !important; }
+#wk-bhot .card { --accent: #5b3d91; --gold: #a87a24; --gold-soft: #f7efdf; font-size: 15px; border-radius: 14px; padding: 20px 22px; }
+#detail[data-mode=view] .wk-tabs, #detail[data-mode=view] #wf, #detail[data-mode=view] #wfinv, #detail[data-mode=view] #wk-trip, #detail[data-mode=view] #sheet { display: none !important; }
+#detail[data-mode=view] .wk-print { display: flex; justify-content: flex-end; margin-top: 10px; }
+#detail[data-mode=edit] #wk-sent { display: none; }
+.wk-tabs { top: 58px; }
+/* the request as sent */
+.sd { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 28px 32px; max-width: 920px; margin: 4px auto 0; }
+.sd-top { display: flex; gap: 20px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.sd-k { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sd h2 { margin: 6px 0 4px; font-size: 1.35rem; letter-spacing: -.01em; }
+.sd-by { font-size: .84rem; color: var(--muted); }
+.sd-price { text-align: right; display: grid; gap: 2px; } .sd-price span { font-size: .75rem; color: var(--muted); font-weight: 600; } .sd-price b { font-size: 1.5rem; color: var(--brand); } .sd-price em { font-style: normal; font-size: .78rem; color: var(--muted); }
+.sd-dl { display: grid; grid-template-columns: 170px 1fr; gap: 9px 18px; margin: 18px 0 6px; font-size: .9rem; } .sd-dl dt { color: var(--muted); font-weight: 600; } .sd-dl dd { margin: 0; }
+.sd h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 22px 0 6px; }
+.sd-day { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: .88rem; }
+.sd-n { font-weight: 700; color: var(--brand); font-size: .82rem; padding-top: 2px; }
+.sd-day h4 { margin: 0; font-size: .95rem; } .sd-rt { color: var(--muted); font-size: .8rem; margin: 2px 0 4px; }
+.sd-day ul { margin: 4px 0 0; padding-left: 18px; } .sd-day li { margin: 2px 0; } .sd-rq { color: #b42318; font-weight: 600; } .sd-ml { margin-top: 4px; font-size: .78rem; color: var(--muted); }
+/* to-do strip while editing */
+.todo { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin: 2px 0 12px; }
+.td { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; font-size: .82rem; } .td span { display: block; font-size: .72rem; color: var(--muted); font-weight: 600; margin-bottom: 2px; } .td b { font-weight: 600; }
+.td.warn { border-color: #f1c9a8; background: #fff8f1; } .td .hl { color: #b42318; font-style: normal; }
+.breq { margin: 4px 0 2px; font-size: .8rem; color: #b42318; font-weight: 600; background: #fff4ef; border-radius: 6px; padding: 4px 8px; display: inline-block; }
+@media print { body.printing-sent header, body.printing-sent .wk-head, body.printing-sent .wk-print { display: none !important; } .sd { border: 0; padding: 0; max-width: none; } }
+#wk-trip #builder { margin: 0; }
+.bprice { top: 112px; }
+@media (min-width: 1001px) { #wk-trip .bprice { max-height: calc(100vh - 124px); } }
+.step h3 { font-size: 1rem; }
+/* builder: calmer cards */
+#builder .card { padding: 16px 18px; }
+#builder .bhead { gap: 8px; }
+.bh-st { font-size: .82rem; color: var(--muted); }
+#b-title { height: 36px; font-size: .95rem; font-weight: 600; }
+.bday { border-radius: 8px; }
+.bday h4 { font-size: .98rem; font-weight: 700; }
+/* checkboxes in day rows → toggle chips */
+.bchk { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.bchk label { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: .78rem; font-weight: 600; color: var(--muted); cursor: pointer; user-select: none; }
+.bchk label input { position: absolute; opacity: 0; width: 0; height: 0; }
+.bchk label:has(input:checked) { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.bchk label:hover { border-color: #c9c9d3; }
+.bchk label:has(input:focus-visible) { outline: 2px solid var(--brand); }
+.tag { border-radius: 6px; font-size: .68rem; }
+.bprice .big { font-size: 1.6rem; }
+@media print { .wk-head, .wk-tabs, .wk-print { display: none !important; } }
+.hplan { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 12px; margin: 4px 0 16px; }
+@media (max-width: 1000px) { .hplan { grid-template-columns: 1fr; } }
+.hp-box { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: #fcfcfd; }
+.hp-h { font-weight: 700; font-size: .86rem; margin-bottom: 6px; display: flex; gap: 8px; align-items: baseline; } .hp-h .hint { font-weight: 400; font-size: .75rem; }
+.hplan .ht td, .hplan .ht th { padding: 6px 8px; font-size: .82rem; vertical-align: middle; }
+.hp-req { background: #fffaf0; border-color: #eedcb3; }
+.hp-kv { display: grid; grid-template-columns: 44px 1fr; gap: 8px; font-size: .84rem; padding: 3px 0; } .hp-kv span { color: var(--muted); font-weight: 600; font-size: .76rem; padding-top: 1px; } .hp-kv b { font-weight: 600; }
+.hp-note { font-weight: 400 !important; white-space: pre-wrap; max-height: 90px; overflow: auto; display: block; }
+.hst { display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: #eef0f3; color: var(--muted); margin: 1px 2px 1px 0; }
+.hst.ask { background: #e6eef8; color: #3c639b; } .hst.ok { background: var(--ok-soft); color: var(--ok); } .hst.no { background: #fdecea; color: #b42318; }
+/* ---- tour builder in the buyer page's look (11-24): option panel left, quote + itinerary right */
+#builder { --accent: #5b3d91; --accent-soft: #efe9f8; --gold: #a87a24; --gold-soft: #f7efdf; --paper2: #f5f4f8; font-size: 15px; }
+.bwrap { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 1050px) { .bwrap { grid-template-columns: 1fr; } }
+.bpanel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 20px; }
+#builder .field { display: grid; gap: 8px; }
+#builder .field.two { grid-template-columns: auto auto; justify-content: start; gap: 18px; } #builder .field.two > div { display: grid; gap: 8px; }
+#builder .label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+#builder .seg { display: grid; gap: 6px; } #builder .seg.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } #builder .seg.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } #builder .seg.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#builder .opt { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 4px; cursor: pointer; text-align: center; display: grid; gap: 1px; font: inherit; font-size: .86rem; color: var(--ink); white-space: nowrap; transition: border-color .15s, background .15s; }
+#builder .opt small { color: var(--muted); font-size: .66rem; }
+#builder .opt:hover { border-color: var(--accent); }
+#builder .opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+#builder .opt[aria-pressed="true"] small { color: var(--accent); }
+#builder .stepper { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; width: fit-content; background: #fff; }
+#builder .stepper button { border: 0; background: transparent; width: 36px; height: 36px; cursor: pointer; font-size: 1.1rem; color: var(--ink); }
+#builder .stepper button:hover { background: var(--accent-soft); }
+#builder .stepper input { width: 48px; height: 36px !important; border: 0 !important; border-inline: 1px solid var(--line) !important; border-radius: 0 !important; text-align: center; font-weight: 700; padding: 0 !important; -moz-appearance: textfield; }
+#builder .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; }
+#builder .bpanel input[type=date], #builder .bpanel select, #builder .bpanel .bcc { height: 38px; border-radius: 10px; width: 100%; }
+#builder .bem { display: flex; } #builder .bem input { flex: 1; width: 0 !important; min-width: 0; height: 38px; border-radius: 10px; }
+.bbuyer { font-size: .9rem; font-weight: 600; }
+.bcities { display: grid; gap: 6px; }
+.bcrow { display: grid; grid-template-columns: auto 1fr auto auto; cursor: grab; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 4px 4px 4px 12px; background: #fff; }
+.bcrow.off { opacity: .55; background: var(--paper2); }
+.bcrow label.bc { font-weight: 700; font-size: .95rem; display: flex; gap: 8px; align-items: center; }
+.bcrow label.bc input { accent-color: var(--accent); width: 16px; height: 16px; }
+.bcrow .bnl { font-size: .75rem; color: var(--muted); }
+.bcrow .stepper button { width: 30px; height: 32px; } .bcrow .stepper input { width: 40px; height: 32px !important; }
+.bpanel-foot { display: flex !important; gap: 8px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--line); }
+.bmain { display: grid; gap: 16px; min-width: 0; }
+#builder .card { border-radius: 14px; padding: 20px 22px; }
+.bquote { display: grid !important; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 24px; position: sticky; top: 12px; z-index: 5; box-shadow: 0 6px 20px rgba(40, 20, 80, .06); }
+#wk-trip .bquote { top: 108px; }
+.bq-t { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; margin: 0; letter-spacing: -.01em; }
+.bq-in { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem !important; width: 100%; height: 40px !important; border-radius: 10px !important; }
+.bq-route { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+#builder .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+#builder .chip { font-size: .78rem; padding: 3px 10px; border-radius: 99px; background: var(--paper2); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 5px; }
+#builder .chip.chk { cursor: pointer; } #builder .chip.chk input { accent-color: var(--accent); margin: 0; }
+#builder .chip.chk:has(input:checked) { background: var(--accent-soft); border-color: #cdbdea; color: var(--accent); font-weight: 600; }
+.bq-r { text-align: right; min-width: 210px; }
+.bq-k { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); } .bq-k small { text-transform: none; letter-spacing: 0; font-weight: 500; margin-left: 4px; }
+.bq-p { font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1.1; color: var(--gold); margin-top: 2px; }
+.bq-s { font-size: .8rem; color: var(--muted); }
+.bq-split { display: flex; justify-content: flex-end; gap: 14px; margin-top: 6px; font-size: .8rem; color: var(--muted); } .bq-split b { color: var(--ink); } .bq-split i { font-style: normal; color: var(--muted); }
+.bq-a { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 12px; border-top: 1px solid var(--line); }
+.bq-a .btn { height: 36px; border-radius: 10px; } .bq-a .saved { font-size: .8rem; color: var(--muted); margin-left: auto; }
+.bsh { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 10px; } .bsh .sp { flex: 1; } .bsh label { display: inline-flex; align-items: center; }
+.bhcity { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.bhc-n { display: grid; align-content: start; gap: 2px; padding-top: 6px; } .bhc-n b { font-size: .95rem; } .bhc-n span { font-size: .78rem; color: var(--muted); }
+#builder .bhot { background: transparent !important; border: 0 !important; padding: 0 !important; margin: 0 !important; }
+.bitin { display: grid; gap: 10px; }
+.bith { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 2px 0; } .bith .sp { flex: 1; }
+.bdays { display: grid; gap: 12px; }
+#builder .day.bday { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; margin: 0; }
+#builder .day.bday .n { font-family: var(--font-display); font-size: 2rem; line-height: 1; color: var(--accent); font-weight: 700; }
+#builder .day.bday .n::before { content: "DAY"; display: block; font-family: inherit; font-size: .62rem; letter-spacing: .12em; color: var(--muted); font-weight: 700; margin-bottom: 4px; font-family: var(--font-body); }
+#builder .day.bday.folded { padding-top: 12px; padding-bottom: 12px; } #builder .day.bday.folded .n { font-size: 1.4rem; }
+#builder .bday h4 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+#builder .bday .rt { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+#builder .bst { margin: 10px 0 0 4px !important; padding: 2px 0 !important; border-left: 2px solid var(--line); list-style: none; }
+#builder .bst li { position: relative; padding: 5px 0 5px 18px !important; border-bottom: 0 !important; }
+#builder .bst li::before { content: ""; position: absolute; left: -5px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+#builder .bst li.ln::before { background: var(--muted); }
+#builder .bst li.add::before { background: var(--gold); }
+.bmore-g { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+@media (max-width: 900px) { .bmore-g { grid-template-columns: 1fr; } }
+.bmore textarea { width: 100%; margin-top: 8px; border-radius: 10px; }
+.bmore details { margin-top: 14px; font-size: .85rem; } .bmore .ht td, .bmore .ht th { padding: 5px 6px; font-size: .82rem; } .bmore tr.on td { background: var(--gold-soft); font-weight: 700; }
+.hfig { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 4px; }
+.hf { background: #fff; border: 1px solid #ead9b3; border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
+.hf span { font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.hf b { font-size: 1.3rem; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.hf em { font-style: normal; font-size: .74rem; color: var(--muted); }
+.hf.tot { border-color: var(--gold); background: #fffdf7; } .hf.tot b { color: var(--gold); }
+.hf-empty { grid-column: 1 / -1; font-size: .82rem; color: var(--muted); padding: 10px 12px; border: 1px dashed #e2cf9f; border-radius: 10px; background: #fffdf7; }
+.hsumbox { display: grid; grid-template-columns: 1fr 1fr 1fr 1.4fr; gap: 8px; margin: 0 0 16px; padding: 12px; border: 1.5px solid var(--gold); border-radius: 12px; background: var(--gold-soft); }
+@media (max-width: 900px) { .hsumbox { grid-template-columns: 1fr 1fr; } }
+.hs-c { background: #fff; border-radius: 9px; padding: 10px 12px; display: grid; gap: 2px; }
+.hs-c > span { font-size: .72rem; font-weight: 700; color: var(--muted); } .hs-c > b { font-size: 1.25rem; font-weight: 800; font-variant-numeric: tabular-nums; } .hs-c em { font-style: normal; font-size: .74rem; color: var(--muted); } .hs-c em b { color: var(--ink); }
+.hs-c.main > b { font-size: 1.6rem; color: var(--brand); }
+/* type: same families as the buyer page. Latin = SUIT, Hangul = Pretendard, display (names, prices, day numbers) = ZEN SERIF with Hangul falling back to Pretendard */
+:root { --font-body: "SUIT Variable", "Pretendard Variable", "Segoe UI", system-ui, sans-serif; --font-display: "ZEN SERIF", "Pretendard Variable", Georgia, serif; }
+body, button, input, select, textarea { font-family: var(--font-body); }
+body { font-size: 15px; line-height: 1.5; }
+header h1 { font-family: var(--font-display) !important; font-weight: 400 !important; font-size: 1.45rem !important; letter-spacing: 0; }
+.wk-t { font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; letter-spacing: 0; }
+.bq-t { font-family: var(--font-body) !important; font-weight: 800 !important; font-size: 1.35rem !important; letter-spacing: -.015em !important; }
+.bq-in { font-family: var(--font-body) !important; font-weight: 700 !important; }
+.bq-p, #builder .day.bday .n, .sd h2, .sd-price b { font-family: var(--font-display); font-weight: 400; }
+.bq-p { font-size: 2.3rem; }
+#builder .day.bday .n::before { font-family: var(--font-body); }
+.sd h2 { font-size: 1.6rem; }
+.hf b, .hs-c > b { font-family: var(--font-body); }
+.ops-h { margin: 14px 0 8px; font-size: .9rem; display: flex; gap: 10px; align-items: baseline; } .ops-h .hint { font-weight: 400; font-size: .78rem; }
+.vgrid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.vcard { grid-template-columns: minmax(280px, 2fr) minmax(0, 3fr); column-gap: 18px; align-items: start; } .vcard > .vc-h { grid-column: 1 / -1; } .vcard > .vc-l { grid-column: 2; grid-row: 2 / span 3; } @media (max-width: 900px) { .vcard { grid-template-columns: 1fr; } .vcard > .vc-l { grid-column: 1; grid-row: auto; } }
+.vcard { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; display: grid; gap: 6px; }
+.vcard.op-ok, .vcard.op-na { border-color: #b7dccf; background: #f6fbf9; } .vcard.op-req { border-color: #c8d6ee; }
+.vc-h { display: flex; gap: 8px; align-items: center; } .vc-h b { font-size: .95rem; } .vc-h .sp { flex: 1; }
+.vc-in { width: 100%; border-collapse: collapse; } .vc-in td { padding: 0 4px 0 0; border: 0; vertical-align: top; } .vc-in td:nth-child(1) { width: 42%; } .vc-in td:nth-child(2) { width: 26%; } .vc-in input, .vc-in select { width: 100%; }
+.vc-l { margin: 2px 0 0; padding: 0; list-style: none; font-size: .8rem; display: grid; gap: 2px; } .vc-l li span { color: var(--muted); display: inline-block; min-width: 118px; } .vc-l em { color: var(--muted); font-style: normal; }
+.bmeals { display: grid; gap: 4px; max-height: 340px; overflow: auto; }
+.bm-r { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; align-items: center; font-size: .8rem; }
+.bm-d { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); } .bm-d b { color: var(--ink); } .bm-d em { font-style: normal; margin-left: 6px; }
+.bm-c { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 9px; border: 1px solid var(--line); border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--muted); background: #fff; }
+.bm-c input { position: absolute; opacity: 0; width: 0; height: 0; }
+.bm-c { width: 52px; justify-content: center; padding: 0 !important; }
+.bm-c:has(input:checked) { background: var(--brand); border-color: var(--brand); color: #fff; }
+#builder li[draggable=true] { cursor: grab; } #builder li[draggable=true]:active { cursor: grabbing; }
+#builder li.dragging { opacity: .4; } #builder li.drop-before { box-shadow: 0 -2px 0 var(--brand); } #builder li.drop-after { box-shadow: 0 2px 0 var(--brand); }
+.bgrip { font-style: normal; color: #b9b3c6; margin-right: 6px; font-size: .8rem; }
+.bh-req { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; background: var(--gold-soft); border: 1.5px solid #e6cf9b; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; font-size: .86rem; }
+.bh-req span { font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--gold); } .bh-req b { background: #fff; border-radius: 99px; padding: 2px 10px; } .bh-req em { font-style: normal; color: var(--muted); font-size: .8rem; }
+#builder .bhh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; } #builder .bhh .bhn { flex: 1; min-width: 200px; } #builder select.bhst { width: 76px; }
+#builder .opt[data-bseg=concept][data-v=classic] { grid-column: 1 / -1; }
+#builder .bchk label:has(input:checked), #builder .bchk label:has(input:checked) * { color: #fff !important; } #builder .bchk label:has(input:checked) { background: var(--brand) !important; border-color: var(--brand) !important; }
+.bhb { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; height: 22px; padding: 0 9px; border: 1px solid var(--line); border-radius: 99px; font-size: .74rem; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; vertical-align: 1px; }
+.bhb input { position: absolute; opacity: 0; width: 0; height: 0; } .bhb:has(input:checked) { background: var(--brand); border-color: var(--brand); color: #fff; }
+.bcrow.dragging { opacity: .4; } .bcrow.drop-before { box-shadow: 0 -2px 0 var(--brand); } .bcrow.drop-after { box-shadow: 0 2px 0 var(--brand); }
+.bdp-wrap { position: relative; }
+.bdp-in { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font: inherit; font-size: .9rem; color: var(--ink); cursor: pointer; text-align: left; }
+.bdp-in:hover { border-color: var(--brand); } .bdp-in i { font-style: normal; color: var(--muted); font-size: .8rem; }
+.bdp { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: 290px; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 14px 34px rgba(40, 20, 80, .16); padding: 12px; }
+.bdp-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; } .bdp-h b { font-size: .95rem; }
+.bdp-h button { border: 0; background: none; width: 30px; height: 30px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; color: var(--ink); } .bdp-h button:hover { background: var(--brand-soft); color: var(--brand); }
+.bdp-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.bdp-g .w { font-size: .7rem; font-weight: 700; color: var(--muted); padding: 4px 0; } .bdp-g .w.sun, .bdp-g button.sun { color: #c0392b; } .bdp-g .w.sat, .bdp-g button.sat { color: #3c639b; }
+.bdp-g button { border: 0; background: none; height: 34px; border-radius: 9px; font: inherit; font-size: .86rem; cursor: pointer; color: var(--ink); }
+.bdp-g button:hover { background: var(--brand-soft); } .bdp-g button.today { box-shadow: inset 0 0 0 1.5px var(--gold); } .bdp-g button.on { background: var(--brand); color: #fff !important; font-weight: 700; }
+.bdp-f { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); } .bdp-f button { border: 0; background: none; font: inherit; font-size: .8rem; font-weight: 600; color: var(--brand); cursor: pointer; }
+.vchips { display: flex; flex-direction: column; gap: 5px; }
+.vchip { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 4px 2px 6px; background: #fbfafd; }
+.vchip select { border: 0 !important; background: transparent !important; font-size: .76rem !important; color: var(--muted); height: 26px !important; padding: 0 2px !important; width: auto; }
+.vchip input { flex: 1; min-width: 0; border: 0 !important; background: transparent !important; height: 26px !important; font-size: .82rem !important; padding: 0 4px !important; }
+.vchip:focus-within { border-color: var(--brand); background: #fff; }
+.vchip button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: .72rem; width: 22px; height: 22px; border-radius: 50%; } .vchip button:hover { background: #fdecea; color: #b42318; }
+.vc-acts { display: flex; gap: 10px; align-items: center; margin-top: 2px; }
+.bmvp { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.bmv-on { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 99px; font-size: .8rem; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+.bmv-on input { position: absolute; opacity: 0; width: 0; height: 0; } .bmv-on:has(input:checked) { background: var(--brand); border-color: var(--brand); color: #fff; }
+.bmvp select { height: 30px; max-width: 260px; font-size: .82rem; }
+.bpdf-w { position: relative; display: inline-block; }
+.bpdf-m { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 210px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 30px rgba(40, 20, 80, .16); padding: 6px; display: grid; gap: 2px; }
+.bpdf-m[hidden] { display: none; }
+.bpdf-m button { border: 0; background: none; text-align: left; padding: 9px 12px; border-radius: 8px; font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; color: var(--ink); }
+.bpdf-m button:hover:not(:disabled) { background: var(--brand-soft); color: var(--brand); } .bpdf-m button:disabled { opacity: .4; cursor: not-allowed; } .bpdf-m small { font-weight: 400; color: var(--muted); margin-left: 4px; }
+.op-vw{display:flex;gap:4px;align-items:center}.op-vw input{flex:1;min-width:0}.op-link{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;border:1px solid var(--line,#e5e2ee);color:var(--purple,#5b3a8c);text-decoration:none;font-weight:700}.op-link:hover{background:#f3eefb}
+.hgrp{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 12px;background:#fff}.hgrp-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}.hgrp-h b{font-size:1rem;color:var(--purple,#4a2a73)}.hgrp-h span{color:var(--muted,#6b6178);font-size:.85rem}.hgrp-h .sp{flex:1}.hgrp-e{padding:6px 2px}.hgrp .ht.hotels{margin:0}.bh-req .hp-note{font-style:normal;font-size:.82rem;color:var(--muted,#6b6178)}
+.wk-sum{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0 6px;min-width:0}.wk-sum .bq-t{font-size:.95rem;margin:0;white-space:nowrap}.wk-sum .chips{margin:0;display:flex;gap:6px;flex-wrap:wrap}.wk-sum .chip{font-size:.78rem;padding:3px 10px;background:#f3eefb;border:1px solid #e4dcf2;border-radius:99px;color:#4a2a73}
+.bquote.nol{grid-template-columns:1fr}.bquote.nol .bq-r{display:flex;align-items:baseline;gap:8px 18px;flex-wrap:wrap;text-align:left}.bquote.nol .bq-split{margin:0}
+.bsvc .sv-top{display:grid;grid-template-columns:1fr 1fr;gap:6px}.bsvc .opt{padding:8px 6px;font-size:.85rem}
+.bsvc .sv-sub{position:relative;margin:0 0 0 18px;padding:10px 0 2px 14px;border-left:2px solid #d9cdee}
+.bsvc .sv-sub:before{content:"";position:absolute;left:-2px;top:0;height:10px;width:2px;background:#d9cdee}
+.bsvc .sv-subl{display:block;font-size:.7rem;font-weight:700;color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+.bsvc .sv-subb{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.bsvc .sv-subb .opt{font-size:.78rem;padding:6px 2px}
+.bsvc .sv-sub.inc .opt{cursor:default;background:#f6f2fc;border-style:dashed;font-weight:600}.bsvc .sv-sub.inc .sv-subl{color:var(--accent)}
+.noitin .bitin,.noitin .bmore,.noitin .bf-itin{display:none !important}
+.bsvcard .sv-sec{border-top:1px solid var(--line);padding:12px 0 4px}.bsvcard .sv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}.bsvcard .sv-h b{color:var(--purple,#4a2a73)}
+.sv-city{margin:6px 0 10px}.sv-ch{font-weight:800;font-size:.85rem;margin-bottom:4px}
+.sv-row{display:grid;grid-template-columns:120px 170px 90px 140px 90px 28px;gap:8px;align-items:center;margin-bottom:6px}.sv-row.g{grid-template-columns:auto auto auto auto}.sv-row.f{grid-template-columns:120px 170px 90px 60px 140px 90px 28px}
+.sv-u{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted)}.sv-u input{width:80px}.sv-amt{font-weight:700;text-align:right}
+.opg{border:1px solid var(--line);border-radius:12px;padding:10px 12px 4px;margin:14px 0 0;background:#fff}.opg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:6px}.opg-h b{font-size:.95rem;color:var(--purple,#4a2a73)}.opg-h .sp{flex:1}.opg-c{display:flex;gap:4px}.opc{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;font:inherit;font-size:.8rem;cursor:pointer}.opc em{font-style:normal;color:var(--muted);font-size:.75rem}.opc[aria-pressed=true]{background:var(--accent-soft,#f1ecf9);border-color:var(--accent,#5b3a8c);color:var(--accent,#5b3a8c);font-weight:700}.opc.solo{cursor:default}.opg .ht.ops{margin:0}
+.op-it{display:flex;gap:4px;align-items:center}.op-it select{width:74px;flex:none;padding-left:6px;padding-right:2px}.op-it input{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -344,14 +606,14 @@ body.printing-quote #qsheet { display: block; }
   <section id="list" hidden>
     <div class="bar">
       <input id="q" placeholder="회사·이름·이메일 검색">
-      <select id="fst"><option value="">전체 상태</option><option value="new">신규</option><option value="land">지상비 발송</option><option value="hotel">호텔 견적 발송</option><option value="booked">예약 확정</option><option value="closed">종료</option></select>
+      <select id="fst"><option value="">전체 상태</option><option value="new">New</option><option value="land">Land quoted</option><option value="hotel">Hotel quoted</option><option value="booked">Confirmed</option><option value="closed">Closed</option></select>
       <select id="fas"><option value="">전체 담당</option></select>
       <button class="btn ghost" id="reload">새로고침</button>
       <button class="btn ghost" id="csv">CSV 내보내기</button>
       <span class="count" id="count"></span>
     </div>
     <div class="card" style="padding:0;overflow:auto">
-      <table><thead><tr><th>접수 시각</th><th>회사 / 담당자</th><th>일정</th><th>도착일</th><th class="num">인원</th><th>등급 · 테마</th><th class="num">1인당</th><th class="num">총액</th><th>상태</th><th>하킴 담당</th></tr></thead>
+      <table><thead><tr><th>접수</th><th>회사 / 담당자</th><th>일정</th><th>Arrival</th><th class="num">PAX</th><th>Tier · Theme</th><th class="num">Land / pax</th><th class="num">Total</th><th>Status</th><th>담당</th></tr></thead>
       <tbody id="rows"></tbody></table>
     </div>
   </section>
@@ -362,18 +624,26 @@ body.printing-quote #qsheet { display: block; }
   <section id="buyers" hidden></section>
 
   <section id="detail">
-    <div class="dtop">
-      <button class="btn ghost" id="back">← 전체 목록</button>
+    <div class="wk-head dtop">
+      <button class="btn ghost" id="back">← 목록</button>
+      <div class="wk-id"><div class="wk-t" id="wk-title"></div><div class="wk-m" id="wk-meta"></div></div>
       <span class="sp" style="flex:1"></span>
-      <label>하킴 담당 <select id="das"></select></label>
-      <label>상태 <select id="dst"><option value="new">신규</option><option value="land">지상비 발송</option><option value="hotel">호텔 견적 발송</option><option value="booked">예약 확정</option><option value="closed">종료</option></select></label>
-      <button class="btn ghost" id="to-builder">투어 빌더에서 열기</button>
-      <a class="btn ghost" id="reply" href="#">이메일 답장</a>
-      <button class="btn" onclick="window.print()">PDF 저장</button>
+      <label class="wk-f">담당 <select id="das"></select></label>
+      <label class="wk-f">Status <select id="dst"><option value="new">New</option><option value="land">Land quoted</option><option value="hotel">Hotel quoted</option><option value="booked">Confirmed</option><option value="closed">Closed</option></select></label>
+      <a class="btn ghost" id="reply" href="#">메일 답장</a>
+      <button class="btn ghost" id="wk-toview" hidden>보낸 그대로 보기</button>
+      <button class="btn" id="wk-edit">수정하기</button>
+      <button class="btn ghost" id="wk-tour" hidden>투어 수정</button>
     </div>
+    <div id="wk-sent"></div>
+    <div id="wk-todo"></div>
+    <nav class="wk-tabs" id="wk-tabs"><button data-wk="trip">Itinerary</button><button data-wk="hotel">Hotel</button><button data-wk="ops">수배</button><button data-wk="inv">Invoice</button><div class="wk-sum" id="wk-sum"></div></nav>
+    <div id="wk-trip"></div>
+    <div id="wk-bhot"></div>
     <div class="wf" id="wf"></div>
     <div class="wf" id="wfinv"></div>
     <div class="sheet" id="sheet"></div>
+    <div class="wk-print"><button class="btn ghost" onclick="document.body.classList.add('printing-sent'); window.print(); document.body.classList.remove('printing-sent')">요청서 인쇄 / PDF</button></div>
   </section>
 </main>
 <div id="isheet"></div>
@@ -1100,8 +1370,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const usd = n => 'US$ ' + Number(n).toLocaleString('en-US');
 const fmt = iso => iso ? new Date(iso.length === 10 ? iso + 'T00:00:00' : iso).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' }) : '–';
 const fmtT = iso => new Date(iso).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-const THEME = { classic: '클래식', family: '가족', romantic: '커플', beauty: 'K-뷰티', wellness: '웰니스', tech: '테크', education: '교육' };
-const STATUS = { new: '신규', land: '지상비 발송', quoted: '지상비 발송', hotel: '호텔 견적 발송', booked: '예약 확정', closed: '종료' };
+const THEME = { classic: '기본', family: '가족', romantic: '커플', beauty: 'K-뷰티', wellness: '웰니스', tech: '테크', education: '교육' };
+const STATUS = { new: 'New', land: 'Land quoted', quoted: 'Land quoted', hotel: 'Hotel quoted', booked: 'Confirmed', closed: 'Closed' };
 const SEASON = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
 const MARKET = { 'Middle East': '중동', 'India': '인도', 'Other markets': '기타' };
 const nd = s => String(s).replace(/(\d+)N(\d+)D/, '$1박 $2일').replace(/ (\d+)N/g, ' $1박').replace(/Seoul/g, '서울').replace(/Jeju/g, '제주').replace(/Busan/g, '부산');
@@ -1124,6 +1394,7 @@ async function load() {
     $('login').hidden = true; $('list').hidden = false; $('logout').hidden = false; $('tabs').hidden = false; $('err').textContent = '';
     try { sessionStorage.setItem('hk-admin', key); } catch {}
     fillStaff(); draw();
+    const op = new URLSearchParams(location.search).get('open'); if (op) { history.replaceState(null, '', location.pathname); open(op).catch(() => {}); }
   } catch (e) {
     $('login').hidden = false; $('list').hidden = true; $('err').textContent = key ? KERR(e) : '';
     try { sessionStorage.removeItem('hk-admin'); } catch {}
@@ -1153,9 +1424,10 @@ function exportCSV() {
 function draw() {
   const list = filtered(), f = $('fst').value;
   $('count').textContent = mineOnly ? `내 투어 ${list.length}건 (내가 빌드했거나 담당인 것)` : `전체 ${rows.length}건 중 ${list.length}건 · 신규 ${rows.filter(r => r.status === 'new').length}건`;
-  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
+  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.revisionOf ? ` <span class="tag" title="이전 요청 ${esc(r.revisionOf)}">재요청</span>` : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${esc(nd(r.trip))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td><span class="st ${r.status}">${STATUS[r.status] || r.status}</span></td><td>${esc(r.assignee) || '<span class="sub">미지정</span>'}</td></tr>`).join('')
     : '<tr><td colspan="10" class="empty">견적 요청 없음.</td></tr>';
 }
+document.addEventListener('click', e => { const b = e.target.closest('[data-openreq]'); if (b) open(b.dataset.openreq).catch(err => alert(KERR(err))); });
 async function open(id) {
   current = await api('/api/admin/get?id=' + encodeURIComponent(id));
   await loadDirectory();
@@ -1165,7 +1437,7 @@ async function open(id) {
   const line = (k, v) => v ? `<div><b>${k}</b>${v}</div>` : '';
   $('sheet').innerHTML = `
     <h2>${esc(r.contact.company || r.contact.name)}</h2>
-    <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수${r.builder ? ` · <b style="color:var(--brand)">투어 빌더로 수정됨 ${fmtT(r.builder.savedAt)}${r.builder.by ? ' (' + esc(r.builder.by) + ')' : ''}</b>${r.original ? ` · 원래 ${r.original.trip.nights}박 ${r.original.options.pax}명 1인 ${usd(r.original.price.perPerson)}` : ''}` : ''}</div>
+    <div class="sub">요청번호 ${r.id} · ${fmtT(r.createdAt)} 접수${r.revisionOf ? ` · <b style="color:var(--gold)">바이어 재요청 (이전 요청 <button class="linkbtn" data-openreq="${esc(r.revisionOf)}">${esc(r.revisionOf)}</button>)</b>` : ''}${r.builder ? ` · <b style="color:var(--brand)">투어 빌더로 수정됨 ${fmtT(r.builder.savedAt)}${r.builder.by ? ' (' + esc(r.builder.by) + ')' : ''}</b>${r.original ? ` · 원래 ${r.original.trip.nights}박 ${r.original.options.pax}명 1인 ${usd(r.original.price.perPerson)}` : ''}` : ''}</div>
     ${(r.quotes || []).length ? `<div class="sub" style="margin-top:6px">보낸 견적: ${r.quotes.map((q, i) => `<button class="btn ghost sm" data-qpdf="${i}">${esc(q.no)} · ${fmtT(q.sentAt)}${q.by ? ' · ' + esc(q.by) : ''}</button>`).join(' ')}</div>` : ''}
     <div class="grid">
       ${line('바이어 담당자', `${esc(r.contact.name)}<br><a href="mailto:${esc(r.contact.email)}">${esc(r.contact.email)}</a>`)}
@@ -1187,7 +1459,106 @@ async function open(id) {
       <ul>${d.stops.map(s => `<li>${esc(s)}</li>`).join('')}${d.tour ? `<li class="rq"><b>이동일 투어: ${esc(d.tour)}</b></li>` : ''}${(d.adds || []).map(s => `<li class="rq">이동일 관광: ${esc(s)}</li>`).join('')}${d.requests.map(s => `<li class="rq">고객 요청: ${esc(s)}</li>`).join('')}</ul></div></div>`).join('')}`;
   renderWorkflow();
   $('list').hidden = true; $('detail').style.display = 'block'; window.scrollTo(0, 0);
+  await wkEnter(r);
 }
+// ---- one work page per request: header (status, owner) + tabs; the tour builder sits in the first tab
+let wkCur = 'trip', wkFromReq = false, wkMode = 'view';
+// the request as the buyer sent it (first version, before any staff edit), in English like the buyer's page
+function sentDoc(r) {
+  const s = { ...r, ...(r.original || {}) }, o = s.options || {}, tr = s.trip || {}, p = s.price || {};
+  const dt = iso => iso ? new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  const TH = { classic: 'Classic Korea', family: 'Family', romantic: 'Couple', beauty: 'K-Beauty', wellness: 'Wellness', tech: 'Tech & Innovation', education: 'Education' }, SE = { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' };
+  const pp = p.discountedPerPerson ?? p.perPerson;
+  const rows = [
+    ['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)}` : 'To be confirmed'],
+    ['Tour', `${tr.nights} nights / ${tr.days} days · ${esc(tr.cities || '')}`],
+    ['Group', `${o.pax} paying traveler${o.pax > 1 ? 's' : ''}${o.foc ? ` + ${o.foc} FOC` : ''}${o.market ? ` · ${esc(o.market)}` : ''}`],
+    ['Style', [o.tier, TH[o.theme] || o.theme, SE[o.season] || o.season].filter(Boolean).map(esc).join(' · ')],
+    ['Vehicle', esc(o.vehicle && o.vehicle !== 'Standard' ? o.vehicle : 'Standard (by group size)') + (o.luggage ? ' + luggage van' : '')],
+    ['Meals', esc((s.meals || []).join(', ')) || 'None (land only)'],
+    ['Dietary requirements', esc([...(s.diet || []), s.dietOther && 'Other: ' + s.dietOther].filter(Boolean).join(', '))],
+    ['Add-on experiences', esc((s.addons || []).join(', '))],
+    ['Hotel category', esc((s.hotel || []).join(' / ')) || 'To be advised'],
+    ['Rooms', esc((s.rooms || []).map(x => `${x.qty} x ${x.type}`).join(', '))],
+    ['Notes', esc(s.notes || '').replace(/\n/g, '<br>')],
+  ].filter(([, v]) => v);
+  return `<div class="sd">
+    <div class="sd-top"><div><div class="sd-k">Quotation request · ${esc(r.id)}</div><h2>${tr.nights} nights / ${tr.days} days · ${esc(tr.cities || '')}</h2>
+      <div class="sd-by">${esc(r.contact.name)}${r.contact.company ? ' · ' + esc(r.contact.company) : ''} · ${esc(r.contact.email)} · sent ${fmtT(r.createdAt)}</div></div>
+      ${pp ? `<div class="sd-price"><span>Land fee shown</span><b>US$ ${Number(pp).toLocaleString('en-US')}</b><em>per person · total US$ ${Number(p.total || pp * o.pax).toLocaleString('en-US')}${p.discountedPerPerson != null ? ` · was US$ ${Number(p.perPerson).toLocaleString('en-US')}` : ''}</em></div>` : ''}</div>
+    <dl class="sd-dl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    <h3>Day-by-day itinerary</h3>
+    ${(s.itinerary || []).map(d => `<div class="sd-day"><div class="sd-n">Day ${d.day}</div><div><h4>${esc(d.title)}${d.swapped ? ' <span class="tag">changed by buyer</span>' : ''}</h4>${d.route ? `<div class="sd-rt">${esc(d.route)}</div>` : ''}
+      <ul>${(d.stops || []).map(x => `<li>${esc(x)}</li>`).join('')}${d.tour ? `<li>Tour: ${esc(d.tour)}</li>` : ''}${(d.adds || []).map(x => `<li>${esc(x)}</li>`).join('')}${(d.requests || []).map(x => `<li class="sd-rq">Requested: ${esc(x)}</li>`).join('')}</ul>
+      ${(d.meals || []).length ? `<div class="sd-ml">${d.meals.map(m => { const x = String(typeof m === 'string' ? m : m.label || m.type || ''); return esc(x.charAt(0).toUpperCase() + x.slice(1)); }).join(' · ')}</div>` : ''}</div></div>`).join('')}
+  </div>`;
+}
+// what we have to arrange, from the request (shown above the tabs while editing)
+function todoStrip(r) {
+  const o = r.options || {}, reqs = (r.itinerary || []).filter(d => (d.requests || []).length);
+  const it = (k, v, warn) => `<div class="td${warn ? ' warn' : ''}"><span>${k}</span><b>${v}</b></div>`;
+  return `<div class="todo">${[
+    it('Arrival', r.trip && r.trip.arrival ? fmt(r.trip.arrival) : '미정', !(r.trip && r.trip.arrival)),
+    it('Hotel', `${esc((r.hotel || []).join(' / ') || '등급 미정')} · ${esc((r.rooms || []).map(x => `${x.type} ${x.qty}`).join(', ') || '객실 미정')}`),
+    it('Meals', esc((r.meals || []).map(m => ({ Lunch: '점심', Dinner: '저녁' })[m] || m).join('·') || '없음') + ((r.diet || []).length || r.dietOther ? ` · <em class="hl">${esc([...(r.diet || []), r.dietOther].filter(Boolean).join(', '))}</em>` : '')),
+    (r.addons || []).length ? it('Add-ons', esc(r.addons.join(', '))) : '',
+    o.luggage ? it('Luggage', '짐차 요청') : '',
+    reqs.length ? it(`Special requests ${reqs.reduce((a, d) => a + d.requests.length, 0)}건`, reqs.map(d => `D${d.day} ${d.requests.map(esc).join(', ')}`).join(' / '), true) : '',
+    r.notes ? it('Notes', esc(r.notes.length > 120 ? r.notes.slice(0, 120) + '…' : r.notes), true) : '',
+  ].join('')}</div>`;
+}
+function wkSetMode(m) {
+  const r = current; if (!r) return;
+  if (m === 'view' && r.source === 'staff') m = 'edit'; // our own tours have no 'as sent' page
+  wkMode = m; $('detail').dataset.mode = m;
+  $('wk-edit').hidden = m === 'edit'; $('wk-toview').hidden = m === 'view' || r.source === 'staff'; $('wk-tour').hidden = !USE_STAFF_TOUR || !r.builderSel;
+  $('wk-sent').innerHTML = m === 'view' ? sentDoc(r) : '';
+  $('wk-todo').innerHTML = m === 'edit' && r.source !== 'staff' ? todoStrip(r) : '';
+  if (m === 'edit') wkTab(wkCur === 'req' ? 'trip' : wkCur); else { $('builder').hidden = true; }
+  window.scrollTo(0, 0);
+}
+$('wk-edit').onclick = () => wkSetMode('edit');
+// tour editing lives on its own page (the buyer page's builder with staff tools): admin/tour.html?id=
+// switch for the separate staff tour builder (admin/tour.html). Off until that page is finished: the admin page works as before.
+const USE_STAFF_TOUR = false;
+function goTour(id) { location.href = 'tour.html' + (id ? '?id=' + encodeURIComponent(id) : ''); }
+$('wk-tour').onclick = () => goTour(current && current.id);
+$('wk-toview').onclick = () => wkSetMode('view');
+function wkMeta(r) {
+  const o = r.options || {}, tr = r.trip || {};
+  $('wk-title').textContent = (r.contact && (r.contact.company || r.contact.name)) || r.id;
+  $('wk-meta').innerHTML = [esc(r.id), r.buyer ? esc(r.buyer.code) : '', o.pax ? `${o.pax}명${o.foc ? ` + FOC ${o.foc}` : ''}` : '', tr.nights ? `${tr.nights}박 ${tr.days}일` : '', tr.arrival ? `${fmt(tr.arrival)} 도착` : '도착일 미정', r.source === 'staff' ? '직원 작성' : r.revisionOf ? `재요청 (이전 ${esc(r.revisionOf)})` : ''].filter(Boolean).join(' · ');
+}
+function wkTab(k) {
+  if (k === 'trip' && (USE_STAFF_TOUR || !(current && current.builderSel))) k = 'hotel';
+  wkCur = k; $('detail').dataset.wk = k;
+  document.querySelectorAll('#wk-tabs button').forEach(b => b.classList.toggle('on', b.dataset.wk === k));
+  $('builder').hidden = k !== 'trip';
+  const lq = document.querySelector('#wf .step[data-wk=quote]'); if (lq) lq.classList.toggle('land-here', k === 'hotel' && document.querySelector('#wk-tabs [data-wk=trip]').hidden);
+  if (k === 'trip' && bHotelDirty && typeof drawBuilder === 'function') drawBuilder();
+  if (k === 'hotel' && current && typeof wf !== 'undefined' && wf) { const sv = $('w-saved') ? $('w-saved').textContent : ''; drawWorkflow(); if ($('w-saved')) $('w-saved').textContent = sv; }
+}
+async function wkEnter(r) {
+  wkMeta(r);
+
+  document.querySelector('#wk-tabs [data-wk=trip]').hidden = USE_STAFF_TOUR || !r.builderSel;
+  if (!USE_STAFF_TOUR && r.builderSel) {
+    if (!settings || !settings.defaults || !settings.defaults.vehicles) { try { settings = await api('/api/admin/settings'); } catch {} }
+    bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
+    const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
+    bFold = {}; bAddOpen = {}; bTitle = ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
+    $('wk-trip').appendChild($('builder')); drawBuilder();
+  }
+  wkCur = !USE_STAFF_TOUR && r.builderSel ? 'trip' : 'hotel'; wkTab(wkCur); wkSetMode('view');
+}
+// leaving the request: the builder goes back to its own tab (a blank tour when opened from the menu)
+function wkLeave(toBuilder) {
+  const b = $('builder'); if (b.parentNode !== $('wk-trip')) return;
+  document.querySelector('main').insertBefore(b, $('dir'));
+  if (wkFromReq) { wkFromReq = false; bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; }
+  b.hidden = !toBuilder; if ($('wk-sum')) $('wk-sum').innerHTML = '';
+}
+$('wk-tabs').addEventListener('click', e => { const b = e.target.closest('[data-wk]'); if (b) { wkTab(b.dataset.wk); window.scrollTo(0, 0); } });
 // ---- ① land fee quotation and ② hotels, stored on the request as r.workflow
 const CITY = { seoul: '서울', jeju: '제주', busan: '부산' }, CITY_EN = { seoul: 'Seoul', jeju: 'Jeju', busan: 'Busan' };
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -1199,6 +1570,43 @@ const enDate = iso => iso ? new Date(iso + 'T00:00:00').toLocaleDateString('en-G
 const money = n => 'US$ ' + Math.round(n).toLocaleString('en-US');
 
 // city stays from "Seoul 4N · Jeju 3N · Busan 3N" and the arrival date
+// top of the hotel tab: nights per city from the current itinerary (tour builder) + what the buyer asked for
+const HST = { todo: ['To ask', ''], asked: ['Asked', 'ask'], ok: ['Available', 'ok'], no: ['Not available', 'no'] };
+function planStays() {
+  if (typeof bFrom !== 'undefined' && bFrom && current && bFrom === current.id) {
+    const ss = bStays(builtDays());
+    return ss.map(s => { const n = s.to - s.from + 1, ci = bNightDate(s.from); const h = bStayHotel(s); return { city: s.city, nights: n, checkIn: ci || '', checkOut: ci ? addDays(ci, n) : '', planned: h && h.name ? h.name : '' }; });
+  }
+  const hn = (current.builderHotels && current.builderHotels.nights) || []; let ni = 0;
+  return stays(current).map(s => { const h = hn[ni]; ni += s.nights; return { ...s, planned: h && h.name ? h.name : '' }; });
+}
+function hotelPlan() {
+  const r = current, o = r.options || {}, heads = (+o.pax || 0) + (+o.foc || 0);
+  if (r.source === 'staff' && !(r.hotel || []).length && !(r.rooms || []).length) return '';
+  return `<div class="bh-req"><span>Buyer request</span><b>${esc((r.hotel || []).join(' / ')) || '등급 미정'}</b><b>${esc((r.rooms || []).filter(x => x.qty > 0).map(x => `${x.type} ${x.qty}`).join(', ')) || `TWN ${Math.ceil(heads / 2)} (기본)`}</b><b>${o.pax} PAX${o.foc ? ` + ${o.foc} FOC` : ''}</b>${(r.diet || []).length || r.dietOther ? `<b>${esc([...(r.diet || []), r.dietOther].filter(Boolean).join(', '))}</b>` : ''}${r.notes ? `<em class="hp-note">${esc(r.notes)}</em>` : ''}</div>`;
+}
+// hotel inquiries grouped by the stays of the itinerary (city · dates · nights); a hotel whose city is not in the trip is listed last
+function hotelGroups(hrow) {
+  const ss = planStays(), used = new Set();
+  const grp = s => { const hs = wf.hotels.map((h, i) => ({ h, i })).filter(x => x.h.city === s.city && !used.has(x.i)); hs.forEach(x => used.add(x.i));
+    return `<div class="hgrp"><div class="hgrp-h"><b>${CITY[s.city] || s.city}</b><span>${s.checkIn ? `${fmt(s.checkIn)} – ${fmt(s.checkOut)}` : '날짜 미정'} · ${s.nights}N</span><i class="sp"></i><button class="btn ghost sm" data-hcity="${s.city}|${s.checkIn || ''}|${s.checkOut || ''}|">+ 호텔 문의 추가</button></div>
+      ${hs.length ? `<table class="ht hotels"><tbody>${hs.map(x => hrow(x.h, x.i)).join('')}</tbody></table>` : '<div class="hint hgrp-e">문의할 호텔이 없습니다. + 호텔 문의 추가</div>'}</div>`; };
+  const main = ss.map(grp).join(''), rest = wf.hotels.map((h, i) => ({ h, i })).filter(x => !used.has(x.i));
+  return main + (rest.length ? `<div class="hgrp"><div class="hgrp-h"><b>기타</b><span>일정에 없는 도시</span></div><table class="ht hotels"><tbody>${rest.map(x => hrow(x.h, x.i)).join('')}</tbody></table></div>` : '');
+}
+// the hotel tab is the one place for hotels: hotels with Include in quote + Net feed the tour builder's price card and the buyer PDF
+function wfSyncBuilder() {
+  if (typeof bFrom === 'undefined' || !bFrom || !current || bFrom !== current.id || !wf) return false;
+  const days = builtDays(), before = JSON.stringify([bHotels, bMarkup]);
+  bMarkup = +wf.hotelMarkup || 0; bHotels = Array.from({ length: Math.max(0, days.length - 1) }, () => null);
+  bStays(days).forEach(st => {
+    const h = wf.hotels.find(x => x.city === st.city && x.offer && x.status !== 'no' && x.name && hotelNet(x) > 0);
+    if (!h) return;
+    for (let k = st.from; k <= st.to; k++) bHotels[k] = { name: h.name, star: h.star || '', rooms: h.rooms.filter(r => +r.qty > 0).map(r => ({ type: r.type, qty: +r.qty, net: +r.net || 0 })) };
+  });
+  const changed = before !== JSON.stringify([bHotels, bMarkup]); if (changed) bHotelDirty = true; return changed;
+}
+let bHotelDirty = false;
 function stays(r) {
   const out = []; let d = r.trip.arrival;
   for (const m of r.trip.cities.matchAll(/(Seoul|Jeju|Busan) (\d+)N/g)) {
@@ -1212,14 +1620,16 @@ function defaultWorkflow(r) {
   return {
     land: { perPerson: r.price.perPerson, pax: r.options.pax, note: '', sentAt: '' },
     country: r.options.country || COUNTRY_DEFAULT[r.options.market] || '',
-    hotels: stays(r).map(s => ({ city: s.city, name: '', manager: '', email: '', checkIn: s.checkIn, checkOut: s.checkOut,
+    hotels: stays(r).map(s => ({ city: s.city, star: reqStar(r), name: '', manager: '', email: '', checkIn: s.checkIn, checkOut: s.checkOut,
       rooms: (r.rooms && r.rooms.length ? r.rooms : [{ type: 'TWN', qty: Math.ceil(headsR(r) / 2) }]).map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })), breakfast: true, status: 'todo', offer: true })),
     hotelNote: '', hotelSentAt: '', hotelFx: (r.cost && r.cost.fx) || 1250, hotelMarkup: 0,
   };
 }
 let wf = null;
 // rooms per hotel = a list of room types: [{type, qty, net (KRW per room-night), rate (USD selling price per room-night)}]
+const reqStar = r => (String(((r && r.hotel) || [])[0] || '').match(/[345]/) || [''])[0];
 function normHotel(h) {
+  if (h.star === undefined || (h.star === '' && !h.name)) h.star = reqStar(current);
   if (!Array.isArray(h.rooms)) h.rooms = [{ type: h.roomType || 'TWN', qty: +h.rooms || 0, net: +h.net || 0, rate: +h.rate || 0 }];
   delete h.roomType; delete h.net; delete h.rate; return h;
 }
@@ -1230,9 +1640,18 @@ const hotelSum = h => { const n = nightsBetween(h.checkIn, h.checkOut); return h
 const hotelNet = h => { const n = nightsBetween(h.checkIn, h.checkOut); return h.rooms.reduce((a, r) => a + (+r.net || 0) * (+r.qty || 0) * n, 0); };
 // selling rate per room-night (USD) from the hotel's net rate (KRW): exchange rate + hotel markup, rounded up to a dollar
 const sellRate = net => { const fx = +wf.hotelFx || 1250; return Math.ceil(net / fx * (1 + (+wf.hotelMarkup || 0) / 100)); };
+// the three numbers the buyer quote needs: per pax per night, per pax for the stay, and the hotel total (selling price, USD)
+function hotelFigs(h) {
+  const n = nightsBetween(h.checkIn, h.checkOut), tot = hotelSum(h), net = hotelNet(h), pax = +wf.land.pax || 1;
+  if (!tot || !n) return `<div class="hf-empty">${n ? 'Net (₩)을 넣으면 Per pax / night · Per pax total · Total이 계산됩니다' : 'Check-in · Check-out 날짜를 넣으면 계산됩니다'}</div>`;
+  const kr = v => '₩' + Math.round(v).toLocaleString('ko-KR');
+  return `<div class="hf"><span>Per pax / night</span><b>${money(Math.ceil(tot / pax / n))}</b><em>Net ${kr(net / pax / n)}</em></div>
+    <div class="hf"><span>Per pax total</span><b>${money(Math.ceil(tot / pax))}</b><em>${n}N · Net ${kr(net / pax)}</em></div>
+    <div class="hf tot"><span>Total</span><b>${money(tot)}</b><em>${roomCount(h)} rooms × ${n}N · ${pax} pax · Net ${kr(net)}</em></div>`;
+}
 function hotelLine(h) {
   const n = nightsBetween(h.checkIn, h.checkOut), tot = hotelSum(h), net = hotelNet(h);
-  return `호텔 합계 ${roomCount(h)}실 × ${n}박${tot ? ` = ${money(tot)}` : ''}${net ? ` (원가 ₩${Math.round(net).toLocaleString('ko-KR')})` : ''}`;
+  return `Hotel total ${roomCount(h)} rooms × ${n}N${tot ? ` = ${money(tot)}` : ''}${net ? ` (Net ₩${Math.round(net).toLocaleString('ko-KR')})` : ''}`;
 }
 const roomLine = (r, n) => `${(+r.rate || 0) * (+r.qty || 0) * n ? money(r.rate * r.qty * n) : ''}`;
 function hotelTotals() {
@@ -1249,73 +1668,73 @@ function renderWorkflow() {
 function drawWorkflow() {
   const L = wf.land, t = hotelTotals();
   const hrow = (h, i) => `<tr data-i="${i}"><td><div class="hcard">
-    <div class="hsec ask"><div class="hs-h">호텔 문의 <span>예약실에 보낼 조건</span></div>
+    <div class="hsec ask"><div class="hs-h">Inquiry <span>예약실에 보낼 조건</span></div>
       <div class="hl1">
-        <label>도시<select data-f="city">${Object.keys(CITY).map(c => `<option value="${c}"${h.city === c ? ' selected' : ''}>${CITY[c]}</option>`).join('')}</select></label>
-        <label>호텔명<input data-f="name" list="dl-hotel-${h.city}" value="${esc(h.name)}" placeholder="호텔명 (목록에서 선택)"></label>
-        <label>담당자<input data-f="manager" value="${esc(h.manager)}" placeholder="담당자"></label>
-        <label>예약실 이메일<input data-f="email" value="${esc(h.email)}" placeholder="reservation@hotel.com"></label>
+        <label>City<select data-f="city">${Object.keys(CITY).map(c => `<option value="${c}"${h.city === c ? ' selected' : ''}>${CITY[c]}</option>`).join('')}</select></label>
+        <label>Star<select data-f="star">${[['', 'All'], ['3', '3★'], ['4', '4★'], ['5', '5★']].map(([v, l]) => `<option value="${v}"${String(h.star || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label>Hotel<input data-f="name" list="${hotelListId(h)}" value="${esc(h.name)}" placeholder="${h.star ? h.star + '★ ' : ''}hotel (목록에서 선택)"></label>
+        <label>Contact<input data-f="manager" value="${esc(h.manager)}" placeholder="담당자"></label>
+        <label>Reservation email<input data-f="email" value="${esc(h.email)}" placeholder="reservation@hotel.com"></label>
       </div>
       <div class="hint hinfo" data-hinfo="${i}">${hotelInfo(h)}</div>
       <div class="hl2">
-        <label>체크인<input data-f="checkIn" type="date" value="${h.checkIn}"></label>
-        <label>체크아웃<input data-f="checkOut" type="date" value="${h.checkOut}"></label>
-        <label>회신 상태<select data-f="status">${[['todo', '문의 전'], ['asked', '문의함'], ['ok', '가능'], ['no', '불가']].map(([v, l]) => `<option value="${v}"${h.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label>Check-in<input data-f="checkIn" type="date" value="${h.checkIn}"></label>
+        <label>Check-out<input data-f="checkOut" type="date" value="${h.checkOut}"></label>
+        <label>Status<select data-f="status">${[['todo', 'To ask'], ['asked', 'Asked'], ['ok', 'Available'], ['no', 'Not available']].map(([v, l]) => `<option value="${v}"${h.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
         <div class="hbtn"><button class="btn ghost sm" data-ask="${i}" title="호텔 문의 메일">문의 메일 작성</button><button class="btn ghost sm" data-del="${i}" title="이 호텔 삭제">✕</button></div>
       </div>
-      <div class="hrooms"><span class="hr-l">객실 구성</span>
+      <div class="hrooms"><span class="hr-l">Rooms</span>
         ${h.rooms.map((r, j) => `<span class="rpill"><input data-r="${j}" data-rf="type" value="${esc(r.type)}" placeholder="TWN" aria-label="룸타입"><input data-r="${j}" data-rf="qty" type="number" min="0" value="${r.qty}" aria-label="객실 수"><em>실</em>${h.rooms.length > 1 ? `<button class="rx" data-rdel="${i}:${j}" title="이 룸타입 삭제">✕</button>` : ''}</span>`).join('')}
-        <button class="btn ghost sm" data-radd="${i}">+ 룸타입 추가</button>
+        <button class="btn ghost sm" data-radd="${i}">+ Room type</button>
       </div>
     </div>
-    <div class="hsec sell"><div class="hs-h">바이어 견적 <span>호텔 회신 요금 → 판매가</span></div>
+    <div class="hsec sell"><div class="hs-h">Rates <span>Net → Sell</span></div>
       ${h.rooms.map((r, j) => `<div class="hl3">
         <span class="rt" data-rl="${i}:${j}">${esc(r.type)} ${r.qty}실</span>
-        <label>호텔 회신 요금 (1실 1박, ₩)<input data-r="${j}" data-rf="net" type="number" min="0" step="1000" value="${r.net || ''}" placeholder="예: 180000"></label>
+        <label>Net / room / night (₩)<input data-r="${j}" data-rf="net" type="number" min="0" step="1000" value="${r.net || ''}" placeholder="예: 180000"></label>
         <span class="arrow">→</span>
-        <label>판매가 (1실 1박, USD)<input data-r="${j}" data-rf="rate" type="number" min="0" step="1" value="${r.rate || ''}" placeholder="USD"></label>
+        <label>Sell / room / night (US$)<input data-r="${j}" data-rf="rate" type="number" min="0" step="1" value="${r.rate || ''}" placeholder="USD"></label>
         <span class="hint" data-rs="${i}:${j}">${roomLine(r, nightsBetween(h.checkIn, h.checkOut))}</span>
       </div>`).join('')}
-      <div class="hl4"><span class="hint hsum" data-sum="${i}">${hotelLine(h)}</span><label class="chk"><input data-f="offer" type="checkbox"${h.offer ? ' checked' : ''}> 견적 포함</label></div>
+      <div class="hfig" data-fig="${i}">${hotelFigs(h)}</div>
+      <div class="hl4"><span class="hint hsum" data-sum="${i}">${hotelLine(h)}</span><label class="chk"><input data-f="offer" type="checkbox"${h.offer ? ' checked' : ''}> Include in quote</label></div>
       </div>
     </div></div></td></tr>`;
   $('wf').innerHTML = `
-  <div class="step"><h3>① 지상비 견적 ${L.sentAt ? `<span class="done">발송 ${fmtT(L.sentAt)}</span>` : ''}</h3>
+  <div class="step" data-wk="quote"><h3>Land Fee · 견적 메일 ${L.sentAt ? `<span class="done">발송 ${fmtT(L.sentAt)}</span>` : ''}</h3>
     <div class="row">
-      <label>1인당 지상비 (USD)<input id="w-pp" type="number" min="0" value="${L.perPerson}"></label>
-      <label>인원<input id="w-pax" type="number" min="1" value="${L.pax}" style="width:80px"></label>
-      <div><span class="hint">총액</span><br><span class="big" id="w-ltot">${money(L.perPerson * L.pax)}</span></div>
+      <label>Land Fee / pax (US$)<input id="w-pp" type="number" min="0" value="${L.perPerson}"></label>
+      <label>PAX<input id="w-pax" type="number" min="1" value="${L.pax}" style="width:80px"></label>
+      <div><span class="hint">Total</span><br><span class="big" id="w-ltot">${money(L.perPerson * L.pax)}</span></div>
       <span class="hint">사이트 계산가 ${money(current.price.perPerson)} · 수정 시 바이어 견적서에 수정 금액 반영</span>
     </div>
     ${costBlock()}
     <label class="hint">바이어용 메모 (영어, 견적서·메일에 포함)</label>
     <textarea id="w-note" placeholder="e.g. Rates valid for travel dates above, subject to availability.">${esc(L.note)}</textarea>
     <div class="acts">
-      <button class="btn ghost" id="w-qpdf">지상비 견적서 PDF</button>
+      <button class="btn ghost" id="w-qpdf">Land Quote PDF</button>
       <a class="btn ghost" id="w-qmail" href="#">견적 메일 작성</a>
       ${L.sentAt ? '<button class="btn ghost" id="w-qsent">발송 완료 취소</button>' : '<button class="btn" id="w-qsent">발송 완료로 표시</button>'}
     </div>
   </div>
-  ${hotelDatalists()}<div class="step"><h3>② 호텔 확인 → 호텔 견적 ${wf.hotelSentAt ? `<span class="done">발송 ${fmtT(wf.hotelSentAt)}</span>` : ''}</h3>
+  ${hotelDatalists()}<div class="step" data-wk="hotel"><h3>Hotel ${wf.hotelSentAt ? `<span class="done">발송 ${fmtT(wf.hotelSentAt)}</span>` : ''}</h3>
+    ${hotelPlan()}
+    <div class="hsumbox">
+      <div class="hs-c"><span>Land Fee / pax</span><b>${money(L.perPerson)}</b><em>Land Fee 칸 금액</em></div>
+      <div class="hs-c"><span>Hotel Fee / pax</span><b id="w-hpp">${money(t.pp)}</b><em>Include 체크한 호텔</em></div>
+      <div class="hs-c"><span>Hotel Total</span><b id="w-ht">${money(t.total)}</b><em>${L.pax} pax</em></div>
+      <div class="hs-c main"><span>Tour Fee / pax</span><b id="w-app">${money(L.perPerson + t.pp)}</b><em>Total <b id="w-atot">${money(t.landTotal + t.total)}</b></em></div>
+    </div>
     <div class="row">
-      <label>손님 국적 코드 (메일 제목용)<input id="w-cty" value="${esc(wf.country)}" placeholder="KWT, SAU, UAE…" maxlength="3" style="width:110px;text-transform:uppercase"></label>
-      <label>환율 (₩/US$)<input id="w-hfx" type="number" min="500" step="10" value="${wf.hotelFx || 1250}" style="width:100px"></label>
-      <label>호텔 마진 (%)<input id="w-hmk" type="number" min="0" step="1" value="${wf.hotelMarkup || 0}" style="width:80px"></label>
-      <span class="hint">호텔 고객 요청: ${esc(current.hotel.join(' / ') || '없음')} · 객실 요청: ${esc((current.rooms || []).map(x => `${x.type} ${x.qty}실`).join(', ') || '없음 (인원/2 트윈)')}<br>회신 요금(₩)을 넣으면 환율·마진으로 판매가(USD) 자동 계산 · 판매가는 직접 수정 가능</span>
+      <label>국적 코드 (메일 제목)<input id="w-cty" value="${esc(wf.country)}" placeholder="KWT, SAU, UAE…" maxlength="3" style="width:110px;text-transform:uppercase"></label>
+      <label>FX (₩/US$)<input id="w-hfx" type="number" min="500" step="10" value="${wf.hotelFx || 1250}" style="width:100px"></label>
+      <label>Hotel markup (%)<input id="w-hmk" type="number" min="0" step="1" value="${wf.hotelMarkup || 0}" style="width:80px"></label>
+      <span class="hint">회신 요금(₩)을 넣으면 환율·마진으로 판매가(US$) 자동 계산 · Include in quote 체크한 호텔이 Itinerary 견적·PDF에 들어갑니다</span>
     </div>
-    <div><table class="ht hotels">
-      <tbody>${wf.hotels.map(hrow).join('')}</tbody></table></div>
-    <button class="btn ghost" id="w-hadd">+ 호텔 추가</button>
-    <div class="sum">
-      <div>호텔 합계<br><b id="w-ht">${money(t.total)}</b></div>
-      <div>1인당 호텔비<br><b id="w-hpp">${money(t.pp)}</b></div>
-      <div>1인당 지상비 + 호텔<br><b id="w-app">${money(L.perPerson + t.pp)}</b></div>
-      <div>총액 (지상비 + 호텔)<br><b id="w-atot">${money(t.landTotal + t.total)}</b></div>
-    </div>
+    ${hotelGroups(hrow)}
     <label class="hint" style="display:block;margin-top:10px">호텔 견적 메모 (영어)</label>
     <textarea id="w-hnote" placeholder="e.g. Rates include breakfast and taxes.">${esc(wf.hotelNote)}</textarea>
     <div class="acts">
-      <button class="btn ghost" id="w-hpdf">지상비 + 호텔 견적서 PDF</button>
       <a class="btn ghost" id="w-hmail" href="#">호텔 포함 견적 메일 작성</a>
       ${wf.hotelSentAt ? '<button class="btn ghost" id="w-hsent">발송 완료 취소</button>' : '<button class="btn" id="w-hsent">발송 완료로 표시</button>'}
       <button class="btn ghost" id="w-save">저장</button> <span class="saved" id="w-saved"></span>
@@ -1394,9 +1813,10 @@ async function saveWorkflow(status, msg) {
   const d = await api('/api/admin/save?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify(body) });
   current.workflow = d.workflow; current.status = d.status; wf = JSON.parse(JSON.stringify(d.workflow)); $('dst').value = d.status;
   drawWorkflow(); $('w-saved').textContent = msg || '저장 완료';
+  if (typeof bFrom !== 'undefined' && bFrom && bFrom === current.id && bHotelDirty) { bHotelDirty = false; await bSaveToRequest(); }
 }
 function updateSums() {
-  const L = wf.land, t = hotelTotals();
+  const L = wf.land, t = hotelTotals(); wfSyncBuilder();
   $('w-ltot').textContent = money(L.perPerson * L.pax); $('w-ht').textContent = money(t.total); $('w-hpp').textContent = money(t.pp);
   $('w-app').textContent = money(L.perPerson + t.pp); $('w-atot').textContent = money(t.landTotal + t.total);
   if ($('w-margin')) $('w-margin').textContent = marginText();
@@ -1421,10 +1841,11 @@ $('wf').addEventListener('input', e => {
     const tr = el.closest('tr'), h = wf.hotels[+tr.dataset.i], f = el.dataset.f;
     h[f] = el.type === 'checkbox' ? el.checked : el.value;
     if (f === 'name') { const x = dirHotel(h.name); if (x) { if (!h.manager && x.manager) { h.manager = x.manager; tr.querySelector('[data-f="manager"]').value = h.manager; } if (!h.email && x.email) { h.email = x.email.split(/\s*\/\s*/)[0]; tr.querySelector('[data-f="email"]').value = h.email; } } }
-    if (f === 'city') tr.querySelector('[data-f="name"]').setAttribute('list', 'dl-hotel-' + h.city);
+    if (f === 'city' || f === 'star') { const nm = tr.querySelector('[data-f="name"]'); nm.setAttribute('list', hotelListId(h)); nm.placeholder = `${h.star ? h.star + '★ ' : ''}hotel (목록에서 선택)`; }
     const hi = tr.querySelector('[data-hinfo]'); if (hi) hi.innerHTML = hotelInfo(h);
   }
   document.querySelectorAll('[data-sum]').forEach(s => { s.textContent = hotelLine(wf.hotels[+s.dataset.sum]); });
+  document.querySelectorAll('[data-fig]').forEach(s => { s.innerHTML = hotelFigs(wf.hotels[+s.dataset.fig]); });
   document.querySelectorAll('[data-rl]').forEach(s => { const [i, j] = s.dataset.rl.split(':').map(Number), r = wf.hotels[i].rooms[j]; s.textContent = `${r.type} ${r.qty}실`; });
   document.querySelectorAll('[data-rs]').forEach(s => { const [i, j] = s.dataset.rs.split(':').map(Number), h = wf.hotels[i]; s.textContent = roomLine(h.rooms[j], nightsBetween(h.checkIn, h.checkOut)); });
   updateSums(); $('w-saved').textContent = '저장 안 됨';
@@ -1437,7 +1858,8 @@ $('wf').addEventListener('click', e => {
   if (b.dataset.del !== undefined) { wf.hotels.splice(+b.dataset.del, 1); drawWorkflow(); return; }
   if (b.dataset.radd !== undefined) { e.preventDefault(); wf.hotels[+b.dataset.radd].rooms.push({ type: 'DBL', qty: 1, net: 0, rate: 0 }); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
   if (b.dataset.rdel !== undefined) { e.preventDefault(); const [i, j] = b.dataset.rdel.split(':').map(Number); wf.hotels[i].rooms.splice(j, 1); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
-  if (b.id === 'w-hadd') { const s = stays(current)[0] || {}; wf.hotels.push({ city: s.city || 'seoul', name: '', manager: '', email: '', checkIn: s.checkIn || '', checkOut: s.checkOut || '', rooms: [{ type: 'TWN', qty: Math.ceil(current.options.pax / 2), net: 0, rate: 0 }], breakfast: true, status: 'todo', offer: true }); drawWorkflow(); return; }
+  if (b.dataset.hcity) { const [city, ci, co, nm] = b.dataset.hcity.split('|'); const rq = (current.rooms || []).filter(x => x.qty > 0); const st0 = (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], nh = { city, star: nm ? (starOfDir(dirHotel(nm)) || st0) : st0, name: nm || '', manager: '', email: '', checkIn: ci, checkOut: co, rooms: rq.length ? rq.map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })) : [{ type: 'TWN', qty: Math.ceil(((+current.options.pax || 0) + (+current.options.foc || 0)) / 2), net: 0, rate: 0 }], breakfast: true, status: 'todo', offer: true }; if (typeof normHotel === 'function') normHotel(nh); wf.hotels.push(nh); drawWorkflow(); return; }
+  if (b.id === 'w-hadd') { const s = stays(current)[0] || {}; wf.hotels.push({ city: s.city || 'seoul', star: (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], name: '', manager: '', email: '', checkIn: s.checkIn || '', checkOut: s.checkOut || '', rooms: [{ type: 'TWN', qty: Math.ceil(current.options.pax / 2), net: 0, rate: 0 }], breakfast: true, status: 'todo', offer: true }); drawWorkflow(); return; }
   if (b.id === 'w-qpdf') return quotationPDF(false);
   if (b.id === 'w-hpdf') return quotationPDF(true);
   if (b.id === 'w-qmail') { b.href = buyerMail(false); return; }
@@ -1465,7 +1887,7 @@ const BOOKABLE = [
   [/Seoul Sky/i, '서울스카이 입장권'], [/Han River Cruise/i, '한강 유람선 예약'], [/Bay 101 Yacht/i, '더베이101 요트 예약'],
   [/K-?Pop Dance/i, 'K-팝 댄스 클래스 예약'], [/Color Analys|Personal Colou?r/i, '퍼스널컬러 진단 예약'], [/Cooking Class/i, '쿠킹 클래스 예약'],
   [/Temple Food/i, '사찰음식 체험 예약'], [/Tea Experience|Tea Meditation/i, '다도·티 명상 예약'], [/Hanbok Rental\)/i, '한복 대여 예약'],
-  [/Rail Park|Rail Bike/i, '강촌 레일바이크 예약'], [/Spaland/i, '스파랜드 입장권'], [/Ice Festival|Ice Fishing/i, '화천 산천어축제 낚시 예약'],
+  [/Rail Park|Rail Bike/i, '강촌 레일바이크 예약'], [/Spaland/i, '스파랜드 입장권'], [/Ice Festival|Ice Fishing/i, '화천 산천어축제 낚시권', dt => [0, 6].includes(new Date(dt + 'T00:00:00').getDay()) ? '주말 · 예약낚시터 조기 매진, 미리 예약' : '평일 · 현장 발권 가능 (예약 선택)'],
   [/Trick Eye/i, '트릭아이 입장권'], [/Gondola/i, 'DMZ 곤돌라'], [/Hyundai Motor Studio/i, '현대모터스튜디오 예약'], [/Ski/i, '스키 강습 예약'],
 ];
 // vehicle class by group size (2026-11): 1–4 Staria + driving guide / 5–9 Solati + luggage van /
@@ -1486,6 +1908,8 @@ function vehicleName(r) {
   if (r.options.vehicle !== 'Standard') return r.options.vehicle;
   return vehicleKo(planOf(r));
 }
+const PLACE_KO = { Seoul: '서울', Busan: '부산', Jeju: '제주', Gyeongju: '경주', Suwon: '수원', Gapyeong: '가평', Goyang: '고양', Hwacheon: '화천', Chuncheon: '춘천', DMZ: 'DMZ', Gimpo: '김포', Yongin: '용인', Gyeonggi: '경기', Incheon: '인천', Gimhae: '김해' };
+const tripKo = d => { const p = String(d.route || '').split('→').map(x => x.trim()).filter(Boolean), mid = p.slice(1, -1).flatMap(x => x.split('·').map(y => y.trim())); return mid.length ? ' · ' + mid.map(x => PLACE_KO[x] || x).join('·') : ''; };
 const cityOf = d => d.kind === 'tour' && d.region ? d.region : /Busan|Gyeongju|Haeundae|Gamcheon|Spa Day/.test(d.title + d.route) ? 'busan' : /Jeju|Sunrise Peak|Waterfalls|Alpacas|Markets & Café|Beaches & Volcanic/.test(d.title + d.route) ? 'jeju' : 'seoul';
 // every day the vehicle company works, in order. type: tour / half (travel-day sightseeing) / transfer; free = done by the touring vehicle, not charged
 function vehicleSchedule(r) {
@@ -1493,11 +1917,11 @@ function vehicleSchedule(r) {
   const v = (i, text, type, free, city) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text, type, free: !!free, city: city || (/제주/.test(text) ? 'jeju' : /부산|김해/.test(text) ? 'busan' : 'seoul') });
   const pl = planOf(r), tourBus = mix ? ` · ${VEH_KO[pl.tour]}` : '', trVeh = mix ? ` · ${VEH_KO[pl.pickup]}` : '';
   r.itinerary.forEach((d, i) => {
-    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})${tourBus}`, 'tour', false, cityOf(d));
+    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일${tripKo(d)}${tourBus}`, 'tour', false, cityOf(d));
     if (d.kind !== 'transfer') return;
     if (!Array.isArray(d.transfers)) return oldTransfers(r, d, i, v, lugOn);
     const paid = Array.isArray(d.paid) ? d.paid : d.transfers, adds = d.adds || [];
-    const half = () => { if (adds.length) v(i, `이동일 관광${d.tourCity ? ` (${CITY[d.tourCity]})` : ''}: ${d.tour ? d.tour + ' – ' : ''}${adds.join(', ')}${tourBus}`, 'half', false, d.tourCity || cityOf(d)); };
+    const half = () => { if (adds.length) v(i, `이동일 관광${d.tourCity ? ` (${CITY[d.tourCity]})` : ''}${tourBus}`, 'half', false, d.tourCity || cityOf(d)); };
     if (adds.length && d.tourCity && d.tourCity === d.from) half(); // touring before leaving the city
     d.transfers.forEach((t, k) => {
       const c = CITY[T_CITY[t]] || '', free = !paid.includes(t);
@@ -1515,7 +1939,7 @@ function vehicleSchedule(r) {
 // requests saved before 2026-11-20 have no airport / station codes: always Seoul first, arrival and departure at Incheon
 function oldTransfers(r, d, i, v, lugOn) {
   const t = d.title, lug = lugOn ? ' + 짐차' : '';
-  if ((d.adds || []).length) v(i, `이동일 관광: ${d.adds.join(', ')}`, 'half', false, cityOf(d));
+  if ((d.adds || []).length) v(i, '이동일 관광', 'half', false, cityOf(d));
   if (/Arrival/.test(t)) v(i, `인천공항 도착 픽업 → 서울 호텔${lug}`, 'transfer');
   if (/Seoul to Jeju/.test(t)) { v(i, '서울 호텔 → 김포공항 샌딩', 'transfer'); v(i, '제주공항 픽업 → 제주 호텔', 'transfer'); }
   if (/Jeju to Busan/.test(t)) { v(i, '제주 호텔 → 제주공항 샌딩', 'transfer'); v(i, '김해공항 픽업 → 부산 호텔', 'transfer'); }
@@ -1529,8 +1953,13 @@ function oldTransfers(r, d, i, v, lugOn) {
 // copy text for the vehicle company: dates without the year, grouped by city; city = 'seoul' | 'jeju' | 'busan' copies that city only
 const mdDate = iso => { if (!iso) return ''; const d = new Date(iso + 'T00:00:00'); return `${d.getMonth() + 1}월 ${d.getDate()}일(${'일월화수목금토'[d.getDay()]})`; };
 const vehCities = r => [...new Set(vehicleSchedule(r).map(x => x.city))];
+const vehOp = c => (wf && wf.ops || []).find(o => o.cat === 'vehicle' && o.city === c);
+function vehLines(r) {
+  const all = vehicleSchedule(r), date = d => r.trip.arrival ? addDays(r.trip.arrival, d - 1) : '';
+  return vehCities(r).flatMap(c => { const o = vehOp(c); return o && Array.isArray(o.plan) ? o.plan.map(x => ({ day: x.day, date: date(x.day), text: x.text, city: c, edited: true })) : all.filter(x => x.city === c); });
+}
 function vehicleText(r, city) {
-  const all = vehicleSchedule(r), cities = city ? [city] : [...new Set(all.map(x => x.city))];
+  const all = vehLines(r), cities = city ? [city] : [...new Set(all.map(x => x.city))];
   const line = x => `${x.date ? mdDate(x.date) : 'Day ' + x.day} (D${x.day}) ${x.text}`;
   const span = s => s.length && s[0].date ? (s[0].date === s[s.length - 1].date ? mdDate(s[0].date) : `${mdDate(s[0].date)} – ${mdDate(s[s.length - 1].date)}`) : '';
   const head = [`[하킴트래블코리아] 차량 수배 요청${city ? ` · ${CITY[city]}` : ''}`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${headsR(r)}명${r.options.foc ? ` (FOC ${r.options.foc}명 포함)` : ''} + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport && !city ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : [])];
@@ -1547,11 +1976,12 @@ function buildOps(r) {
   const vs = vehicleSchedule(r), tourN = vs.filter(x => x.type === 'tour').length, halfN = vs.filter(x => x.type === 'half').length;
   const trN = vs.filter(x => x.type === 'transfer' && !x.free).length, freeN = vs.filter(x => x.free).length;
   const tourTxt = `투어 ${tourN}일${halfN ? ` · 이동일 관광 ${halfN}일` : ''}`, trTxt = `픽업·샌딩 ${trN}회${freeN ? ` (이동일 관광 차량 진행 ${freeN}회 별도)` : ''}`, lugTxt = hasLuggage(r) ? ' · 짐차 2회 (도착·출국)' : '';
-  if (isMix(r)) {
-    const pl = planOf(r);
-    add('vehicle', date(0), `투어 차량: ${VEH_KO[pl.tour]}${pl.tour === 'staria' ? ' + 드라이빙가이드' : ''}`, `${pax}명 · ${tourTxt}`);
-    add('vehicle', date(0), `픽업·샌딩 차량: ${VEH_KO[pl.pickup]}${pl.luggage ? ' + 짐차' : ''}`, `${pax}명 · ${trTxt}${lugTxt}`);
-  } else add('vehicle', date(0), `전 일정 차량: ${vehicleName(r)}`, `${pax}명 · ${tourTxt} · ${trTxt}${lugTxt}`);
+  // one line per city: the vehicle company is often different in Seoul, Jeju and Busan
+  for (const c of vehCities(r)) {
+    const cs = vs.filter(x => x.city === c), tn = cs.filter(x => x.type === 'tour').length, hn = cs.filter(x => x.type === 'half').length, rn = cs.filter(x => x.type === 'transfer' && !x.free).length;
+    const pl = planOf(r), veh = isMix(r) ? `투어 ${VEH_KO[pl.tour]} · 픽업·샌딩 ${VEH_KO[pl.pickup]}${pl.luggage ? ' + 짐차' : ''}` : vehicleName(r);
+    ops.push({ cat: 'vehicle', city: c, date: (cs[0] && cs[0].date) || date(0), item: `${CITY[c]} 차량: ${veh}`, detail: `${pax}명 · ${[tn ? `투어 ${tn}일` : '', hn ? `이동일 관광 ${hn}일` : '', rn ? `픽업·샌딩 ${rn}회` : ''].filter(Boolean).join(' · ')}${c === (vs[vs.length - 1] || {}).city && hasLuggage(r) ? lugTxt : ''}`, vendor: '', status: 'todo', ref: '' });
+  }
   // guides: one line per city block of touring days
   const byCity = {};
   r.itinerary.forEach((d, i) => { const c = d.kind === 'tour' ? cityOf(d) : (d.adds || []).length ? d.tourCity || cityOf(d) : ''; if (c) (byCity[c] = byCity[c] || []).push(i); });
@@ -1568,7 +1998,7 @@ function buildOps(r) {
   });
   // bookings found in the itinerary, plus the client's own requests
   r.itinerary.forEach((d, i) => {
-    [...d.stops, ...(d.adds || [])].forEach(s => { const m = BOOKABLE.find(([re]) => re.test(s)); if (m) add('booking', date(i), m[1], `${pax}명 · Day ${d.day}`); });
+    [...d.stops, ...(d.adds || [])].forEach(s => { const m = BOOKABLE.find(([re]) => re.test(s)); if (m) add('booking', date(i), m[1], `${pax}명 · Day ${d.day}` + (m[2] && date(i) ? ' · ' + m[2](date(i)) : '')); });
     d.requests.forEach(q => add('booking', date(i), `고객 요청 장소: ${q}`, `Day ${d.day} · 운영 가능 여부 확인`));
   });
   // hotels from step ②, meals, add-ons
@@ -1577,29 +2007,104 @@ function buildOps(r) {
   r.addons.forEach(a => add('addon', '', a, '날짜 협의'));
   return ops;
 }
+// vehicles: one card per city with the company, status and the day-by-day plan to send them
+function vehBlock(ops) {
+  const vs = vehicleSchedule(current), cities = vehCities(current); if (!vs.length) return '';
+  const st = o => `<select data-of="status">${OPS_ST.map(([v, l]) => `<option value="${v}"${o.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
+  return `<h4 class="ops-h">차량 <span class="hint">${esc(vehicleName(current))} · ${current.options.pax}명 · 도시별 업체·상태와 일정표</span></h4><div class="vgrid">${cities.map(c => {
+    const i = ops.findIndex(o => o.cat === 'vehicle' && o.city === c), o = ops[i], cs = vs.filter(x => x.city === c);
+    return `<div class="vcard${o ? ' op-' + o.status : ''}"><div class="vc-h"><b>${CITY[c]}</b><span class="hint">${cs[0] && cs[0].date ? `${fmt(cs[0].date)} – ${fmt(cs[cs.length - 1].date)}` : `Day ${cs[0].day}–${cs[cs.length - 1].day}`}</span><span class="sp"></span><button class="btn ghost sm" data-veh="${c}">일정표 복사</button></div>
+      ${o ? `<table class="vc-in"><tr data-o="${i}"><td><input data-of="vendor" list="dl-op-${i}" value="${esc(o.vendor)}" placeholder="차량 업체">${opsVendorList(o, i)}${vendorContact(o) ? `<div class="hint">${esc(vendorContact(o))}</div>` : ''}</td><td>${st(o)}</td><td><input data-of="ref" value="${esc(o.ref)}" placeholder="확정번호·메모"></td></tr></table><div class="hint">${esc(o.item)} · ${esc(o.detail)}</div>` : '<div class="hint">수배 목록을 만들면 업체·상태 칸이 생깁니다.</div>'}
+      ${o ? `<div class="vc-l vchips">${vehLines(current).filter(x => x.city === c).map((x, k) => `<span class="vchip"><select data-vpd="${i}|${k}" aria-label="Day">${current.itinerary.map((_, d) => `<option value="${d + 1}"${d + 1 === x.day ? ' selected' : ''}>${current.trip.arrival ? mdDate(addDays(current.trip.arrival, d)) + ' · ' : ''}D${d + 1}</option>`).join('')}</select><input data-vpt="${i}|${k}" value="${esc(x.text)}" placeholder="내용"><button type="button" data-vpx="${i}|${k}" title="빼기">✕</button></span>`).join('')}
+        <div class="vc-acts"><button type="button" class="btn ghost sm" data-vpa="${i}">+ 일정 추가</button>${Array.isArray(o.plan) ? `<button type="button" class="linkbtn" data-vpr="${i}">일정에서 다시 만들기</button>` : ''}</div></div>`
+        : `<ul class="vc-l">${cs.map(x => `<li><span>${x.date ? mdDate(x.date) : 'Day ' + x.day} · D${x.day}</span>${esc(x.text)}</li>`).join('')}</ul>`}</div>`; }).join('')}</div>`;
+}
+// hotel rows of the 수배 list follow the Hotel tab (hotels with Include in quote and not 'Not available'): name, dates, rooms; 업체·상태·확정번호 typed here are kept
+const HST_OPS = { asked: 'req', ok: 'req' };
+function opsSyncHotels() {
+  if (!Array.isArray(wf.ops) || !wf.ops.length) return;
+  const old = wf.ops.filter(o => o.cat === 'hotel'), at = wf.ops.findIndex(o => o.cat === 'hotel'), keep = wf.ops.filter(o => o.cat !== 'hotel');
+  const pos = at < 0 ? keep.length : wf.ops.slice(0, at).filter(o => o.cat !== 'hotel').length, used = new Set();
+  const fresh = (wf.hotels || []).filter(h => h.status !== 'no' && h.offer).map((h, k) => {
+    const key = `${h.city}|${h.checkIn}`, prev = old.find(o => !used.has(o) && o.hk === key) || old.find(o => !used.has(o) && !o.hk && o.item.startsWith(CITY[h.city] + ' 호텔')) || null; if (prev) used.add(prev);
+    const status = prev && ['ok', 'na'].includes(prev.status) ? prev.status : HST_OPS[h.status] || (prev ? prev.status : 'todo');
+    return { cat: 'hotel', hk: key, area: h.city, date: h.checkIn, item: `${CITY[h.city]} 호텔: ${h.name || '미정'}`, detail: `${roomsKo(h)} · ${nightsBetween(h.checkIn, h.checkOut)}박${h.status === 'ok' ? ' · 객실 가능 회신' : ''}`, vendor: prev && prev.vendor ? prev.vendor : (h.manager || ''), status, ref: prev ? prev.ref : '' };
+  });
+  wf.ops = [...keep.slice(0, pos), ...fresh, ...keep.slice(pos)];
+}
+// the other arrangements, one block per kind (guide, flights · KTX, bookings, meals…); a city picker shows that city's lines and vendors only
+const OPS_GROUPS = ['guide', 'transport', 'booking', 'meal', 'hotel', 'addon', 'vehicle', 'other'];
+let opsCity = {};
+function opCity(o) {
+  if (o.area) return o.area;
+  if (o.city) return o.city;
+  const t = `${o.item || ''} ${o.detail || ''}`;
+  if (o.cat !== 'transport') for (const [c, k] of Object.entries(CITY)) if (t.includes(k)) return c;
+  const arr = current && current.trip && current.trip.arrival;
+  if (o.date && arr) { const i = Math.round((new Date(o.date + 'T00:00:00') - new Date(arr + 'T00:00:00')) / 864e5), d = (current.itinerary || [])[i]; if (d) return cityOf(d); }
+  return '';
+}
+function opsRow(o, i) {
+  const ro = o.cat === 'hotel' ? ' readonly title="Hotel 탭과 연동"' : '';
+  return `<tr data-o="${i}" class="op-${o.status}"><td><select data-of="cat">${Object.keys(OPS_CAT).map(c => `<option value="${c}"${o.cat === c ? ' selected' : ''}>${OPS_CAT[c]}</option>`).join('')}</select></td>
+        <td><input data-of="date" type="date" value="${o.date}"${ro}></td><td><div class="op-it"><select data-of="area" title="지역"${o.cat === 'hotel' ? ' disabled' : ''}>${[['', '지역'], ...((current.trip && current.trip.route) || Object.keys(CITY)).map(c => [c, CITY[c]])].map(([v, l]) => `<option value="${v}"${opCity(o) === v ? ' selected' : ''}>${l}</option>`).join('')}</select><input data-of="item" value="${esc(o.item)}"${ro}></div></td><td><input data-of="detail" value="${esc(o.detail)}"${ro}></td>
+        <td><div class="op-vw"><input data-of="vendor" list="dl-op-${i}" value="${esc(o.vendor)}" placeholder="업체명">${opsLink(o) ? `<a class="op-link" href="${esc(opsLink(o))}" target="_blank" rel="noopener" title="새 창에서 열기">↗</a>` : ''}</div>${opsVendorList(o, i)}${vendorContact(o) ? `<div class="hint">${esc(vendorContact(o))}</div>` : ''}</td>
+        <td><select data-of="status">${OPS_ST.map(([v, l]) => `<option value="${v}"${o.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td><input data-of="ref" value="${esc(o.ref)}" placeholder="예약번호 등"></td><td><button class="btn ghost sm" data-odel="${i}">✕</button></td></tr>`;
+}
+function opsGroup(cat, rows) {
+  const rs = rows.filter(x => x.o.cat === cat); if (!rs.length) return '';
+  const route = (current.trip && current.trip.route) || ['seoul', 'jeju', 'busan'], rank = c => { const k = route.indexOf(c); return k < 0 ? 9 : k; };
+  const cities = [...new Set(rs.map(x => opCity(x.o)).filter(Boolean))].sort((a, b) => rank(a) - rank(b));
+  const cur = opsCity[cat] === 'all' || cities.includes(opsCity[cat]) ? opsCity[cat] : cities.length > 1 ? cities[0] : 'all';
+  const vis = cur === 'all' ? rs : rs.filter(x => opCity(x.o) === cur || !opCity(x.o)), dn = rs.filter(x => ['ok', 'na'].includes(x.o.status)).length;
+  const chip = (v, l, n) => `<button type="button" class="opc" data-opc="${cat}|${v}" aria-pressed="${cur === v}">${l} <em>${n}</em></button>`;
+  return `<div class="opg"><div class="opg-h"><b>${OPS_CAT[cat]}</b><span class="hint">완료 ${dn} / ${rs.length}</span><i class="sp"></i>${cities.length > 1 ? `<div class="opg-c">${cities.map(c => chip(c, CITY[c], rs.filter(x => opCity(x.o) === c).length)).join('')}${chip('all', '전체', rs.length)}</div>` : cities.length ? `<span class="opc solo">${CITY[cities[0]]}</span>` : ''}</div>
+    <div style="overflow:auto"><table class="ht ops"><thead><tr><th>구분</th><th>날짜</th><th>항목</th><th>내용</th><th>업체·담당</th><th>상태</th><th>확정번호·메모</th><th></th></tr></thead><tbody>${vis.map(({ o, i }) => opsRow(o, i)).join('')}</tbody></table></div></div>`;
+}
+$('wf').addEventListener('change', e => { const el = e.target; if (!['area', 'cat'].includes(el.dataset.of)) return; const o = wf.ops[+el.closest('tr').dataset.o]; o[el.dataset.of] = el.value; if (el.dataset.of === 'area' && el.value) { const g = o.cat; opsCity[g] = el.value; } const sv = $('w-saved').textContent; drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; });
+$('wf').addEventListener('click', e => { const b = e.target.closest('[data-opc]'); if (!b) return; const [c, v] = b.dataset.opc.split('|'); opsCity[c] = v; const sv = $('w-saved') ? $('w-saved').textContent : ''; drawWorkflow(); if ($('w-saved')) $('w-saved').textContent = sv; });
 function opsSection() {
+  opsSyncHotels();
   const ops = wf.ops || [], done = ops.filter(o => o.status === 'ok' || o.status === 'na').length;
   const order = Object.keys(OPS_CAT);
-  const rows = ops.map((o, i) => ({ o, i })).sort((a, b) => order.indexOf(a.o.cat) - order.indexOf(b.o.cat) || (a.o.date || '9').localeCompare(b.o.date || '9'));
-  return `<div class="step"><h3>③ 수배·예약 <span class="hint" style="font-weight:600">${ops.length ? `완료 ${done} / ${ops.length}` : ''}</span></h3>
-    ${ops.length ? `<div style="overflow:auto"><table class="ht ops"><thead><tr><th>구분</th><th>날짜</th><th>항목</th><th>내용</th><th>업체·담당</th><th>상태</th><th>확정번호·메모</th><th></th></tr></thead><tbody>
-      ${rows.map(({ o, i }) => `<tr data-o="${i}" class="op-${o.status}"><td><select data-of="cat">${order.map(c => `<option value="${c}"${o.cat === c ? ' selected' : ''}>${OPS_CAT[c]}</option>`).join('')}</select></td>
-        <td><input data-of="date" type="date" value="${o.date}"></td><td><input data-of="item" value="${esc(o.item)}"></td><td><input data-of="detail" value="${esc(o.detail)}"></td>
-        <td><input data-of="vendor" list="dl-op-${i}" value="${esc(o.vendor)}" placeholder="업체명">${opsVendorList(o, i)}${vendorContact(o) ? `<div class="hint">${esc(vendorContact(o))}</div>` : ''}</td>
-        <td><select data-of="status">${OPS_ST.map(([v, l]) => `<option value="${v}"${o.status === v ? ' selected' : ''}>${l}</option>`).join('')}</select></td>
-        <td><input data-of="ref" value="${esc(o.ref)}" placeholder="예약번호 등"></td><td><button class="btn ghost sm" data-odel="${i}">✕</button></td></tr>`).join('')}
-    </tbody></table></div>` : '<p class="hint">일정·호텔 기준으로 수배 항목 목록 생성. 호텔은 ②단계에서 견적 포함한 호텔만 반영.</p>'}
+  const rows = ops.map((o, i) => ({ o, i })).filter(x => !(x.o.cat === 'vehicle' && x.o.city)).sort((a, b) => order.indexOf(a.o.cat) - order.indexOf(b.o.cat) || (a.o.date || '9').localeCompare(b.o.date || '9'));
+  return `<div class="step" data-wk="ops"><h3>수배·예약 <span class="hint" style="font-weight:600">${ops.length ? `완료 ${done} / ${ops.length}` : ''}</span></h3>
+    ${vehBlock(ops)}
+    ${rows.length ? OPS_GROUPS.map(c => opsGroup(c, rows)).join('') : ops.length ? '' : '<p class="hint">일정·호텔 기준으로 수배 항목 목록 생성(차량은 도시별). 호텔은 Hotel 탭에서 견적 포함한 호텔만 반영.</p>'}
     <div class="acts">
       <button class="btn${ops.length ? ' ghost' : ''}" id="o-build">${ops.length ? '일정에서 다시 만들기' : '수배 목록 만들기'}</button>
-      ${ops.length ? `<button class="btn ghost" id="o-veh">차량 일정표 복사 (전체)</button>${vehCities(current).length > 1 ? vehCities(current).map(c => `<button class="btn ghost" data-veh="${c}">차량 일정표 · ${CITY[c]}</button>`).join('') : ''}` + '<button class="btn ghost" id="o-add">+ 항목 추가</button><button class="btn ghost" id="o-print">수배 목록 인쇄</button><button class="btn" id="o-save">저장</button>' : ''}
+      ${ops.length ? `<button class="btn ghost" id="o-veh">차량 일정표 복사 (전체)</button>` + '<button class="btn ghost" id="o-add">+ 항목 추가</button><button class="btn ghost" id="o-print">수배 목록 인쇄</button><button class="btn" id="o-save">저장</button>' : ''}
     </div></div>`;
+}
+// vehicle plan chips: the first edit copies the worked-out plan into the vehicle line (op.plan), then staff change it freely
+function vehPlanOf(i) { const o = wf.ops[i]; if (!Array.isArray(o.plan)) o.plan = vehicleSchedule(current).filter(x => x.city === o.city).map(x => ({ day: x.day, text: x.text })); return o.plan; }
+$('wf').addEventListener('input', e => { const d = e.target.dataset; if (d.vpt) { const [i, k] = d.vpt.split('|').map(Number); vehPlanOf(i)[k].text = e.target.value; $('w-saved').textContent = '저장 안 됨'; } });
+$('wf').addEventListener('change', e => { const d = e.target.dataset; if (d.vpd) { const [i, k] = d.vpd.split('|').map(Number), pl = vehPlanOf(i); pl[k].day = +e.target.value; pl.sort((a, b) => a.day - b.day); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; } });
+$('wf').addEventListener('click', e => {
+  const b = e.target.closest('[data-vpx], [data-vpa], [data-vpr]'); if (!b) return;
+  if (b.dataset.vpx) { const [i, k] = b.dataset.vpx.split('|').map(Number); vehPlanOf(i).splice(k, 1); }
+  else if (b.dataset.vpa) { const pl = vehPlanOf(+b.dataset.vpa); pl.push({ day: pl.length ? pl[pl.length - 1].day : 1, text: '' }); }
+  else if (b.dataset.vpr) delete wf.ops[+b.dataset.vpr].plan;
+  drawWorkflow(); $('w-saved').textContent = '저장 안 됨';
+});
+// booking link beside the vendor box: a URL typed as the vendor, else a search page for flights / KTX / known tickets
+const AP_CODE = { 김포: 'GMP', 제주: 'CJU', 김해: 'PUS', 인천: 'ICN' };
+function opsLink(o) {
+  const v = String(o.vendor || '').trim();
+  if (/^https?:\/\//i.test(v)) return v;
+  const it = String(o.item || ''), m = it.match(/국내선 (\S+) → (\S+)/);
+  if (m && AP_CODE[m[1]] && AP_CODE[m[2]]) { const n = parseInt(o.detail) || 1, d = String(o.date || '').replace(/-/g, ''); return `https://flight.naver.com/flights/domestic/${AP_CODE[m[1]]}-${AP_CODE[m[2]]}${d ? '-' + d : ''}?adult=${n}&fareType=Y`; }
+  if (/^KTX/.test(it)) return 'https://www.letskorail.com/';
+  if (/산천어/.test(it)) return 'https://www.narafestival.com/';
+  return '';
 }
 function opsPrint() {
   const r = current, ops = (wf.ops || []).slice().sort((a, b) => (a.date || '9').localeCompare(b.date || '9'));
   $('qsheet').innerHTML = `<div class="qh"><img src="${document.querySelector('header img.logo').src}" alt=""><div style="text-align:right"><h2>수배 목록</h2><div class="sub">${esc(r.contact.company || r.contact.name)} · ${r.trip.nights}박 ${r.trip.days}일 · ${r.options.pax}명 · 요청번호 ${r.id}</div></div></div>
     <table><tr><th>날짜</th><th>구분</th><th>항목</th><th>내용</th><th>업체</th><th>상태</th><th>확정번호·메모</th></tr>
     ${ops.map(o => `<tr><td>${o.date ? fmt(o.date) : '–'}</td><td>${OPS_CAT[o.cat]}</td><td>${esc(o.item)}</td><td>${esc(o.detail)}</td><td>${esc(o.vendor)}</td><td>${(OPS_ST.find(s => s[0] === o.status) || [])[1]}</td><td>${esc(o.ref)}</td></tr>`).join('')}</table>
-    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${headsR(r)}명)</h3><table><tr><th>날짜</th><th>Day</th><th>도시</th><th>내용</th></tr>${vehicleSchedule(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${CITY[x.city]}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
+    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${headsR(r)}명)</h3><table><tr><th>날짜</th><th>Day</th><th>도시</th><th>내용</th></tr>${vehLines(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${CITY[x.city]}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
   document.body.classList.add('printing-quote');
   setTimeout(() => { window.print(); document.body.classList.remove('printing-quote'); }, 50);
 }
@@ -1721,6 +2226,7 @@ $('wf').addEventListener('toggle', e => { if (e.target.id === 'w-cost') costOpen
 let rDraft = null, rResetArmed = 0;
 const MARGIN_NAME = steps => steps.map((n, i) => `${i ? steps[i - 1] + 1 : 1}${n > (i ? steps[i - 1] + 1 : 1) ? '–' + n : ''}명`);
 function showTab(tab) {
+  if (tab !== 'list' || $('detail').style.display === 'none') wkLeave(tab === 'builder');
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   mineOnly = tab === 'mine'; if (mineOnly) tab = 'list';
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === (mineOnly ? 'mine' : tab)));
@@ -1809,53 +2315,76 @@ let bSel = bNew(), bEdits = {}, bOrder = {}, bFrom = '', bFromReq = null, bRates
 // hotels night by night: bHotels[i] = null or { name, star, rooms: [{ type, qty, net }] } (net = KRW per room-night incl. tax)
 let bHotels = [], bArrival = '', bMarkup = 0, bDirAsked = false, bTitle = '', bFold = {}, bAddOpen = {};
 // ---- buyer-facing quotation (same layout in the admin PDF and the buyer's "My quotations"); never shows costs or margins
-const QD_CSS = `.hq-doc{--plum:#2A1240;--gold:#9A7420;--line:#E4DCCB;font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;color:#2A1240;background:#FFFFFF;line-height:1.5;font-size:14px;max-width:880px;margin:0 auto;padding:36px 40px;box-sizing:border-box}
-.hq-doc *{box-sizing:border-box}.hq-doc h1,.hq-doc h2,.hq-doc h3{margin:0;letter-spacing:-.01em}
-.hq-doc .qd-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--plum);padding-bottom:16px}
-.hq-doc .qd-brand b{display:block;font-size:22px;letter-spacing:.14em}.hq-doc .qd-brand span{font-size:10px;letter-spacing:.42em;color:var(--gold);font-weight:700}
-.hq-doc .qd-ref{text-align:right;font-size:12px;color:#5B4A6E}.hq-doc .qd-ref b{display:block;font-size:15px;color:var(--plum);letter-spacing:.04em}
-.hq-doc .qd-top{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:22px;align-items:start}
-.hq-doc .qd-ttl h1{font-size:26px;line-height:1.15}.hq-doc .qd-ttl .qd-rt{color:#5B4A6E;margin-top:4px}.hq-doc .qd-ttl .qd-for{margin-top:10px;font-size:13px}
-.hq-doc .qd-pbox{border:1.5px solid var(--plum);border-radius:12px;padding:14px 16px}.hq-doc .qd-pbox .qd-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}
-.hq-doc .qd-pbox .qd-big{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-weight:800;font-size:15px}.hq-doc .qd-pbox .qd-big b{font-size:22px;color:var(--gold)}
-.hq-doc .qd-pbox .qd-row span:last-child,.hq-doc .qd-big b{white-space:nowrap}.hq-doc .qd-pbox s{color:#8A7C99;margin-right:4px}.hq-doc .qd-pbox .qd-tot{font-size:12px;color:#5B4A6E;margin-top:4px}
-.hq-doc h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:26px 0 8px}
-.hq-doc table{width:100%;border-collapse:collapse;font-size:13px}.hq-doc th,.hq-doc td{text-align:left;vertical-align:top;padding:7px 10px 7px 0;border-top:1px solid var(--line)}
-.hq-doc th{width:30%;color:#5B4A6E;font-weight:600}.hq-doc .qd-ht th{width:auto}
-.hq-doc .qd-day{display:grid;grid-template-columns:62px minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);break-inside:avoid}
-.hq-doc .qd-day .qd-n{font-weight:800;font-size:12px;color:var(--gold);letter-spacing:.08em}.hq-doc .qd-day .qd-n b{display:block;font-size:24px;color:var(--plum);letter-spacing:0}
-.hq-doc .qd-day h3{font-size:16px}.hq-doc .qd-day .qd-rt{font-size:12px;color:#6C5D7E}.hq-doc .qd-day ul{margin:6px 0 0;padding-left:18px}.hq-doc .qd-day li{margin:2px 0}
-.hq-doc .qd-day .qd-x{font-size:12px;margin-top:6px;color:#4B3A5C}.hq-doc .qd-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}.hq-doc .qd-cols ul{margin:0;padding-left:18px}
-.hq-doc .qd-note{background:#F6F1E7;border-radius:10px;padding:12px 14px;white-space:pre-line}
-.hq-doc .qd-ft{margin-top:28px;border-top:2px solid var(--plum);padding-top:12px;font-size:11px;color:#5B4A6E;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media (max-width:640px){.hq-doc{padding:22px 16px}.hq-doc .qd-top,.hq-doc .qd-cols{grid-template-columns:1fr}}
-@media print{.hq-doc{padding:0;max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table{break-inside:avoid}}`;
+window.QD_LOGO = '../logo.png';
+const QD_CSS = `.hq-doc{--plum:#2A1240;--plum2:#4A2A73;--gold:#A87A24;--gold2:#C9A24B;--gsoft:#F7EFDF;--line:#E7E1EE;--mut:#6B6178;font-family:"SUIT Variable","Pretendard Variable",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1F1530;background:#FFFFFF;line-height:1.55;font-size:13.5px;max-width:880px;margin:0 auto;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.hq-doc *{box-sizing:border-box}.hq-doc h1,.hq-doc h2,.hq-doc h3{margin:0}
+.hq-doc .qd-hd{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:26px 40px 18px}
+.hq-doc .qd-hd img{height:46px;width:auto;display:block}
+.hq-doc .qd-ref{text-align:right;font-size:11.5px;color:var(--mut)}.hq-doc .qd-ref span{display:block;font-family:"ZEN SERIF","Pretendard Variable",Georgia,serif;font-size:22px;font-weight:400;line-height:1.1;letter-spacing:.01em;color:var(--gold)}.hq-doc .qd-ref b{display:block;font-size:14px;color:var(--plum);letter-spacing:.03em;margin:2px 0}
+.hq-doc .qd-hero{background:linear-gradient(120deg,var(--plum) 0%,var(--plum2) 100%);color:#fff;padding:28px 40px;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:28px;align-items:center;position:relative}
+.hq-doc .qd-hero:after{content:"";position:absolute;left:40px;right:40px;bottom:0;height:3px;background:linear-gradient(90deg,var(--gold2),transparent)}
+.hq-doc .qd-k{font-size:10px;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--gold2)}
+.hq-doc .qd-hero h1{font-family:"ZEN SERIF","Pretendard Variable",Georgia,serif;font-weight:400;font-size:31px;line-height:1.15;margin-top:8px}
+.hq-doc .qd-hero .qd-rt{color:#D9CCEA;margin-top:8px;font-size:13px}.hq-doc .qd-hero .qd-for{margin-top:14px;font-size:12.5px;color:#EDE6F6}.hq-doc .qd-hero .qd-for b{color:#fff}
+.hq-doc .qd-pbox{background:#fff;color:#1F1530;border-radius:14px;padding:16px 18px;box-shadow:0 10px 30px rgba(10,0,30,.25)}
+.hq-doc .qd-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;color:var(--mut)}.hq-doc .qd-row span:last-child{color:#1F1530;font-weight:700;white-space:nowrap}
+.hq-doc .qd-pbox s{color:#9C90AA;font-weight:400;margin-right:5px}
+.hq-doc .qd-row small{font-size:10.5px;color:#9C90AA;margin-left:3px}.hq-doc .qd-row .qd-sep{font-weight:500!important;font-style:italic;color:var(--mut)!important}
+.hq-doc .qd-big{margin:10px -6px 0;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#FBF6EA,#F4ECFA);border:1px solid #E8D9B0}.hq-doc .qd-big span:first-child{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--plum)}.hq-doc .qd-big span small{font-size:10px;letter-spacing:.04em;text-transform:none;font-weight:600;color:#8B7FA0;margin-left:4px}
+.hq-doc .qd-bg2{margin-top:4px}.hq-doc .qd-bg2>div{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0}.hq-doc .qd-bg2>div+div{border-top:1px solid #E8D9B0}
+.hq-doc .qd-bg2 i{font-style:normal;font-size:11px;font-weight:600;color:#8B7FA0;white-space:nowrap}
+.hq-doc .qd-big b{font-family:"ZEN SERIF","Pretendard Variable",Georgia,serif;font-weight:400;font-size:28px;line-height:1.15;color:var(--gold);white-space:nowrap}
+.hq-doc .qd-body{padding:6px 40px 30px}
+.hq-doc h2{display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:28px 0 12px}.hq-doc h2:after{content:"";flex:1;height:1px;background:var(--line)}
+.hq-doc .qd-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hq-doc .qd-fact{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#FCFBFE}.hq-doc .qd-fact span{display:block;font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}.hq-doc .qd-fact b{display:block;font-size:13px;font-weight:700;color:var(--plum);margin-top:3px;line-height:1.35}
+.hq-doc table{width:100%;border-collapse:collapse;font-size:12.5px}.hq-doc th,.hq-doc td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+.hq-doc th{font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);background:#FAF8FC}.hq-doc td b{color:var(--plum)}
+.hq-doc .qd-day{display:grid;grid-template-columns:70px minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line);break-inside:avoid}
+.hq-doc .qd-n{font-size:9.5px;font-weight:800;letter-spacing:.2em;color:var(--gold)}.hq-doc .qd-n b{display:block;font-family:"ZEN SERIF","Pretendard Variable",Georgia,serif;font-weight:400;font-size:34px;line-height:1;color:var(--plum);letter-spacing:0;margin:3px 0 4px}.hq-doc .qd-n em{font-style:normal;font-size:10.5px;letter-spacing:0;color:var(--mut);font-weight:600}
+.hq-doc .qd-day h3{font-size:15.5px;font-weight:800;color:var(--plum)}.hq-doc .qd-day .qd-rt{font-size:11.5px;color:var(--mut);margin-top:1px}
+.hq-doc .qd-day ul{margin:8px 0 0;padding:0 0 0 2px;list-style:none;border-left:2px solid var(--line)}.hq-doc .qd-day li{position:relative;padding:2px 0 2px 16px}.hq-doc .qd-day li:before{content:"";position:absolute;left:-5px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--gold2)}
+.hq-doc .qd-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hq-doc .qd-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--gsoft);color:#7A5714}.hq-doc .qd-tag.exp{background:#F1ECF9;color:var(--plum2)}
+.hq-doc .qd-cols{display:grid;grid-template-columns:1fr 1fr;gap:28px}.hq-doc .qd-cols ul{margin:0;padding:0;list-style:none}.hq-doc .qd-cols li{position:relative;padding:3px 0 3px 22px}
+.hq-doc .qd-in li:before{content:"✓";position:absolute;left:0;color:var(--gold);font-weight:800}.hq-doc .qd-out li:before{content:"–";position:absolute;left:2px;color:#9C90AA;font-weight:800}.hq-doc .qd-out li{color:var(--mut)}
+.hq-doc .qd-star{color:var(--gold2);font-size:12px;letter-spacing:1px;margin-top:2px}.hq-doc .qd-star span{color:var(--mut);font-size:11px;letter-spacing:0;margin-left:4px}
+.hq-doc .qd-note{background:var(--gsoft);border-left:3px solid var(--gold2);border-radius:0 10px 10px 0;padding:12px 16px;white-space:pre-line}
+.hq-doc .qd-ft{margin-top:30px;background:var(--plum);color:#D9CCEA;border-radius:12px;padding:14px 18px;font-size:11px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.hq-doc .qd-ft b{color:#fff}
+@media (max-width:640px){.hq-doc .qd-hd,.hq-doc .qd-hero,.hq-doc .qd-body{padding-left:18px;padding-right:18px}.hq-doc .qd-hero,.hq-doc .qd-cols{grid-template-columns:1fr}.hq-doc .qd-facts{grid-template-columns:1fr 1fr}}
+@media print{.hq-doc{max-width:none}.hq-doc .qd-day,.hq-doc .qd-pbox,.hq-doc table,.hq-doc .qd-facts{break-inside:avoid}}`;
 function quoteDoc(s) {
   const e = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const usd = n => 'US$ ' + Number(n || 0).toLocaleString('en-US');
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const dt = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${+d} ${MON[+m - 1]} ${y}`; };
   const p = s.price || {}, g = s.group || {}, tr = s.trip || {}, st = s.style || {};
-  const per = g.foc ? 'paying guest' : 'guest';
-  const rows = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)} (${tr.nights} nights)` : `${tr.nights} nights / ${tr.days} days · dates to be confirmed`],
-    ['Group', `${g.pax} paying guest${g.pax > 1 ? 's' : ''}${g.foc ? ` + ${g.foc} FOC (free of charge)` : ''}${g.country ? ' from ' + g.country : ''}`],
-    ['Style', [st.tier, st.theme, st.season].filter(Boolean).join(' · ')], ['Transport', s.vehicle]];
+  const per = g.foc ? 'paying guest' : 'guest', cap = x => String(x || '').replace(/^\w/, c => c.toUpperCase());
+  const facts = [['Travel dates', tr.arrival ? `${dt(tr.arrival)} – ${dt(tr.departure)}` : 'To be confirmed'], ['Duration', `${tr.nights} nights / ${tr.days} days`],
+    ['Group', `${g.pax} PAX${g.foc ? ` + ${g.foc} FOC` : ''}${g.country ? ' · ' + g.country : ''}`]];
+  const logo = (typeof window !== 'undefined' && window.QD_LOGO) || 'logo.png';
+  const sv = s.services || [], svcSum = k => sv.filter(x => x.type === k).reduce((a, x) => a + (x.amount || 0), 0);
+  const svcCats = [['veh', 'Vehicle Fee'], ['guide', 'Guide Fee'], ['flight', 'Flight · KTX Fee']].filter(([k]) => sv.some(x => x.type === k));
+  const nCat = svcCats.length + (p.hotelPerPerson ? 1 : 0), bigLbl = p.landPerPerson ? 'Tour Fee' : nCat > 1 ? 'Total Fee' : svcCats.length ? svcCats[0][1] : 'Hotel Fee';
   return `<div class="hq-doc">
-<div class="qd-hd"><div class="qd-brand"><b>HAKEEM</b><span>TRAVEL KOREA</span></div><div class="qd-ref"><b>QUOTATION ${e(s.ref || '')}</b>${s.draft ? 'Draft · ' : ''}${dt((s.sentAt || '').slice(0, 10))}</div></div>
-<div class="qd-top"><div class="qd-ttl"><h1>${e(s.title)}</h1><div class="qd-rt">${e(tr.cities || '')}</div>${s.buyer ? `<div class="qd-for">Prepared for <b>${e(s.buyer.name)}</b>${s.buyer.company ? ', ' + e(s.buyer.company) : ''}${s.buyer.code ? ` (${e(s.buyer.code)})` : ''}</div>` : ''}</div>
-<div class="qd-pbox"><div class="qd-row"><span>Land fee per ${per}</span><span>${p.landWas ? `<s>${usd(p.landWas)}</s>` : ''}${usd(p.landPerPerson)}</span></div>
-${p.hotelPerPerson ? `<div class="qd-row"><span>Hotels per ${per}</span><span>${usd(p.hotelPerPerson)}</span></div>` : ''}
-<div class="qd-row qd-big"><span>Total per ${per}</span><b>${usd(p.totalPerPerson)}</b></div>
-<div class="qd-tot">Total for ${p.pax} paying guest${p.pax > 1 ? 's' : ''}${p.foc ? ` + ${p.foc} FOC` : ''}: <b>${usd(p.total)}</b>${p.hotelPerPerson ? '' : ' · hotels excluded'}</div></div></div>
-<h2>Trip details</h2><table>${rows.filter(r => r[1]).map(([k, v]) => `<tr><th>${k}</th><td>${e(v)}</td></tr>`).join('')}</table>
-${(s.hotels || []).length ? `<h2>Hotels</h2><table class="qd-ht"><tr><th>City</th><th>Dates</th><th>Hotel</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td>${e(h.city)}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : ''} (${h.nights} night${h.nights > 1 ? 's' : ''})</td><td>${e(h.name)}</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
-<h2>Day-by-day itinerary</h2>${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? e(dt(d.date).replace(/ \d{4}$/, '')) : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
+<div class="qd-hd"><img src="${e(logo)}" alt="Hakeem Travel Korea"><div class="qd-ref"><span>Quotation</span><b>${e(s.ref || '')}</b>${s.draft ? 'Draft · ' : ''}${dt((s.sentAt || '').slice(0, 10))}</div></div>
+<div class="qd-hero"><div><div class="qd-k">Hakeem Travel Korea${s.docKind && s.docKind !== 'Private tour of Korea' ? ' · ' + e(s.docKind) : ''}</div><h1>${e(s.title)}</h1><div class="qd-rt">${e(tr.cities || '')}</div>${s.buyer ? `<div class="qd-for">Prepared for <b>${e(s.buyer.name)}</b>${s.buyer.company ? ', ' + e(s.buyer.company) : ''}${s.buyer.code ? ` · ${e(s.buyer.code)}` : ''}</div>` : ''}</div>
+<div class="qd-pbox">${p.landPerPerson ? `<div class="qd-row"><span>Land Fee <small>per ${per}</small></span><span>${p.landWas ? `<s>${usd(p.landWas)}</s>` : ''}${usd(p.landPerPerson)}</span></div>` : ''}
+${p.hotelPerPerson && (p.landPerPerson || p.servicesTotal) ? `<div class="qd-row"><span>Hotel Fee <small>per ${per}</small></span><span>${usd(p.hotelPerPerson)}</span></div>` : p.landPerPerson ? `<div class="qd-row"><span>Hotel Fee</span><span class="qd-sep">Quoted separately</span></div>` : ''}
+${svcCats.length > 1 || (svcCats.length && p.hotelPerPerson) ? svcCats.map(([k, l]) => `<div class="qd-row"><span>${l} <small>per ${per}</small></span><span>${usd(Math.ceil(svcSum(k) / Math.max(1, p.pax || 1)))}</span></div>`).join('') : ''}
+<div class="qd-big"><span>${bigLbl}${p.landPerPerson && !p.hotelPerPerson ? ' <small>excl. hotels</small>' : ''}</span>
+<div class="qd-bg2"><div><i>Per ${per}</i><b>${usd(p.totalPerPerson)}</b></div><div><i>Total · ${p.pax} PAX${p.foc ? ` + ${p.foc} FOC` : ''}</i><b>${usd(p.total)}</b></div></div></div></div></div>
+<div class="qd-body">
+<h2>Trip details</h2><div class="qd-facts">${facts.filter(r => r[1]).map(([k, v]) => `<div class="qd-fact"><span>${k}</span><b>${e(v)}</b></div>`).join('')}</div>
+${s.vehicle ? `<div class="qd-tags" style="margin-top:10px"><span class="qd-tag exp">Transport: ${e(s.vehicle)}</span></div>` : ''}
+${(s.hotels || []).length ? `<h2>Hotels</h2><table><tr><th>City</th><th>Hotel</th><th>Check-in – Check-out</th><th>Stay</th><th>Rooms</th></tr>${s.hotels.map(h => `<tr><td><b>${e(h.city)}</b></td><td><b>${e(h.name)}</b>${+h.star ? `<div class="qd-star">${'★'.repeat(+h.star)} <span>${+h.star}-star</span></div>` : ''}</td><td>${h.checkIn ? `${e(dt(h.checkIn))} – ${e(dt(h.checkOut))}` : 'To be confirmed'}</td><td style="white-space:nowrap">${h.nights} night${h.nights > 1 ? 's' : ''} / ${h.nights + 1} days</td><td>${e(h.rooms)}</td></tr>`).join('')}</table>` : ''}
+${sv.length ? `<h2>Services</h2><table><tr><th>Date</th><th>Service</th><th>City</th><th style="text-align:right">Rate</th><th style="text-align:right">Qty</th><th style="text-align:right">Amount</th></tr>${sv.map(x => `<tr><td>${x.date ? e(dt(x.date)) : x.day ? 'Day ' + x.day : '–'}</td><td><b>${e(x.label)}</b></td><td>${e(x.city || '')}</td><td style="text-align:right">${usd(x.unit)}</td><td style="text-align:right">${x.qty}${x.per === 'pax' ? ' pax' : x.per === 'day' ? (/extra/i.test(x.label) ? ' hrs' : ' days') : ' veh.'}</td><td style="text-align:right"><b>${usd(x.amount)}</b></td></tr>`).join('')}<tr><td colspan="5" style="text-align:right"><b>Services total</b></td><td style="text-align:right"><b>${usd(p.servicesTotal || sv.reduce((a, x) => a + x.amount, 0))}</b></td></tr></table>` : ''}
+${(s.itinerary || []).length ? '<h2>Day-by-day itinerary</h2>' : ''}${(s.itinerary || []).map(d => `<div class="qd-day"><div class="qd-n">DAY<b>${d.day}</b>${d.date ? `<em>${e(dt(d.date).replace(/ \d{4}$/, ''))}</em>` : ''}</div><div><h3>${e(d.title)}</h3>${d.route ? `<div class="qd-rt">${e(d.route)}</div>` : ''}
 ${(d.stops || []).length || (d.adds || []).length ? `<ul>${[...(d.stops || []), ...(d.adds || [])].map(x => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
-${(d.extras || []).length ? `<div class="qd-x">Experience: ${e(d.extras.join(', '))}</div>` : ''}${(d.meals || []).length ? `<div class="qd-x">Meals: ${e(d.meals.join(' & '))} at local restaurants</div>` : ''}</div></div>`).join('')}
-<div class="qd-cols"><div><h2>Included</h2><ul>${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul>${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>
+${(d.extras || []).length || (d.meals || []).length ? `<div class="qd-tags">${(d.extras || []).map(x => `<span class="qd-tag exp">${e(x)}</span>`).join('')}${(d.meals || []).length ? `<span class="qd-tag">${e(d.meals.join(' & '))} at local restaurants</span>` : ''}</div>` : ''}</div></div>`).join('')}
+${(s.included || []).length || (s.excluded || []).length ? `<div class="qd-cols"><div><h2>Included</h2><ul class="qd-in">${(s.included || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div><div><h2>Not included</h2><ul class="qd-out">${(s.excluded || []).map(x => `<li>${e(x)}</li>`).join('')}</ul></div></div>` : ''}
 ${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` : ''}
-<div class="qd-ft"><span>Prices in US dollars for private touring, confirmed at booking.</span><span>Hakeem Travel Korea · contact@hakeemtravel.com · WhatsApp +82 10 5426 7112</span></div>
-</div>`;
+<div class="qd-ft"><span>Prices in US dollars for private touring, confirmed at booking.</span><span><b>Hakeem Travel Korea</b> · contact@hakeemtravel.com · WhatsApp +82 10 5426 7112</span></div>
+</div></div>`;
 }
 
 const B_HAS_FOC = focOf({ foc: 1, pax: 1 }) === 1;
@@ -1875,9 +2404,18 @@ function qdShow(snap) {
   ov.hidden = false; document.body.classList.add('qd-on'); ov.scrollTop = 0;
 }
 async function bEnsureSaved() { if (bFrom) await bSaveToRequest(); else await bSaveNew(); return bFrom; }
-async function bPdf() {
+// one buyer document, three versions: tour (land + hotel), land fee only, hotel fee only
+function qdMode(s, mode) {
+  s = JSON.parse(JSON.stringify(s)); const p = s.price || (s.price = {}), n = p.pax || 1;
+  if (mode === 'land') { s.docKind = 'Land quotation'; p.hotelPerPerson = 0; p.totalPerPerson = p.landPerPerson; p.total = p.landPerPerson * n; s.hotels = []; if (!(s.excluded || []).some(x => /hotel/i.test(x))) (s.excluded ||= []).unshift('Hotel accommodation (quoted separately)'); }
+  else if (mode === 'hotel') { s.docKind = 'Hotel quotation'; p.landPerPerson = 0; p.landWas = 0; p.totalPerPerson = p.hotelPerPerson || 0; p.total = (p.hotelPerPerson || 0) * n; s.itinerary = []; s.included = []; s.excluded = []; s.vehicle = ''; }
+  else s.docKind = s.docKind || 'Private tour of Korea';
+  return s;
+}
+document.addEventListener('click', e => { const m = $('bpdf-m'); if (m && !m.hidden && !e.composedPath().some(x => x.classList && x.classList.contains('bpdf-w'))) m.hidden = true; });
+async function bPdf(mode) {
   const id = await bEnsureSaved(); if (!id) return;
-  try { const d = await api('/api/admin/send?id=' + encodeURIComponent(id), { method: 'POST', body: JSON.stringify({ dry: true, note: bNote }) }); qdShow(d.quote); }
+  try { const d = await api('/api/admin/send?id=' + encodeURIComponent(id), { method: 'POST', body: JSON.stringify({ dry: true, note: bNote }) }); qdShow(qdMode(d.quote, mode || 'tour')); }
   catch (err) { alertBox(KERR(err)); }
 }
 async function bSend() {
@@ -1937,13 +2475,18 @@ function bStays(days) {
 }
 const bStayHotel = s => bHotels[s.from] || null;
 function bSetStay(s, h) { for (let k = s.from; k <= s.to; k++) bHotels[k] = h ? JSON.parse(JSON.stringify(h)) : null; }
+const bStayStar = {};
+const bReqStar = () => { const m = String(((bFromReq && bFromReq.hotel) || [])[0] || '').match(/[345]/); return m ? m[0] : ''; };
+const bStayStarOf = (s, si) => { const h = bStayHotel(s); return h && h.st !== undefined ? h.st : bStayStar[si] !== undefined ? bStayStar[si] : (h && h.star ? String(h.star) : bReqStar()); };
+const bReqRooms = () => { const r = ((bFromReq && bFromReq.rooms) || []).filter(x => x.qty > 0); return r.length ? r.map(x => ({ type: x.type, qty: x.qty, net: 0 })) : [{ type: 'TWN', qty: Math.ceil(bHeads() / 2), net: 0 }]; };
 function bStayHotelHTML(s, si) {
   const h = bStayHotel(s), n = s.to - s.from + 1, date = bNightDate(s.from);
   const est = h && h.name && date ? hotelRateEstimate(s.city, h.star || bStarOf(h.name), date, addDays(date, n)) : null;
   const sub = h ? h.rooms.reduce((a, x) => a + (x.qty | 0) * (+x.net || 0), 0) : 0, x = h && h.name && dirHotel(h.name);
   const rooms = h ? h.rooms.map((x, j) => `<div class="bhr"><select data-bhr="${si}|${j}|type">${opt(ROOMS, x.type)}</select><input type="number" min="0" max="60" data-bhr="${si}|${j}|qty" value="${x.qty}">실 × 1박 ₩<input class="net" type="number" min="0" step="1000" data-bhr="${si}|${j}|net" value="${x.net || ''}" placeholder="원가 (세금 포함)"><button class="btn ghost sm" data-bhx="${si}|${j}" title="이 객실 빼기">✕</button></div>`).join('') : '';
   return `<div class="bhot"><div class="bhh"><span class="hint">${date ? `${date.slice(5).replace('-', '/')}–${addDays(date, n).slice(5).replace('-', '/')}` : `Day ${s.from + 1}–${s.to + 2}`}</span>
-      <input class="bhn" list="b-hotel-${s.city}" data-bhn="${si}" value="${esc(h ? h.name : '')}" placeholder="호텔 (업체 목록에서 고르거나 이름 입력)">
+      <select class="bhst" data-bhst="${si}" aria-label="Star">${[['', 'All'], ['3', '3★'], ['4', '4★'], ['5', '5★']].map(([v, l]) => `<option value="${v}"${bStayStarOf(s, si) === v ? ' selected' : ''}>${l}</option>`).join('')}</select>
+      <input class="bhn" list="b-hotel-${s.city}${bStayStarOf(s, si) ? '-' + bStayStarOf(s, si) : ''}" data-bhn="${si}" value="${esc(h ? h.name : '')}" placeholder="${bStayStarOf(s, si) ? bStayStarOf(s, si) + '★ ' : ''}호텔 (업체 목록에서 고르거나 이름 입력)">
       ${h ? `<button class="btn sm" data-bhmail="${si}"${x && x.email ? '' : ' disabled title="업체 목록에 이 호텔 이메일이 없음"'}>객실 문의 메일</button><button class="btn ghost sm" data-bhdel="${si}">삭제</button>` : ''}</div>
     ${x ? `<div class="hint">${esc([x.star, x.area, x.manager, x.verdict].filter(Boolean).join(' · '))}</div>` : ''}
     ${rooms}
@@ -2008,33 +2551,49 @@ function bAutoTitle() {
   const agency = ((hit && hit.company) || (w && !FREE_MAILS.includes(w) ? w[0].toUpperCase() + w.slice(1) : '') || (hit && hit.name) || '').replace(/[_\s]+/g, ' ').trim();
   return ['Hakeem Travel Korea', 'Package', ...route.map(c => CODE[c]), `${n}N${n + 1}D${dates}`, agency, today].filter(Boolean).join('_');
 }
+const bStep = (attr, v, min, max, w) => `<div class="stepper"><button type="button" data-bstep="-1" aria-label="빼기">−</button><input type="number" min="${min}" max="${max}" ${attr} value="${v}"${w ? ` style="width:${w}px"` : ''}><button type="button" data-bstep="1" aria-label="더하기">+</button></div>`;
+const bSeg = (key, list, v, cls) => `<div class="seg ${cls}">${list.map(([k, l, sm]) => `<button type="button" class="opt" data-bseg="${key}" data-v="${k}" aria-pressed="${k === v}">${l}${sm ? `<small>${sm}</small>` : ''}</button>`).join('')}</div>`;
 function bOptions(days) {
-  const s = bSel, route = routeOf(s), stays = bStays(days), hit = bBuyerHit();
-  const head = bFrom
-    ? `<span>요청 <b>${esc(bFrom)}</b> 수정 중${bFromReq && bFromReq.builder ? ` · 마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span><button class="btn sm" id="b-save-req">이 요청에 저장</button><button class="btn ghost sm" id="b-back-req">요청으로 돌아가기</button>`
-    : `<input id="b-title" placeholder="투어 이름" title="기본 정보로 자동 지정 · 직접 고치면 그 이름으로 저장 (지우면 자동 이름으로 돌아감)" value="${esc(bTitle || bAutoTitle())}"><button class="btn sm" id="b-save-new">내 투어로 저장</button>`;
+  const s = bSel, route = routeOf(s), hit = bBuyerHit();
   const buyer = bFrom
-    ? `<span>${esc(bReqBuyer() || '바이어 정보 없음')}</span>`
+    ? `<div class="bbuyer">${esc(bReqBuyer() || '바이어 정보 없음')}</div>`
     : `<span class="em-id bem"><input data-bbuy="id" value="${esc(bBuyer.id)}" placeholder="agent" autocapitalize="off" spellcheck="false"><span>@</span><input data-bbuy="dom" value="${esc(bBuyer.dom)}" placeholder="company.com" autocapitalize="off" spellcheck="false"></span>
-      ${hit ? `<span class="hint"><b>${esc(hit.code)}</b> · ${esc(hit.name)} · ${esc(hit.company)} · ${esc(bCountryName(hit.country))} (가입 바이어)</span>`
-        : `<label>국가<input data-bbuy="country" list="b-cc-list" class="bcc" value="${esc((bBuyer.country || s.country) ? bCountryName(bBuyer.country || s.country) : '')}" placeholder="입력해서 찾기" autocomplete="off" spellcheck="false" title="국가명·코드(UAE, KSA, KOR…) 입력"></label><datalist id="b-cc-list">${CC_TOP.map(c => `<option value="${esc(bCountryName(c))}">${c}</option>`).join('')}${COUNTRIES.filter(x => !CC_TOP.includes(x[1])).map(([n, c]) => `<option value="${esc(n)}">${c}</option>`).join('')}</datalist>${bBuyerEmail() ? '<span class="hint">미가입 바이어</span>' : ''}`}`;
-  const cityHead = c => `<label class="bc"><input type="checkbox" data-bk="${c}"${(c === 'seoul' ? s.seoul !== false : s[c]) ? ' checked' : ''}> <b>${CITY[c]}</b></label>`;
-  const nightsIn = c => `<span class="bnts"><input type="number" min="1" max="${c === 'seoul' ? 8 : 6}" data-bn="n${CITY_EN[c]}" value="${s['n' + CITY_EN[c]]}" style="width:54px"> 박</span>`;
-  const cityRows = route.map(c => { const si = stays.findIndex(x => x.city === c); return `<div class="bcity">${cityHead(c)}${nightsIn(c)}${si >= 0 ? bStayHotelHTML(stays[si], si) : ''}</div>`; }).join('')
-    + ['seoul', 'jeju', 'busan'].filter(c => !route.includes(c)).map(c => `<div class="bcity off">${cityHead(c)}${nightsIn(c)}</div>`).join('');
-  return `<div class="card bopts">
-    <div class="bhead">${head}<span class="sp"></span><button class="btn ghost sm" id="b-reset-edit">관광지 편집 초기화</button><button class="btn ghost sm" id="b-new">새로 시작</button></div>
-    <div class="bsec"><span class="bsl">바이어</span><div class="row">${buyer}
-      <label>시장 (차량 기준)<select data-b="market">${opt(BMARKET, s.market)}</select></label></div></div>
-    <div class="bsec"><span class="bsl">인원</span><div class="row">
-      <label>인원<input type="number" min="1" max="40" data-bnum="pax" value="${s.pax}" style="width:70px"></label>
-      ${B_HAS_FOC ? `<label>FOC<input type="number" min="0" max="5" data-bnum="foc" value="${s.foc || 0}" style="width:56px"></label>` : ''}
-      <label>도착일<input type="date" data-barr="1" value="${bArrival}"></label>
-    </div></div>
-    <div class="bsec" id="b-hotels"><span class="bsl">도시·숙박<br>호텔</span><div>
-      <div class="row"><label>도시 순서<select data-b="order">${ORDERS.map(o => `<option value="${o.join(',')}"${o.join() === s.order.join() ? ' selected' : ''}>${o.map(c => CITY[c]).join(' → ')}</option>`).join('')}</select></label></div>
-      ${cityRows}
-    </div></div></div>`;
+      ${hit ? `<div class="hint"><b>${esc(hit.code)}</b> · ${esc(hit.name)} · ${esc(hit.company)} · ${esc(bCountryName(hit.country))} (가입 바이어)</div>`
+        : `<input data-bbuy="country" list="b-cc-list" class="bcc" value="${esc((bBuyer.country || s.country) ? bCountryName(bBuyer.country || s.country) : '')}" placeholder="국가" autocomplete="off" spellcheck="false" title="국가명·코드(UAE, KSA, KOR…) 입력"><datalist id="b-cc-list">${CC_TOP.map(c => `<option value="${esc(bCountryName(c))}">${c}</option>`).join('')}${COUNTRIES.filter(x => !CC_TOP.includes(x[1])).map(([n, c]) => `<option value="${esc(n)}">${c}</option>`).join('')}</datalist>${bBuyerEmail() ? '<div class="hint">미가입 바이어</div>' : ''}`}`;
+  const cityRow = c => { const on = c === 'seoul' ? s.seoul !== false : !!s[c]; return `<div class="bcrow${on ? '' : ' off'}" draggable="true" data-bcity="${c}" title="끌어서 도시 순서 바꾸기"><i class="bgrip" aria-hidden="true">⠿</i><label class="bc"><input type="checkbox" data-bk="${c}"${on ? ' checked' : ''}> ${CITY[c]}</label><span class="bnl">박</span>${bStep(`data-bn="n${CITY_EN[c]}"`, s['n' + CITY_EN[c]], 1, c === 'seoul' ? 8 : 6)}</div>`; };
+  const VEH = [['std', '기본'], ...Object.entries(CONFIG.upgrades).map(([k, u]) => [k, u.short, `~${u.maxPax}명`])];
+  return `<aside class="panel bpanel">
+    ${bSvcSwitch()}
+    <div class="field"><span class="label">Buyer</span>${buyer}</div>
+    <div class="field bf-itin"><span class="label">Market (차량 기준)</span>${bSeg('market', [['mideast', '중동'], ['india', '인도'], ['other', '기타']], s.market, 'c3')}</div>
+    <div class="field two"><div><span class="label">PAX</span>${bStep('data-bnum="pax"', s.pax, 1, 40)}</div>${B_HAS_FOC ? `<div><span class="label">FOC</span>${bStep('data-bnum="foc"', s.foc || 0, 0, 5)}</div>` : ''}</div>
+    <div class="field bdp-wrap"><span class="label">Arrival</span><button type="button" class="bdp-in" data-bdp="open">${bArrival ? bDpLabel(bArrival) : '<span class="hint">날짜 선택</span>'}<i aria-hidden="true">▾</i></button><div class="bdp" id="bdp" hidden></div></div>
+    <div class="field"><span class="label">Cities · Nights</span>
+      <div class="bcities">${s.order.map(cityRow).join('')}</div><span class="hint">⠿ 끌어서 도시 순서 변경 · ${route.map(c => CITY[c]).join(' → ')}</span></div>
+    <div class="field bf-itin"><span class="label">Season</span>${bSeg('season', [['spring', '봄', '3–5월'], ['summer', '여름', '6–8월'], ['autumn', '가을', '9–11월'], ['winter', '겨울', '12–2월']], s.season, 'c4')}</div>
+    <div class="field bf-itin"><span class="label">Tier</span>${bSeg('tier', BTIER, s.tier, 'c3')}</div>
+    ${s.tier === 'L' ? `<div class="field bf-itin"><span class="label">Vehicle</span>${bSeg('vehicle', VEH, s.vehicle, 'c2')}</div>` : ''}
+    <div class="field bf-itin"><span class="label">Theme</span>${bSeg('concept', BTHEME, s.concept, 'c2')}</div>
+    <div class="field bf-itin"><span class="label">Meals</span><div class="seg c2"><button type="button" class="opt" data-bmall="lunch" title="전체 일정 점심 켜기/끄기">점심</button><button type="button" class="opt" data-bmall="dinner" title="전체 일정 저녁 켜기/끄기">저녁</button></div>
+      <div class="bmeals">${days.map((d, i) => d.kind === 'tour' || d.kind === 'transfer' ? `<div class="bm-r"><span class="bm-d"><b>D${i + 1}</b>${bNightDate(i) ? ` ${bNightDate(i).slice(5).replace('-', '/')}` : ''}<em>${esc(d.title)}</em></span>${['lunch', 'dinner'].map(m => `<label class="bm-c"><input type="checkbox" data-bml="${i}|${m}"${(d.meals || []).includes(m) ? ' checked' : ''}>${m === 'lunch' ? '점심' : '저녁'}</label>`).join('')}</div>` : '').join('')}</div></div>
+    <div class="field bpanel-foot"><button class="btn ghost sm bf-itin" id="b-reset-edit">관광지 편집 초기화</button>${wkFromReq ? '' : '<button class="btn ghost sm" id="b-new">새로 시작</button>'}</div>
+  </aside>`;
+}
+// hotels per city stay (right column, under the quote)
+function bHotelsCard(days) {
+  if (wkFromReq) return '';
+  const stays = bStays(days);
+  return `<div class="card bhotels" id="b-hotels"><div class="bsh"><span class="label">Hotels (by stay)</span><span class="sp"></span><label class="hint">Hotel markup %<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px;margin-left:6px"></label><span class="hint">FX ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
+    ${bFromReq && bFromReq.source !== 'staff' ? `<div class="bh-req"><span>바이어 요청</span><b>${esc((bFromReq.hotel || []).join(' / ') || '등급 미정')}</b><b>${esc((bFromReq.rooms || []).filter(x => x.qty > 0).map(x => `${x.type} ${x.qty}`).join(', ') || '객실 미정')}</b><em>${bFromReq.options ? `${bFromReq.options.pax} PAX${bFromReq.options.foc ? ` + ${bFromReq.options.foc} FOC` : ''}` : ''}</em></div>` : ''}
+    ${stays.map((st, si) => `<div class="bhcity"><div class="bhc-n"><b>${CITY[st.city] || st.city}</b><span>${st.to - st.from + 1}박</span></div>${bStayHotelHTML(st, si)}</div>`).join('')}</div>`;
+}
+// travel day between cities: add a tour before leaving / after arriving (same choices as the buyer page)
+function bMovePanel(d) {
+  if (!d.moveKey) return '';
+  const s = bSel, opts = moveTourOptions(d.moveFrom, d.moveTo, s), pick = moveTourPick(d.moveFrom, d.moveTo, s);
+  if (!opts.length) return '';
+  const group = (city, when) => `<optgroup label="${CITY[city]} ${when === 'before' ? '출발 전' : '도착 후'}">${opts.filter(o => o.city === city).map(o => { const taken = moveTourTaken(d.moveFrom, d.moveTo, o.value, s); return `<option value="${o.value}"${pick && pick.value === o.value ? ' selected' : ''}${taken ? ' disabled' : ''}>${esc(o.title)}${taken ? ' (다른 이동일에 있음)' : ''}</option>`; }).join('')}</optgroup>`;
+  return `<span class="bmvp"><label class="bmv-on"><input type="checkbox" data-bmvon="${d.moveKey}"${pick ? ' checked' : ''}>이동일 투어</label>${pick ? `<select data-bmvt="${d.moveKey}" aria-label="이동일 투어">${group(d.moveFrom, 'before')}${group(d.moveTo, 'after')}</select>` : ''}</span>`;
 }
 function bDay(d, i, days) {
   const e = bEdits[dk(d)] || { rm: [], add: [] }, fk = dk(d), folded = !!bFold[fk];
@@ -2044,51 +2603,61 @@ function bDay(d, i, days) {
   const swap = d.slot ? `<select data-bswap="${d.slot}">${swapOptions(d.region, bSel).map(o => `<option value="${o.id}"${o.id === d.moduleId ? ' selected' : ''}>${esc(o.title)}${o.out ? ' (근교)' : ''}</option>`).join('')}<option value="free"${d.moduleId === 'free' ? ' selected' : ''}>자유일 (가이드·차량 없음)</option></select>` : '';
   const sn = (d.kind === 'tour' ? d.stops : (d.adds || [])).length;
   const so = j => sn > 1 ? `<span class="bso"><button title="위로" data-bso="${esc(fk)}|${j}|-1"${j === 0 ? ' disabled' : ''}>▲</button><button title="아래로" data-bso="${esc(fk)}|${j}|1"${j === sn - 1 ? ' disabled' : ''}>▼</button></span>` : '<span></span>';
-  const stop = (s, where, j) => `<li${s.added ? ' class="add"' : ''}><span>${esc(sightLabel(s.key))}${where ? ` <em>${where}</em>` : ''}${placeMemo(s.key) ? `<small class="pm">${esc(placeMemo(s.key))}</small>` : ''}</span><span class="num">${s.price ? krw(s.price) : '–'}${s.key === HANBOK_KEY ? ` + US$${CONFIG.hanbokUSD}` : ''}</span>${so(j)}<button class="rx" title="빼기" data-brm="${esc(dk(d))}|${esc(s.key)}">✕</button></li>`;
+  const stop = (s, where, j) => `<li${s.added ? ' class="add"' : ''}${sn > 1 ? ` draggable="true" data-bdrag="${esc(fk)}|${j}" title="끌어서 순서 바꾸기"` : ''}><span>${sn > 1 ? '<i class="bgrip" aria-hidden="true">⠿</i>' : ''}${esc(sightLabel(s.key))}${where ? ` <em>${where}</em>` : ''}${placeMemo(s.key) ? `<small class="pm">${esc(placeMemo(s.key))}</small>` : ''}${d.hanbokOpt && /^GYEONGBOKGUNG PALACE/.test(s.key) ? `<label class="bhb"><input type="checkbox" data-bb="hanbok"${hanbokOf(bSel) ? ' checked' : ''}>한복 +US$${CONFIG.hanbokUSD}/인</label>` : ''}</span><span class="num">${s.price ? krw(s.price) : '–'}${s.key === HANBOK_KEY ? ` + US$${CONFIG.hanbokUSD}` : ''}</span>${so(j)}<button class="rx" title="빼기" data-brm="${esc(dk(d))}|${esc(s.key)}">✕</button></li>`;
   const list = d.kind === 'tour' ? d.stops.map((s, j) => stop(s, '', j)).join('') : (d.adds || []).map((a, j) => stop(a, '이동일 관광', j)).join('') + (d.kind !== 'tour' ? (d.lines || []).map(l => `<li class="ln">${esc(l)}</li>`).join('') : '');
   const removed = e.rm.length ? `<div class="hint">뺀 곳: ${e.rm.map(k => `${esc(sightLabel(k))} <button class="linkbtn" data-bback="${esc(dk(d))}|${esc(k)}">되돌리기</button>`).join(' · ')}</div>` : '';
   const canAdd = d.kind === 'tour' || d.kind === 'free' || (d.kind === 'transfer' && d.moveFrom);
   const meals = (d.kind === 'tour' || d.kind === 'transfer' ? ['lunch', 'dinner'] : []).map(m => `<label><input type="checkbox" data-bml="${i}|${m}"${(d.meals || []).includes(m) ? ' checked' : ''}> ${m === 'lunch' ? '점심' : '저녁'}</label>`).join('')
-    + (d.hanbokOpt ? `<label><input type="checkbox" data-bb="hanbok"${hanbokOf(bSel) ? ' checked' : ''}> 경복궁 한복 (US$${CONFIG.hanbokUSD}/인)</label>` : '')
-    + (d.kind === 'tour' && d.region === 'seoul' ? Object.entries(CONFIG.addonPaid).map(([k, n]) => `<label class="bao"><input type="checkbox" data-baddon="${k}|${esc(fk)}"${(bSel.addons || []).includes(k) && (bSel.addonDay || {})[k] === fk ? ' checked' : ''}> ${esc(n)} ${krw(CONFIG.addons[k] || 0)}/인</label>`).join('') : '')
     + (d.lotteOpt ? `<label><input type="checkbox" data-bb="lotte"${(typeof bSel.lotte === 'boolean' ? bSel.lotte : bSel.concept === 'romantic') ? ' checked' : ''}> 롯데월드 어드벤처</label>` : '');
   const stopsAll = d.kind === 'tour' ? d.stops : (d.adds || []), fee = stopsAll.reduce((a, s) => a + (s.price || 0), 0);
-  const head = `<div class="bdh"><button class="bfold" data-bfold="${esc(fk)}" title="${folded ? '펼치기' : '접기'}">${folded ? '▸' : '▾'}</button><h4>${esc(d.title)} <span class="tag">${d.kind === 'tour' ? '투어' : d.kind === 'free' ? '자유' : '이동'}</span></h4>${swap}${move}</div>`;
+  const head = `<div class="bdh"><button class="bfold" data-bfold="${esc(fk)}" title="${folded ? '펼치기' : '접기'}">${folded ? '▸' : '▾'}</button><h4>${esc(d.title)} <span class="tag">${d.kind === 'tour' ? '투어' : d.kind === 'free' ? '자유' : '이동'}</span></h4>${swap}${move}${bMovePanel(d)}</div>`;
   if (folded) return `<div class="day bday folded" id="bd-${i}"><div class="n">${i + 1}</div><div>${head}
     <div class="bsum">${stopsAll.length ? `<b>${stopsAll.length}곳</b> · ${esc(stopsAll.slice(0, 4).map(s => sightLabel(s.key)).join(', '))}${stopsAll.length > 4 ? ' 외' : ''}${fee ? ` · 입장 ${krw(fee)}/인` : ''}` : esc(d.route || '')}${d.meals && d.meals.length ? ` · ${d.meals.map(m => m === 'lunch' ? '점심' : '저녁').join('·')}` : ''}${e.rm.length + e.add.length ? ` · <b>편집 ${e.rm.length + e.add.length}</b>` : ''}${(bSel.addons || []).filter(k => (bSel.addonDay || {})[k] === fk).map(k => ` · ${esc(CONFIG.addonPaid[k])}`).join('')}</div></div></div>`;
   return `<div class="day bday" id="bd-${i}"><div class="n">${i + 1}</div><div>
     ${head}
-    <div class="rt">${esc(d.route || '')}</div>
+    <div class="rt">${esc(d.route || '')}</div>${(() => { const q = bFromReq && bFromReq.dayRequests && bFromReq.dayRequests[d.slot || 't:' + d.title]; return q && q.length ? `<div class="breq">고객 요청 · ${q.map(esc).join(' · ')}</div>` : ''; })()}
     <ul class="bst">${list}</ul>${removed}
     ${meals ? `<div class="bchk">${meals}</div>` : ''}
     ${canAdd ? (bAddOpen[fk] ? `<div class="badd"><input list="b-sights" placeholder="관광지 추가 (목록에서 고르거나 새 이름 입력)" data-badd="${esc(fk)}"><button class="btn ghost sm" data-bgo="${esc(fk)}">추가</button><button class="linkbtn" data-baddopen="${esc(fk)}">닫기</button></div>` : `<div class="baddo"><button class="linkbtn" data-baddopen="${esc(fk)}">+ 관광지 추가</button></div>`) : ''}
   </div></div>`;
 }
 function bPrice(days) {
-  const q = quoteFor(days, bSel), c = costBreakdown(days, bSel), tbl = bracketTable(days, bSel);
+  const s = bSel, q0 = quoteFor(days, s), hq = bSvc.on.hotel ? bHotelQuote(days) : null, hp = hq ? hq.perPerson : 0, ht = hq ? hq.total : 0, route = routeOf(s);
+  const sq = bSvcQuote(), q = bSvc.on.itin ? q0 : { ...q0, perPerson: 0, total: 0 };
+  const n = days.length - 1, TH = Object.fromEntries(BTHEME), SE = Object.fromEntries(BSEASON), TI = Object.fromEntries(BTIER);
+  const veh = s.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan);
+  const title = bFrom ? `<h2 class="bq-t">${n}박 ${n + 1}일 · ${route.map(c => `${CITY[c]} ${s['n' + CITY_EN[c]]}박`).join(' → ')}</h2>`
+    : `<input id="b-title" class="bq-in" placeholder="투어 이름" title="기본 정보로 자동 지정 · 직접 고치면 그 이름으로 저장 (지우면 자동 이름으로 돌아감)" value="${esc(bTitle || bAutoTitle())}"><div class="bq-route">${n}박 ${n + 1}일 · ${route.map(c => `${CITY[c]} ${s['n' + CITY_EN[c]]}박`).join(' → ')}</div>`;
+  const left = `${title}
+      <div class="chips">${bSvc.on.itin ? '' : `${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => `<span class="chip">${l}</span>`).join('')}<span class="chip">${s.pax}명</span>`}${!bSvc.on.itin ? '' : `<span class="chip">${SE[s.season] || s.season}</span><span class="chip">${TI[s.tier] || s.tier}</span><span class="chip">${TH[s.concept] || s.concept}</span><span class="chip">${s.pax}명${focOf(s) ? ` + FOC ${focOf(s)}` : ''}</span><span class="chip">${esc(veh)}${q.plan.extraLuggage ? ' + 짐차' : ''}</span>
+        <label class="chip chk"><input type="checkbox" data-bb="luggage"${s.luggage ? ' checked' : ''}> 짐 추가</label>`}</div>`;
+  bSumHTML = wkFromReq ? left : '';
+  return `<div class="card bquote${wkFromReq ? ' nol' : ''}">
+    ${wkFromReq ? '' : `<div class="bq-l">${left}</div>`}
+    <div class="bq-r">
+      ${bSvc.on.itin ? `<div class="bq-k">Tour Fee <small>/ pax · Land + Hotel</small></div><div class="bq-p">${money(q.perPerson + hp)}</div><div class="bq-s">Total ${money(q.total + ht)}</div>
+      <div class="bq-split"><span>Land <b>${money(q.perPerson)}</b></span>${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(hp) : '<i>미입력</i>'}</b></span>` : '<span>Hotel <b>제외</b></span>'}</div>`
+      : `<div class="bq-k">Total Fee <small>/ pax · ${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => l).join(' + ')}</small></div><div class="bq-p">${money((sq ? sq.perPerson : 0) + hp)}</div><div class="bq-s">Total ${money((sq ? sq.total : 0) + ht)}</div>
+      <div class="bq-split">${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(ht) : '<i>미입력</i>'}</b></span>` : ''}${['veh', 'guide', 'flight'].filter(k => bSvc.on[k]).map(k => `<span>${Object.fromEntries(SVC_LBL)[k]} <b>${money(sq ? sq.lines.filter(l => l.type === k).reduce((a, l) => a + l.amount, 0) : 0)}</b></span>`).join('')}</div>`}</div>
+    <div class="bq-a"><button class="btn" data-bsavemain="1" title="${bFrom ? '이 요청에 저장' : '내 투어로 저장'}">Save</button>${!bSvc.on.itin ? '<button class="btn ghost" data-bpdfm="tour" title="바이어용 견적서 미리보기 · PDF로 저장">PDF</button>' : ''}<span class="bpdf-w"${bSvc.on.itin ? '' : ' hidden'}><button class="btn ghost" data-bpdf="1" title="바이어용 견적서 미리보기 · PDF로 저장">PDF ▾</button><span class="bpdf-m" id="bpdf-m" hidden><button type="button" data-bpdfm="tour">Tour Fee <small>Land + Hotel</small></button><button type="button" data-bpdfm="land">Land Fee only</button><button type="button" data-bpdfm="hotel"${bHotelQuote(days) ? '' : ' disabled title="호텔 요금을 먼저 넣어 주세요"'}>Hotel Fee only</button></span></span>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn ghost" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<button class="btn ghost" id="b-copy" title="일정·가격을 영문 텍스트로 복사">Text</button><span class="saved" id="b-msg">${bFrom && bFromReq && bFromReq.builder ? `마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span></div>
+  </div>`;
+}
+function bPriceMore(days) {
+  const q = quoteFor(days, bSel), c = costBreakdown(days, bSel), tbl = bracketTable(days, bSel), hq = bHotelQuote(days);
   const row = (x, cols) => `<tr>${cols.map(v => `<td${typeof v === 'number' ? ' class="num"' : ''}>${typeof v === 'number' ? v.toLocaleString('ko-KR') : esc(v)}</td>`).join('')}</tr>`;
-  return `<div class="card bprice">
-    ${(() => { const hq = bHotelQuote(days), hp = hq ? hq.perPerson : 0, ht = hq ? hq.total : 0; return `<div class="bfee">
-      <div class="bfee-top"><span>Tour Fee <small>1인 · 지상비 + 호텔</small></span><b>${money(q.perPerson + hp)}</b><em>총 ${money(q.total + ht)}</em></div>
-      <div class="bfee-row"><span>Land Fee</span><b>${money(q.perPerson)}</b><em>총 ${money(q.total)}</em></div>
-      <div class="bfee-row"><span>Hotel Fee</span>${hq ? `<b>${money(hp)}</b><em>총 ${money(ht)}</em>` : '<b class="na">미입력</b><em>호텔 요금 넣으면 합산</em>'}</div>
-    </div>`; })()}
-    <div class="sub">${bSel.pax}명${focOf(bSel) ? ` + FOC ${focOf(bSel)}명 (FOC 원가는 유료 인원이 나눠 부담)` : ''} · ${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산</div>
-    <div>마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
-    <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
-    <div class="bchk" style="margin-top:4px"><label><input type="checkbox" data-bb="luggage"${bSel.luggage ? ' checked' : ''}> 짐 추가 (짐차)</label></div>
-    <div class="bpa"><button class="btn sm" data-bsavemain="1">${bFrom ? '이 요청에 저장' : '내 투어로 저장'}</button><button class="btn ghost sm" id="b-copy">일정·가격 복사 (영문)</button></div>
-    <div class="bpa"><button class="btn ghost sm" data-bpdf="1">바이어용 PDF</button>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn sm" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<span class="saved" id="b-msg"></span></div>
-    <textarea data-bnote="1" rows="2" placeholder="견적서에 넣을 메모 (영문, 선택)" style="width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:.82rem">${esc(bNote)}</textarea>
-    ${bFromReq && (bFromReq.quotes || []).length ? `<div class="hint">보낸 견적: ${bFromReq.quotes.map((q, i) => `<button class="linkbtn" data-bqpdf="${i}">${esc(q.no)} ${fmtT(q.sentAt)}</button>`).join(' · ')}</div>` : ''}
-    <h4>추가 체험</h4>
-    <div class="hint">${(bSel.addons || []).length ? bSel.addons.map(k => { const di = days.findIndex(x => dk(x) === (bSel.addonDay || {})[k]); return `${esc(CONFIG.addonPaid[k])} ${krw(CONFIG.addons[k] || 0)}/인 · ${di >= 0 ? `Day ${di + 1}` : '날짜 미정'}`; }).join('<br>') : '서울 투어일에서 고르면 여기 표시됩니다.'}</div>
-    <h4>호텔 <button class="linkbtn" data-bjump="b-hotels">호텔 칸으로</button></h4>
-    <div class="row" style="gap:8px;align-items:center"><label>호텔 마진 (%)<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px"></label><span class="hint">환율 ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
-    ${(() => { const hq = bHotelQuote(days); return `${hq ? `<div>호텔 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)} <span class="hint">(${hq.priced}/${hq.nights}박 요금 입력, 원가 ₩${hq.netKRW.toLocaleString('ko-KR')})</span></div>` : '<div class="hint">위 도시·숙박 줄에 호텔과 객실 요금을 넣으면 여기 합산됩니다.</div>'}`; })()}
-    <h4>인원 구간별 1인 가격</h4>
-    <table class="ht">${tbl.map(t => `<tr${t.bracket[0] === q.bracket[0] ? ' class="on"' : ''}><td style="white-space:nowrap">${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')}명</td><td class="hint">${esc(vehicleKo(t.plan))}</td><td class="num">${money(t.perPerson)}</td></tr>`).join('')}</table>
-    <details${bOpen.cost ? ' open' : ''} id="b-cost"><summary>원가 세부내용 (${c.basePax}명 기준)</summary>
+  return `<div class="card bmore">
+    <div class="bmore-g">
+      <div><span class="label">Quote note (English)</span><textarea data-bnote="1" rows="3" placeholder="견적서에 넣을 메모 (선택)">${esc(bNote)}</textarea>
+        ${bFromReq && (bFromReq.quotes || []).length ? `<div class="hint" style="margin-top:6px">보낸 견적: ${bFromReq.quotes.map((x, i) => `<button class="linkbtn" data-bqpdf="${i}">${esc(x.no)} ${fmtT(x.sentAt)}</button>`).join(' · ')}</div>` : ''}
+        <span class="label" style="margin-top:14px;display:block">Basis</span>
+        <div class="hint">${bSel.pax}명${focOf(bSel) ? ` + FOC ${focOf(bSel)}명 (FOC 원가는 유료 인원이 나눠 부담)` : ''} · ${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
+        <div class="hint">${hq ? `호텔 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)} (${hq.priced}/${hq.nights}박 요금 입력, 원가 ₩${hq.netKRW.toLocaleString('ko-KR')})` : '호텔 칸에 호텔과 객실 요금을 넣으면 Tour Fee에 합산됩니다.'}</div>
+        <span class="label" style="margin-top:14px;display:block">Add-ons</span>
+        <div class="hint">${(bSel.addons || []).length ? bSel.addons.map(k => { const di = days.findIndex(x => dk(x) === (bSel.addonDay || {})[k]); return `${esc(CONFIG.addonPaid[k])} ${krw(CONFIG.addons[k] || 0)}/인 · ${di >= 0 ? `Day ${di + 1}` : '날짜 미정'}`; }).join('<br>') : '서울 투어일에서 고르면 여기 표시됩니다.'}</div></div>
+      <div><span class="label">Price / pax by group size</span>
+        <table class="ht">${tbl.map(t => `<tr${t.bracket[0] === q.bracket[0] ? ' class="on"' : ''}><td style="white-space:nowrap">${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')}명</td><td class="hint">${esc(vehicleKo(t.plan))}</td><td class="num">${money(t.perPerson)}</td></tr>`).join('')}</table></div>
+    </div>
+    <details${bOpen.cost ? ' open' : ''} id="b-cost"><summary>Cost breakdown (${c.basePax} pax 기준)</summary>
       <table class="ht"><tr><th>공통 (그룹)</th><th>내용</th><th class="num">단가 ₩</th><th class="num">수량</th></tr>${c.common.map(x => row(x, [x.item, x.detail, x.unit, x.qty])).join('')}
       <tr><th>개인 (1인)</th><th>Day</th><th class="num">₩</th><th></th></tr>${c.personal.map(x => row(x, [x.item, 'D' + x.day, x.unit, ''])).join('')}
       ${c.supp.length ? `<tr><th>추가 (US$, 그룹)</th><th>Day</th><th class="num">US$</th><th></th></tr>${c.supp.map(x => row(x, [x.item, 'D' + x.day, Math.round(x.usd), ''])).join('')}` : ''}</table>
@@ -2096,21 +2665,27 @@ function bPrice(days) {
     </details>
   </div>`;
 }
+// for a request, the hotels card lives in the Hotel tab (above the hotel inquiries); a new tour keeps it in the builder
+function bPlaceHotels() {
+  const box = $('wk-bhot'); if (!box) return; box.innerHTML = '';
+  const card = $('b-hotels'); if (card && wkFromReq && $('builder').parentNode === $('wk-trip')) box.appendChild(card);
+}
 function drawBuilder() {
   if (!bRatesOK) bRatesOK = bRates();
   if (!bRatesOK) { $('builder').innerHTML = '<div class="card">단가를 불러오지 못했습니다. Wix 서버 파일(hakeem-core.js)이 최신인지 확인해 주세요.</div>'; return; }
   const days = builtDays();
   const all = Object.keys(SIGHTS).filter(k => k !== HANBOK_KEY).sort((a, b) => sightLabel(a).localeCompare(sightLabel(b)));
-  const s = bSel, extras = `<label>시즌 <select data-b="season">${opt(BSEASON, s.season)}</select></label><label>등급 <select data-b="tier">${opt(BTIER, s.tier)}</select></label><label>테마 <select data-b="concept">${opt(BTHEME, s.concept)}</select></label>${s.tier === 'L' ? `<label>차량 <select data-b="vehicle">${opt([['std', '기본'], ...Object.entries(CONFIG.upgrades).map(([k, u]) => [k, `${u.short} (~${u.maxPax}명)`])], s.vehicle)}</select></label>` : ''}`;
-  $('builder').innerHTML = `${bOptions(days)}<div class="bgrid"><div><div class="card"><div class="bith"><h3>일정 (${days.length - 1}박 ${days.length}일)</h3>${extras}</div><div class="bith">${bStays(days).map(s => `<button class="bchip" data-bjump="bd-${s.from}">${CITY[s.city] || s.city} ${s.to - s.from + 1}박 · D${s.from + 1}</button>`).join('')}<button class="bchip" data-bjump="b-hotels">호텔 ↑</button><span class="sp"></span><span class="hint">식사 전체</span><button class="linkbtn" data-bmall="lunch">점심</button><button class="linkbtn" data-bmall="dinner">저녁</button><span class="hint">·</span><button class="linkbtn" data-bfoldall="1">모두 접기</button><button class="linkbtn" data-bfoldall="0">모두 펼치기</button></div>
+  $('builder').innerHTML = `<div class="bwrap${bSvc.on.itin ? '' : ' noitin'}">${bOptions(days)}<div class="bmain">${bPrice(days)}${bSvc.on.hotel ? bHotelsCard(days) : ''}${bSvcCard(days)}<div class="bitin"><div class="bith"><span class="label">Day-by-day itinerary · ${days.length - 1}박 ${days.length}일</span><span class="sp"></span>${bStays(days).map(s => `<button class="bchip" data-bjump="bd-${s.from}">${CITY[s.city] || s.city} · D${s.from + 1}</button>`).join('')}<button class="bchip" data-bfoldall="1">모두 접기</button><button class="bchip" data-bfoldall="0">모두 펼치기</button></div>
     <datalist id="b-sights">${all.map(k => `<option value="${esc(sightLabel(k))}">${SIGHTS[k] ? krw(SIGHTS[k]) : '무료'}</option>`).join('')}</datalist>
-    ${DIR ? Object.keys(DCITY).map(c => `<datalist id="b-hotel-${c}">${hotelsIn(c).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('') : ''}
-    ${days.map((d, i) => bDay(d, i, days)).join('')}</div></div>${bPrice(days)}</div>`;
+    ${DIR ? Object.keys(DCITY).map(c => ['', '3', '4', '5'].map(n => `<datalist id="b-hotel-${c}${n ? '-' + n : ''}">${hotelsIn(c).filter(h => !n || String(bStarOf(h.name)) === n).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('')).join('') : ''}
+    <div class="bdays">${days.map((d, i) => bDay(d, i, days)).join('')}</div></div>${bPriceMore(days)}</div></div>`;
   bLast = days;
+  if ($('wk-sum')) $('wk-sum').innerHTML = bSumHTML;
+  bPlaceHotels();
   if (!BUY && !bBuyAsked) { bBuyAsked = true; api('/api/admin/buyers').then(x => { BUY = x; drawBuilder(); }).catch(() => {}); }
   if (!DIR && !bDirAsked) { bDirAsked = true; loadDirectory().then(x => { if (x) drawBuilder(); }); }
 }
-let bLast = null;
+let bLast = null, bSumHTML = '';
 const bEdit = k => (bEdits[k] ||= { rm: [], add: [] });
 function bCityOrder(days, city) { return days.filter(d => d.slot && d.region === city).map(d => d.slot); }
 async function bAddSight(k, name, priceEl) {
@@ -2140,33 +2715,105 @@ function bText(days) {
     ...(bHotelQuote(days) ? [] : ['Per person by group size:']), ...tbl.map(t => `${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')} pax: US$ ${t.perPerson.toLocaleString('en-US')}`)].join('\n');
 }
 function openInBuilder(r) {
+  if (r && r.id) { showTab('list'); open(r.id); return; }
   if (!r.builderSel) { alert('이 요청은 저장된 선택값이 없어 투어 빌더로 열 수 없습니다.'); return; }
   bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
-  const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0;
+  const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup || 0; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
   bFold = {}; bAddOpen = {}; bFrom = r.id; bFromReq = r; showTab('builder');
 }
 // saves the edited tour into the request: itinerary, options and site price are replaced (the first version stays in r.original)
 // a tour built from scratch: saved as its own entry ('직원 작성'), then later saves go to it like a request
-const bHotelPayload = () => ({ arrival: bArrival, markup: +bMarkup || 0, nights: bHotelsFor(builtDays()) });
+// ---- services (2026-11-24): with Itinerary off, quote hotel only, vehicle only, guide or flights / KTX. Tariffs come from the server (settings.limo)
+const SVC_DEF = () => ({ on: { itin: true, hotel: true, veh: false, guide: false, flight: false }, veh: { cls: 'minivan', qty: 1, lang: 'en', items: [] }, guide: { lang: 'en', days: 0, xh: 0, usd: null }, flight: { segs: [] } });
+let bSvc = SVC_DEF();
+const SVC_LBL = [['itin', 'Itinerary'], ['hotel', 'Hotel'], ['veh', 'Vehicle'], ['guide', 'Guide'], ['flight', 'Flight · KTX']];
+const KIND_KO = { icn: '인천공항 편도', gmp: '김포공항 편도', pus: '김해공항 편도', cju: '제주공항 편도', day: '10시간 (150km)', xh: '추가 시간' };
+const ROUTE_KO = { SEL: '서울', CJU: '제주', PUS: '김해', BUS: '부산', MOK: '목포', ULS: '울산', GYE: '경주', DAE: '대구' };
+const routeKo = k => { const [t, a, b] = k.split('-'); return `${t === 'K' ? 'KTX' : '국내선'} ${ROUTE_KO[a] || a} → ${ROUTE_KO[b] || b}`; };
+const bLimo = () => (typeof settings !== 'undefined' && settings && settings.limo) || null;
+const bBusUSD = k => Math.ceil((((CONFIG.vehicles || {}).bus || {})[k === 'day' ? 'day' : 'transfer'] || 0) / CONFIG.fx / 5) * 5;
+function bLimoRate(city, cls, kind, lang) { const L = bLimo(); if (!L) return 0; if (cls === 'bus') return kind === 'xh' ? 0 : bBusUSD(kind); const r = (L.rates[city] || {})[cls] || {}; return (lang === 'en' && r[kind + 'En']) || r[kind] || 0; }
+// same sums as the server (svcQuote)
+function bSvcQuoteFor(svc, pax) {
+  const L = bLimo(); if (!svc || svc.on.itin || !L) return null;
+  const lines = [], P = Math.max(1, pax);
+  if (svc.on.veh) svc.veh.items.forEach((x, i) => { const def = x.kind === 'xh' ? bLimoRate(x.city, svc.veh.cls, 'xh') * (x.n || 1) : bLimoRate(x.city, svc.veh.cls, x.kind, svc.veh.lang), unit = x.usd != null ? x.usd : def;
+    lines.push({ type: 'veh', i, day: x.day, city: x.city, def, label: x.kind === 'xh' ? `Extra hours × ${x.n || 1}` : L.kindEn[x.kind], unit, qty: svc.veh.qty, amount: unit * svc.veh.qty }); });
+  if (svc.on.guide && svc.guide.days) { const G = L.guides[svc.guide.lang] || L.guides.en, u = svc.guide.usd != null ? svc.guide.usd : G[1];
+    lines.push({ type: 'guide', day: -1, city: '', def: G[1], label: `${G[0]} (10 hours per day)`, unit: u, qty: svc.guide.days, amount: u * svc.guide.days });
+    if (svc.guide.xh) lines.push({ type: 'guide', day: -1, city: '', def: G[2], label: 'Guide extra hours', unit: G[2], qty: svc.guide.xh, amount: G[2] * svc.guide.xh }); }
+  if (svc.on.flight) svc.flight.segs.forEach((x, i) => { const R = L.routes[x.route], one = x.cls === 'first' ? (R[2] || R[1]) : R[1], def = one * (x.rt ? 2 : 1), u = x.usd != null ? x.usd : def;
+    lines.push({ type: 'flight', i, day: x.day, city: '', def, label: `${R[0]}${x.rt ? ' (round trip)' : ''}${x.cls === 'first' ? ' · first class' : x.route[0] === 'K' ? ' · economy' : ''}`, unit: u, qty: P, amount: u * P }); });
+  const total = lines.reduce((a, l) => a + l.amount, 0);
+  return { lines, total, perPerson: Math.ceil(total / P) };
+}
+const bSvcQuote = () => bSvcQuoteFor(bSvc, bSel.pax);
+function bSvcSwitch() {
+  const btn = (k, l, inc) => `<button type="button" class="opt${inc ? ' inc' : ''}" data-bsvc="${k}" aria-pressed="${!!(bSvc.on[k] || inc)}"${inc ? ' disabled title="Itinerary 견적에 포함"' : ''}>${l}</button>`;
+  const it = bSvc.on.itin;
+  return `<div class="field"><span class="label">Services</span><div class="bsvc">
+    <div class="sv-top">${btn('itin', 'Itinerary')}${btn('hotel', 'Hotel')}</div>
+    <div class="sv-sub${it ? ' inc' : ''}"><span class="sv-subl">${it ? 'Itinerary에 포함' : '따로 견적'}</span><div class="sv-subb">${btn('veh', 'Vehicle', it)}${btn('guide', 'Guide', it)}${btn('flight', 'Flight · KTX', it)}</div></div></div>
+    <span class="hint">${it ? '차량·가이드·항공은 Itinerary 지상비에 포함. Itinerary를 끄면 따로 켜고 끌 수 있음' : '켠 서비스만 견적·PDF에 들어갑니다'}</span></div>`;
+}
+function bSvcCard(days) {
+  if (bSvc.on.itin) return '';
+  const L = bLimo(); if (!L) return '<div class="card">요금표를 불러오지 못했습니다. 서버(hakeem-core.js)가 최신인지 확인해 주세요.</div>';
+  const q = bSvcQuote() || { lines: [], total: 0, perPerson: 0 }, route = routeOf(bSel);
+  const dayOpt = v => days.map((d, i) => `<option value="${i}"${i === +v ? ' selected' : ''}>D${i + 1}${bNightDate(i) ? ' · ' + bNightDate(i).slice(5).replace('-', '/') : ''}</option>`).join('');
+  const amt = l => `<span class="sv-amt">${l ? money(l.amount) : ''}</span>`, sel = (path, list, v) => `<select data-sv="${path}">${list.map(([k, l]) => `<option value="${k}"${String(v) === String(k) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+  const vline = i => q.lines.find(l => l.type === 'veh' && l.i === i), fline = i => q.lines.find(l => l.type === 'flight' && l.i === i);
+  const veh = !bSvc.on.veh ? '' : `<div class="sv-sec"><div class="sv-h"><b>Vehicle</b>${sel('veh.cls', L.classes.map(([k, l, n]) => [k, `${l} · ${n}인`]), bSvc.veh.cls)}${sel('veh.lang', [['en', '영어 기사'], ['ko', '한국어 기사']], bSvc.veh.lang)}<label class="hint">대수 <input type="number" min="1" max="20" data-sv="veh.qty" value="${bSvc.veh.qty}" style="width:56px"></label></div>
+    <div class="hint">${bSvc.veh.cls === 'bus' ? '버스는 요금표에 없어(On request) 우리 견적 단가(단가 관리 버스 픽업·샌딩 / 종일)를 환율로 바꾼 금액이 기본값. 추가 시간은 직접 입력' : '영어 기사 요금은 서울 인천공항·10시간만 다름 (김포·부산·제주는 같은 요금). 하루 150km, 시내 기준 · 시외는 따로 견적'}</div>
+    ${route.map(c => { const items = bSvc.veh.items.map((x, i) => ({ x, i })).filter(o => o.x.city === c);
+      return `<div class="sv-city"><div class="sv-ch">${CITY[c]}</div>${items.map(({ x, i }) => { const l = vline(i); return `<div class="sv-row">${sel(`veh.items.${i}.day`, days.map((d, k) => [k, `D${k + 1}${bNightDate(k) ? ' · ' + bNightDate(k).slice(5).replace('-', '/') : ''}`]), x.day)}
+        ${sel(`veh.items.${i}.kind`, L.kinds[c].map(k => [k, KIND_KO[k]]), x.kind)}
+        ${x.kind === 'xh' ? `<label class="hint"><input type="number" min="1" max="24" data-sv="veh.items.${i}.n" value="${x.n || 1}" style="width:52px"> 시간</label>` : '<span></span>'}
+        <label class="sv-u">US$<input type="number" min="0" data-sv="veh.items.${i}.usd" value="${x.usd ?? ''}" placeholder="${l ? l.def : ''}"></label>${amt(l)}<button class="rx" data-svdel="veh.items.${i}" title="삭제">✕</button></div>`; }).join('')}
+        <button class="linkbtn" data-svadd="veh|${c}">+ ${CITY[c]} 차량 일정 추가</button></div>`; }).join('')}</div>`;
+  const G = L.guides[bSvc.guide.lang] || L.guides.en, gl = q.lines.filter(l => l.type === 'guide');
+  const guide = !bSvc.on.guide ? '' : `<div class="sv-sec"><div class="sv-h"><b>Guide</b>${sel('guide.lang', Object.entries(L.guides).map(([k, g]) => [k, k === 'ar' ? '아랍어 가이드 (서울만)' : '영어 가이드']), bSvc.guide.lang)}<span class="hint">10시간 US$${G[1]} · 추가 시간 US$${G[2]}</span></div>
+    <div class="sv-row g"><label class="hint">일수 <input type="number" min="0" max="60" data-sv="guide.days" value="${bSvc.guide.days || 0}" style="width:60px"></label><label class="hint">추가 시간 합계 <input type="number" min="0" max="200" data-sv="guide.xh" value="${bSvc.guide.xh || 0}" style="width:60px"></label>
+    <label class="sv-u">US$/일<input type="number" min="0" data-sv="guide.usd" value="${bSvc.guide.usd ?? ''}" placeholder="${G[1]}"></label><span class="sv-amt">${gl.length ? money(gl.reduce((a, l) => a + l.amount, 0)) : ''}</span></div></div>`;
+  const flight = !bSvc.on.flight ? '' : `<div class="sv-sec"><div class="sv-h"><b>Flight · KTX</b><span class="hint">1인 요금 × ${bSel.pax}명 · 편도 기준, 왕복 체크 시 2배</span></div>
+    ${bSvc.flight.segs.map((x, i) => { const l = fline(i); return `<div class="sv-row f">${sel(`flight.segs.${i}.day`, days.map((d, k) => [k, `D${k + 1}${bNightDate(k) ? ' · ' + bNightDate(k).slice(5).replace('-', '/') : ''}`]), x.day)}${sel(`flight.segs.${i}.route`, Object.keys(L.routes).map(k => [k, routeKo(k)]), x.route)}
+      ${x.route[0] === 'K' ? sel(`flight.segs.${i}.cls`, [['eco', '일반실'], ['first', '특실']], x.cls) : '<span class="hint">Economy</span>'}<label class="hint"><input type="checkbox" data-sv="flight.segs.${i}.rt"${x.rt ? ' checked' : ''}> 왕복</label>
+      <label class="sv-u">US$/인<input type="number" min="0" data-sv="flight.segs.${i}.usd" value="${x.usd ?? ''}" placeholder="${l ? l.def : ''}"></label>${amt(l)}<button class="rx" data-svdel="flight.segs.${i}" title="삭제">✕</button></div>`; }).join('')}
+    <button class="linkbtn" data-svadd="flight">+ 구간 추가</button></div>`;
+  return `<div class="card bsvcard"><div class="bsh"><span class="label">Services</span><span class="sp"></span><span class="hint">합계 <b>${money(q.total)}</b> · 1인 ${money(q.perPerson || 0)}</span></div>${veh}${guide}${flight}${!bSvc.on.veh && !bSvc.on.guide && !bSvc.on.flight ? '<div class="hint">왼쪽 Services에서 Vehicle·Guide·Flight를 켜면 여기서 일정·금액을 넣을 수 있습니다.</div>' : ''}</div>`;
+}
+function bSvcSet(path, el) {
+  const ks = path.split('.'), last = ks.pop(); let o = bSvc; for (const k of ks) o = o[k]; const v = el.value;
+  if (last === 'rt') o.rt = el.checked;
+  else if (['cls', 'kind', 'route', 'lang'].includes(last)) { o[last] = v; if (last === 'route' && v[0] !== 'K') o.cls = 'eco'; if (last === 'route' || last === 'cls' || last === 'kind' || (last === 'lang' && ks[0] === 'guide')) { if ('usd' in o) o.usd = null; } }
+  else if (last === 'usd') o[last] = v === '' ? null : Math.max(0, Math.round(+v) || 0);
+  else o[last] = Math.max(last === 'qty' || last === 'n' ? 1 : 0, Math.round(+v) || 0);
+}
+const bHotelPayload = () => (wfSyncBuilder(), { arrival: bArrival, markup: +bMarkup || 0, nights: bHotelsFor(builtDays()) });
 async function bSaveNew() {
   try {
-    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), buyer: { email: bBuyerEmail(), country: bBuyerHit() ? '' : (bBuyer.country || bSel.country || '') }, title: (bTitle.trim() || bAutoTitle()) }) });
+    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, buyer: { email: bBuyerEmail(), country: bBuyerHit() ? '' : (bBuyer.country || bSel.country || '') }, title: (bTitle.trim() || bAutoTitle()) }) });
     bFrom = d.id; bTitle = ''; bBuyer = { id: '', dom: '', country: '' }; bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(d.id));
     try { rows = (await api('/api/admin/list')).rows; } catch {}
-    drawBuilder(); $('b-msg').textContent = `${d.id}로 저장 · 지상비 1인 ${money(d.price.perPerson)}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''} · '내 투어'에서 볼 수 있음`;
+    drawBuilder(); $('b-msg').textContent = `${d.id}로 저장 · ${d.svcQuote ? `서비스 ${money(d.svcQuote.total)}` : `지상비 1인 ${money(d.price.perPerson)}`}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''} · '내 투어'에서 볼 수 있음`;
   } catch (err) { if ($('b-msg')) $('b-msg').textContent = KERR(err); }
 }
 async function bSaveToRequest() {
   const msg = $('b-msg');
   try {
-    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), by: $('das') ? $('das').value : '' }) });
+    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, by: $('das') ? $('das').value : '' }) });
     bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(bFrom)); current = bFromReq;
     const row = rows.find(x => x.id === bFrom); if (row) { row.perPerson = d.price.perPerson; row.total = d.price.total; row.pax = bSel.pax; row.edited = true; }
-    drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · 지상비 1인 ${money(d.price.perPerson)}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''}`;
+    drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · ${d.svcQuote ? `서비스 ${money(d.svcQuote.total)}` : `지상비 1인 ${money(d.price.perPerson)}`}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''}`;
   } catch (err) { if (msg) msg.textContent = KERR(err); }
 }
-$('builder').addEventListener('change', e => {
+// builder events also work in the hotel tab, where the hotels card is shown for a request
+const bOn = (type, fn, cap) => { $('builder').addEventListener(type, fn, cap); $('wk-bhot').addEventListener(type, fn, cap); $('wk-sum').addEventListener(type, fn, cap); };
+bOn('change', e => {
   const el = e.target, d = el.dataset;
+  if (d.sv) { bSvcSet(d.sv, el); drawBuilder(); return; }
+  if (d.bmvon) { const k = d.bmvon; bSel.moveTour ||= {}; if (el.checked) { const [f, to] = k.split('>'); const o = moveTourOptions(f, to, bSel).find(x => !moveTourTaken(f, to, x.value, bSel)); if (o) bSel.moveTour[k] = o.value; } else delete bSel.moveTour[k]; drawBuilder(); return; }
+  if (d.bmvt) { bSel.moveTour ||= {}; bSel.moveTour[d.bmvt] = el.value; drawBuilder(); return; }
   if (d.b) { if (d.b === 'order') bSel.order = el.value.split(','); else { bSel[d.b] = el.value; if (d.b === 'market' && marketOf(bSel.country) !== el.value) bSel.country = ''; } if (bSel.tier !== 'L') bSel.vehicle = 'std'; }
   else if (d.bnum === 'foc') bSel.foc = Math.min(5, Math.max(0, +el.value || 0));
   else if (d.bnum) bSel.pax = Math.min(40, Math.max(1, +el.value || 1));
@@ -2184,17 +2831,74 @@ $('builder').addEventListener('change', e => {
   else if (d.bhmk) bMarkup = Math.max(0, Math.min(200, +el.value || 0));
   else if (d.bhn) {
     const s = bStays(bLast)[+d.bhn], h = bStayHotel(s), nm = el.value.trim();
-    bSetStay(s, !nm ? null : h ? { ...h, name: nm, star: bStarOf(nm) } : { name: nm, star: bStarOf(nm), rooms: [{ type: 'TWN', qty: Math.ceil(bHeads() / 2), net: 0 }] });
+    bSetStay(s, !nm ? null : h ? { ...h, name: nm, star: bStarOf(nm) } : { name: nm, star: bStarOf(nm), st: bStayStarOf(s, +d.bhn), rooms: bReqRooms() });
   }
+  else if (d.bhst !== undefined) { const s = bStays(bLast)[+d.bhst], h = bStayHotel(s); if (h) { h.st = el.value; bSetStay(s, h); } else bStayStar[+d.bhst] = el.value; }
   else if (d.bhr) { const [si, j, f] = d.bhr.split('|'), s = bStays(bLast)[+si], h = bStayHotel(s); h.rooms[+j][f] = f === 'type' ? el.value : Math.max(0, +el.value || 0); bSetStay(s, h); }
   else if (d.bmo) { const f = d.edge ? 'mealOn' : 'mealOff', on = d.edge ? el.checked : !el.checked; bSel[f] ||= {}; if (on) bSel[f][d.bmo] = true; else delete bSel[f][d.bmo]; }
   else return;
   drawBuilder();
 });
-$('builder').addEventListener('input', e => { if (e.target.dataset.bnote) bNote = e.target.value; if (e.target.id === 'b-title') bTitle = e.target.value === bAutoTitle() ? '' : e.target.value; });
-$('builder').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.badd) { e.preventDefault(); bAddSight(e.target.dataset.badd, e.target.value); } });
-$('builder').addEventListener('toggle', e => { if (e.target.id === 'b-cost') bOpen.cost = e.target.open; }, true);
-$('builder').addEventListener('click', e => {
+bOn('input', e => { if (e.target.dataset.bnote) bNote = e.target.value; if (e.target.id === 'b-title') bTitle = e.target.value === bAutoTitle() ? '' : e.target.value; });
+bOn('keydown', e => { if (e.key === 'Enter' && e.target.dataset.badd) { e.preventDefault(); bAddSight(e.target.dataset.badd, e.target.value); } });
+// drag a sight to reorder it within its day (same result as ▲▼: edits[day].ord)
+let bDrag = null;
+bOn('dragstart', e => { const li = e.target.closest('[data-bdrag]'); if (!li) return; const p = li.dataset.bdrag.split('|'), j = +p.pop(); bDrag = { k: p.join('|'), j }; li.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', li.dataset.bdrag); } catch {} });
+bOn('dragend', e => { document.querySelectorAll('.dragging, .drop-before, .drop-after').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after')); bDrag = null; });
+bOn('dragover', e => {
+  const li = e.target.closest('[data-bdrag]'); if (!li || !bDrag) return;
+  const p = li.dataset.bdrag.split('|'); p.pop(); if (p.join('|') !== bDrag.k) return;
+  e.preventDefault(); const r = li.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
+  document.querySelectorAll('.drop-before, .drop-after').forEach(x => x.classList.remove('drop-before', 'drop-after')); li.classList.add(after ? 'drop-after' : 'drop-before');
+});
+bOn('drop', e => {
+  const li = e.target.closest('[data-bdrag]'); if (!li || !bDrag) return;
+  const p = li.dataset.bdrag.split('|'), j = +p.pop(), k = p.join('|'); if (k !== bDrag.k) return; e.preventDefault();
+  const r = li.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2, day = (bLast || []).find(x => dk(x) === k); if (!day) return;
+  const keys = (day.kind === 'tour' ? day.stops : (day.adds || [])).map(x => x.key), [mv] = keys.splice(bDrag.j, 1);
+  let to = j + (after ? 1 : 0); if (bDrag.j < to) to--; keys.splice(to, 0, mv); bEdit(k).ord = keys; bDrag = null; drawBuilder();
+});
+// drag a city row to change the order of cities (bSel.order)
+let bCityDrag = null;
+bOn('dragstart', e => { const r = e.target.closest && e.target.closest('[data-bcity]'); if (!r) return; bCityDrag = r.dataset.bcity; r.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', bCityDrag); } catch {} });
+bOn('dragover', e => { const r = e.target.closest('[data-bcity]'); if (!r || !bCityDrag) return; e.preventDefault(); const b = r.getBoundingClientRect(), after = e.clientY > b.top + b.height / 2; document.querySelectorAll('.bcrow.drop-before, .bcrow.drop-after').forEach(x => x.classList.remove('drop-before', 'drop-after')); r.classList.add(after ? 'drop-after' : 'drop-before'); });
+bOn('drop', e => {
+  const r = e.target.closest('[data-bcity]'); if (!r || !bCityDrag) return; e.preventDefault();
+  const b = r.getBoundingClientRect(), after = e.clientY > b.top + b.height / 2, o = bSel.order.filter(c => c !== bCityDrag);
+  let to = o.indexOf(r.dataset.bcity); if (to < 0) to = o.length; else if (after) to++;
+  o.splice(to, 0, bCityDrag); bCityDrag = null; bSel.order = o; drawBuilder();
+});
+bOn('dragend', () => { bCityDrag = null; document.querySelectorAll('.bcrow.dragging, .bcrow.drop-before, .bcrow.drop-after').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after')); });
+// arrival date: a small calendar in the page's own style (the browser's date picker looks different everywhere)
+const bDpLabel = iso => { const d = new Date(iso + 'T00:00:00'); return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; };
+let bDpView = null;
+function bDpDraw() {
+  const el = $('bdp'); if (!el) return;
+  const v = bDpView, y = v.getFullYear(), m = v.getMonth(), first = new Date(y, m, 1).getDay(), n = new Date(y, m + 1, 0).getDate();
+  const iso = d => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+  let h = `<div class="bdp-h"><button type="button" data-bdp="-1" aria-label="이전 달">‹</button><b>${y}년 ${m + 1}월</b><button type="button" data-bdp="1" aria-label="다음 달">›</button></div><div class="bdp-g">${'일월화수목금토'.split('').map((w, i) => `<span class="w${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</span>`).join('')}${'<span></span>'.repeat(first)}`;
+  for (let d = 1; d <= n; d++) { const x = iso(d), wd = (first + d - 1) % 7; h += `<button type="button" data-bdpd="${x}" class="${[x === bArrival ? 'on' : '', x === today ? 'today' : '', wd === 0 ? 'sun' : wd === 6 ? 'sat' : ''].filter(Boolean).join(' ')}">${d}</button>`; }
+  el.innerHTML = h + `</div><div class="bdp-f"><button type="button" data-bdp="clear">지우기</button><button type="button" data-bdp="today">오늘</button></div>`;
+}
+bOn('click', e => {
+  const b = e.target.closest('[data-bdp], [data-bdpd]'); if (!b) return;
+  const el = $('bdp');
+  if (b.dataset.bdpd) { bArrival = b.dataset.bdpd; drawBuilder(); return; }
+  const a = b.dataset.bdp;
+  if (a === 'open') { if (!el.hidden) { el.hidden = true; return; } const base = bArrival ? new Date(bArrival + 'T00:00:00') : new Date(); bDpView = new Date(base.getFullYear(), base.getMonth(), 1); bDpDraw(); el.hidden = false; return; }
+  if (a === '-1' || a === '1') { bDpView = new Date(bDpView.getFullYear(), bDpView.getMonth() + +a, 1); bDpDraw(); return; }
+  if (a === 'clear') { bArrival = ''; drawBuilder(); return; }
+  if (a === 'today') { const t = new Date(); bDpView = new Date(t.getFullYear(), t.getMonth(), 1); bDpDraw(); }
+});
+document.addEventListener('click', e => { const el = $('bdp'); if (el && !el.hidden && !e.composedPath().some(x => x.classList && x.classList.contains('bdp-wrap'))) el.hidden = true; });
+bOn('toggle', e => { if (e.target.id === 'b-cost') bOpen.cost = e.target.open; }, true);
+bOn('click', e => {
+  const st = e.target.closest('[data-bstep]');
+  if (st) { const inp = st.parentNode.querySelector('input'), v = Math.min(+inp.max || 99, Math.max(+inp.min || 0, (+inp.value || 0) + +st.dataset.bstep)); if (v !== +inp.value) { inp.value = v; inp.dispatchEvent(new Event('change', { bubbles: true })); } return; }
+  const sg = e.target.closest('[data-bseg]');
+  if (sg) { const k = sg.dataset.bseg, v = sg.dataset.v; bSel[k] = v; if (k === 'tier' && v !== 'L') bSel.vehicle = 'std'; if (k === 'market' && bSel.country && marketOf(bSel.country) !== v) bSel.country = ''; drawBuilder(); }
+});
+bOn('click', e => {
   const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
   if (d.brm) { const [k, s] = d.brm.split('|'); const ed = bEdit(k); if (ed.add.includes(s)) ed.add.splice(ed.add.indexOf(s), 1); else ed.rm.push(s); drawBuilder(); }
   if (d.bso) { const p = d.bso.split('|'), dir = +p.pop(), j = +p.pop(), k = p.join('|'), day = (bLast || []).find(x => dk(x) === k); if (!day) return; const keys = (day.kind === 'tour' ? day.stops : (day.adds || [])).map(x => x.key), t = j + dir; if (t < 0 || t >= keys.length) return; [keys[j], keys[t]] = [keys[t], keys[j]]; bEdit(k).ord = keys; drawBuilder(); return; }
@@ -2211,7 +2915,15 @@ $('builder').addEventListener('click', e => {
   if (d.bhx) { const [si, j] = d.bhx.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.splice(+j, 1); bSetStay(s, h); drawBuilder(); }
   if (d.bhest) { const [si, v] = d.bhest.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.forEach(x => { if (!x.net) x.net = +v; }); bSetStay(s, h); drawBuilder(); }
   if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) location.href = u; return; }
-  if (d.bpdf) { bPdf(); return; }
+  if (d.bpdf) { const m = $('bpdf-m'); if (m) m.hidden = !m.hidden; return; }
+  if (d.bsvc) { const k = d.bsvc; bSvc.on[k] = !bSvc.on[k]; if (k === 'itin' && bSvc.on.itin) bSvc.on.veh = bSvc.on.guide = bSvc.on.flight = false;
+    if (!SVC_LBL.some(([x]) => bSvc.on[x])) bSvc.on.hotel = true; drawBuilder(); return; }
+  if (d.svadd) { const [t, c] = d.svadd.split('|'), days = builtDays(), st = bStays(days).find(x => x.city === c);
+    if (t === 'veh') { const L = bLimo(), has = bSvc.veh.items.some(x => x.city === c); bSvc.veh.items.push({ day: st ? (has ? Math.min(st.to + 1, st.from + 1) : st.from) : 0, city: c, kind: has ? 'day' : L.kinds[c][0], n: 1, usd: null }); }
+    else { const r = routeOf(bSel), F = { seoul: 'SEL', jeju: 'CJU', busan: 'PUS' }, i = bStays(days).findIndex((x, k, a) => k > 0); const st = bStays(days); bSvc.flight.segs.push(st.length > 1 ? { day: st[1].from, route: `F-${F[st[0].city]}-${F[st[1].city]}`, cls: 'eco', rt: false, usd: null } : { day: 0, route: 'F-SEL-CJU', cls: 'eco', rt: false, usd: null }); if (!bLimo().routes[bSvc.flight.segs.at(-1).route]) bSvc.flight.segs.at(-1).route = 'F-SEL-CJU'; }
+    drawBuilder(); return; }
+  if (d.svdel) { const ks = d.svdel.split('.'), i = +ks.pop(); let o = bSvc; for (const k of ks) o = o[k]; o.splice(i, 1); drawBuilder(); return; }
+  if (d.bpdfm) { if ($('bpdf-m')) $('bpdf-m').hidden = true; bPdf(d.bpdfm); return; }
   if (d.bsend) { bSend(); return; }
   if (d.bqpdf) { qdShow(bFromReq.quotes[+d.bqpdf]); return; }
   if (d.bmall) { bMealAll(d.bmall); drawBuilder(); }
@@ -2221,13 +2933,12 @@ $('builder').addEventListener('click', e => {
   if (d.bjump) { const el = $(d.bjump); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
   if (d.bsavemain) { if (bFrom) bSaveToRequest(); else bSaveNew(); }
   if (b.id === 'b-reset-edit') { bEdits = {}; bOrder = {}; drawBuilder(); }
-  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
+  if (b.id === 'b-new') { bBuyer = { id: '', dom: '', country: '' }; bSel = bNew(); bSvc = SVC_DEF(); bEdits = {}; bOrder = {}; bHotels = []; bArrival = ''; bMarkup = 0; bTitle = ''; bNote = ''; bFold = {}; bAddOpen = {}; bFrom = ''; bFromReq = null; drawBuilder(); }
   if (b.id === 'b-save-req') bSaveToRequest();
   if (b.id === 'b-save-new') bSaveNew();
-  if (b.id === 'b-back-req') { const id = bFrom; showTab('list'); open(id); }
+  
   if (b.id === 'b-copy') { const t = bText(bLast); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => alertBox('복사 완료'), () => alertBox('복사 불가')); }
 });
-$('to-builder').onclick = () => openInBuilder(current);
 $('sheet').addEventListener('click', e => { const b = e.target.closest('[data-qpdf]'); if (b && current && current.quotes) qdShow(current.quotes[+b.dataset.qpdf]); });
 
 // ---- ④ invoice. Issued automatically when the status becomes 예약 확정 (booked); stored on the request as wf.invoice.
@@ -2389,13 +3100,13 @@ function invoiceHTML(v) {
 }
 function invoiceSection() {
   const v = wf.invoice;
-  if (!v) return `<div class="step" id="w-inv"><h3>④ 인보이스</h3>
-    <p class="hint">상태를 <b>예약 확정</b>으로 바꾸면 인보이스 자동 발급 (번호·발행일·입금 기한·일정 내역·금액 자동 작성). 지상비·호텔 금액은 ①·② 기준.</p>
+  if (!v) return `<div class="step" id="w-inv"><h3>인보이스</h3>
+    <p class="hint">상태를 <b>예약 확정</b>으로 바꾸면 인보이스 자동 발급 (번호·발행일·입금 기한·일정 내역·금액 자동 작성). 지상비·호텔 금액은 Itinerary·Hotel 탭 기준.</p>
     <div class="acts"><button class="btn ghost" id="i-issue">지금 발급</button><span class="saved" id="i-msg"></span></div></div>`;
   const t = invTotals(v), b = v.billTo, f = (k, l, w, type = 'text') => `<label>${l}<input data-iv="${k}" type="${type}" value="${esc(v[k])}" style="width:${w}px"></label>`;
   const bt = (k, l, w) => `<label>${l}<input data-ib="${k}" value="${esc(b[k])}" style="width:${w}px"${!b[k] ? ' class="need"' : ''}></label>`;
   const K = { h: '제목', i: '항목', t: '총액' };
-  return `<div class="step" id="w-inv"><h3>④ 인보이스 <span class="done">발급 ${esc(v.no)}${v.rev ? ' · R' + v.rev : ''}</span>${v.sentAt ? ` <span class="done">발송 ${fmtT(v.sentAt)}</span>` : ''}</h3>
+  return `<div class="step" id="w-inv"><h3>인보이스 <span class="done">발급 ${esc(v.no)}${v.rev ? ' · R' + v.rev : ''}</span>${v.sentAt ? ` <span class="done">발송 ${fmtT(v.sentAt)}</span>` : ''}</h3>
     <div class="row">${f('no', 'Invoice #', 170)}${f('date', '발행일', 140, 'date')}${f('due', '입금 기한 (Payment Due)', 150, 'date')}${f('customerId', 'Customer ID', 110)}${f('quotationNo', 'Quotation #', 130)}</div>
     <div class="row">${bt('name', 'Bill To · 회사명', 260)}<label>주소<textarea data-ib="address" rows="2" style="width:300px;min-height:0"${!b.address ? ' class="need"' : ''}>${esc(b.address)}</textarea></label>${bt('tel', '전화', 160)}${bt('atten', 'Atten', 160)}</div>
     <details class="cost" id="i-edit"${invOpen ? ' open' : ''}><summary>내역·조건 편집 <span class="hint">· 합계 US$ ${amt2(t.grand)}</span></summary>
@@ -2532,14 +3243,17 @@ function hotelInfo(h) {
   const bits = x ? [x.star, x.area, x.contract === 'O' && '계약 요금표 있음', x.triple === 'O' && '트리플', x.familyTwin && x.familyTwin !== 'X' && `패밀리트윈 ${x.familyTwin}`, x.quad && x.quad !== 'X' && `쿼드 ${x.quad}`, x.phone && `☎ ${x.phone}`].filter(Boolean) : [];
   return `${x ? `<b>${esc(bits.join(' · '))}</b>${remark(x) ? `<br>${esc(remark(x))}` : ''}` : (DIR ? '목록에 없는 호텔' : '')}${est ? `<br>기준 요금(세금 10% 포함, 1실 1박 평균) ${krw(est)} <button class="btn ghost sm" data-hest="${esc(String(est))}">회신 요금 칸에 넣기</button>` : ''}`;
 }
+const hotelListId = h => `dl-hotel-${h.city}${h.star ? '-' + h.star : ''}`;
+const starOfDir = x => { const m = String((x && x.star) || '').match(/[345]/); return m ? m[0] : ''; };
 function hotelDatalists() {
   if (!DIR) return '';
-  return Object.keys(DCITY).map(c => `<datalist id="dl-hotel-${c}">${hotelsIn(c).map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area, h.verdict].filter(Boolean).join(' · '))}</option>`).join('')}</datalist>`).join('');
+  const li = hs => hs.map(h => `<option value="${esc(h.name)}">${esc([h.star, h.area, h.verdict].filter(Boolean).join(' · '))}</option>`).join('');
+  return Object.keys(DCITY).map(c => `<datalist id="dl-hotel-${c}">${li(hotelsIn(c))}</datalist>${['3', '4', '5'].map(n => `<datalist id="dl-hotel-${c}-${n}">${li(hotelsIn(c).filter(h => starOfDir(h) === n))}</datalist>`).join('')}`).join('');
 }
 // ③ vendor suggestions by category (guides and restaurants by the city in the item, restaurants by the guests' diet first)
 function opsVendorList(o, i) {
   if (!DIR) return '';
-  const cityKo = /부산/.test(o.item + o.detail) ? 'Busan' : /제주/.test(o.item + o.detail) ? 'Jeju' : /서울/.test(o.item + o.detail) ? 'Seoul' : '';
+  const cityKo = CITY_EN[opCity(o)] || '';
   let list = [];
   if (o.cat === 'vehicle') list = DIR.transport.map(t => [t.name, [t.city, t.vehicles].filter(Boolean).join(' · ')]);
   if (o.cat === 'guide') list = DIR.guides.filter(g => !cityKo || g.city === cityKo).sort((a, b) => (a.status === '승인' ? 0 : 1) - (b.status === '승인' ? 0 : 1)).map(g => [g.name, [g.city, g.langs, g.drive, g.status !== '승인' && g.status, g.phone, remark(g)].filter(Boolean).join(' · ')]);
@@ -2644,7 +3358,7 @@ $('buyers').addEventListener('click', async e => {
   try { BUY = await api('/api/admin/buyers', { method: 'POST', body: JSON.stringify(body) }); buyDirty = {}; compDirty = {}; drawBuyers(); $('by-msg').textContent = '저장 완료 · 사이트에 바로 적용'; }
   catch (err) { $('by-msg').textContent = KERR(err); }
 });
-document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => b.dataset.tab === 'builder' && USE_STAFF_TOUR ? goTour('') : showTab(b.dataset.tab));
 $('go').onclick = () => { key = $('pw').value; load(); };
 // staff sign-in: email + 6-digit PIN; sign-up and new PIN need a code sent to the @hakeemtravel.com address
 const lgMsg = (t, ok) => { $('err').textContent = t; $('err').className = 'err' + (ok ? ' ok' : ''); };
