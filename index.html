@@ -485,6 +485,12 @@ body.qv-on main, body.qv-on .intro, body.qv-on .mini { display: none !important;
 .qv[hidden] { display: none; }
 .qv-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .qv-bar .sp { flex: 1; }
+.prof .prof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 16px; }
+.prof label { display: flex; flex-direction: column; gap: 5px; font-size: .85rem; font-weight: 600; }
+.prof input { font: inherit; font-weight: 400; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.prof .prof-act { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.prof-msg { font-size: .85rem; } .prof-msg.ok { color: var(--ok, #0c6b60); } .prof-msg.err { color: #b42318; }
+.card.prof + .card.prof { margin-top: 14px; }
 .qv-head { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
 @media (max-width: 620px) { .qv-head { grid-template-columns: 1fr; } }
 .qv-head h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.7rem; margin: 2px 0 4px; }
@@ -1891,7 +1897,7 @@ function onAuth(fresh) {
   document.getElementById('gate').hidden = true; document.body.classList.remove('gated');
   const acct = document.getElementById('acct');
   document.getElementById('auth-btns').hidden = true;
-  acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-my">My quotations<span id="acct-my-n"></span></button> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
+  acct.hidden = false; acct.innerHTML = `<span>${esc(BUYER.name)} · <b>${esc(BUYER.code)}</b></span> <button type="button" class="linkbtn" id="acct-my">My quotations<span id="acct-my-n"></span></button> <button type="button" class="linkbtn" id="acct-prof">My profile</button> <button type="button" class="linkbtn" id="acct-out">Sign out</button>`;
   myCount();
   const fill = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
   if (BUYER.country && !sel.country && COUNTRIES.some(c => c[1] === BUYER.country)) { sel.country = BUYER.country; sel.market = marketOf(BUYER.country); if (typeof cIn !== 'undefined') cIn.value = cName(BUYER.country); syncButtons(); }
@@ -2110,6 +2116,71 @@ document.addEventListener('click', e => {
   if (e.target.closest('#acct-my')) { showMy(); return; }
   if (e.target.closest('#my-back')) { showMy(); return; }
   const q = e.target.closest('[data-myq]'); if (q) { const [i, j] = q.dataset.myq.split('|').map(Number); showMyQuote(i, j); }
+});
+// My profile: the buyer fixes their own name, company, country and phone (PIN to save); a new email needs a code sent to it
+async function profileCall(body) {
+  if (window.HK_PREVIEW) { if (body.op === 'emailCode') return { ok: true, sentTo: body.email }; return { ok: true, buyer: { ...BUYER, ...(body.profile || {}), ...(body.op === 'emailConfirm' ? { email: PROF_NEW } : {}) }, token: TOKEN }; }
+  const r = await hkFetch('/api/profile', 'POST', { auth: authOf(), ...body }), d = await r.json().catch(() => ({}));
+  if (r.status === 401 && /log in/i.test(d.error || '')) throw Object.assign(new Error(d.error), { relog: true });
+  if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+  return d;
+}
+let PROF_NEW = '';
+const pCountry = v => { const q = String(v || '').trim().toLowerCase(); if (!q) return ''; const hits = gFilter(q).filter(isC), exact = G_C.find(([n, c]) => n.toLowerCase() === q || c.toLowerCase() === q); return exact ? exact[1] : hits.length === 1 ? hits[0][1] : null; };
+function showProfile() {
+  const qv = document.getElementById('qv'), b = BUYER, cn = (G_C.find(x => x[1] === b.country) || [''])[0];
+  qv.innerHTML = `<div class="qv-bar"><button type="button" class="btn ghost" id="qv-back">← Back to the tour builder</button></div>
+    <div class="card prof"><div class="qv-ref">${esc(b.code)}</div><h2 style="margin:4px 0 0">My profile</h2><p class="q-note" style="margin:6px 0 14px">Keep your details up to date so our quotations reach the right person. Your buyer code and rates stay the same.</p>
+      <div class="prof-grid">
+        <label>Name<input id="pf-name" value="${esc(b.name || '')}" autocomplete="name"></label>
+        <label>Company<input id="pf-company" value="${esc(b.company || '')}" autocomplete="organization"></label>
+        <label>Country<input id="pf-country" list="pf-cc" value="${esc(cn)}" autocomplete="off" spellcheck="false" placeholder="Type to search"><datalist id="pf-cc">${G_C.map(([n]) => `<option value="${esc(n)}">`).join('')}</datalist></label>
+        <label>Phone <span class="hint">(optional)</span><input id="pf-phone" value="${esc(b.phone || '')}" autocomplete="tel"></label>
+        <label>Your PIN<input id="pf-pin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 digits"></label>
+      </div>
+      <div class="prof-act"><button type="button" class="btn" id="pf-save">Save changes</button><span class="prof-msg" id="pf-msg"></span></div>
+    </div>
+    <div class="card prof"><h3 style="margin:0">Email (log-in)</h3><p class="q-note" style="margin:6px 0 12px">Now: <b>${esc(b.email)}</b>. We send a 6-digit code to the new address; it changes once you enter the code.</p>
+      <div class="prof-grid">
+        <label>New email<input id="pf-email" type="email" autocomplete="email" placeholder="name@company.com"></label>
+        <label>Your PIN<input id="pf-pin2" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 digits"></label>
+      </div>
+      <div class="prof-act"><button type="button" class="btn ghost" id="pf-code">Send code</button><span class="prof-msg" id="pf-msg2"></span></div>
+      <div class="prof-grid" id="pf-step2" hidden><label>Code from the email<input id="pf-ecode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="6 digits"></label></div>
+      <div class="prof-act" id="pf-step2b" hidden><button type="button" class="btn" id="pf-confirm">Change my email</button></div>
+    </div>`;
+  qv.hidden = false; document.body.classList.add('qv-on'); window.scrollTo(0, 0);
+}
+async function profileDo(id) {
+  const msg = (t, ok, el = 'pf-msg') => { const m = document.getElementById(el); m.textContent = t; m.className = 'prof-msg' + (ok ? ' ok' : t ? ' err' : ''); };
+  const val = x => document.getElementById(x).value.trim();
+  const done = d => { BUYER = d.buyer; if (d.token) TOKEN = d.token; onAuth(false); showProfile(); };
+  try {
+    if (id === 'pf-save') {
+      const country = pCountry(val('pf-country'));
+      if (!val('pf-name') || !val('pf-company') || !country) return msg(country === null ? 'Please pick a country from the list.' : 'Please fill in your name, company and country.');
+      if (!/^\d{4}$/.test(val('pf-pin'))) return msg('Please enter your 4-digit PIN.');
+      msg('Saving…', true);
+      const d = await profileCall({ op: 'update', pin: val('pf-pin'), profile: { name: val('pf-name'), company: val('pf-company'), country, phone: val('pf-phone') } });
+      done(d); msg('Saved.', true);
+    } else if (id === 'pf-code') {
+      const email = val('pf-email').toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return msg('Please enter a valid email.', false, 'pf-msg2');
+      if (!/^\d{4}$/.test(val('pf-pin2'))) return msg('Please enter your 4-digit PIN.', false, 'pf-msg2');
+      msg('Sending…', true, 'pf-msg2');
+      await profileCall({ op: 'emailCode', pin: val('pf-pin2'), email }); PROF_NEW = email;
+      document.getElementById('pf-step2').hidden = false; document.getElementById('pf-step2b').hidden = false;
+      msg(`Code sent to ${email}. It is valid for 15 minutes.`, true, 'pf-msg2'); document.getElementById('pf-ecode').focus();
+    } else if (id === 'pf-confirm') {
+      if (!/^\d{6}$/.test(val('pf-ecode'))) return msg('Please enter the 6-digit code.', false, 'pf-msg2');
+      const d = await profileCall({ op: 'emailConfirm', code: val('pf-ecode') });
+      done(d); msg('Your email is changed. Use it to log in from now on.', true, 'pf-msg2');
+    }
+  } catch (e) { if (e.relog) { BUYER = null; TOKEN = ''; hideQuote(); showGate('in'); return; } msg(e.message, false, id === 'pf-save' ? 'pf-msg' : 'pf-msg2'); }
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('#acct-prof')) { showProfile(); return; }
+  const b = e.target.closest('#pf-save, #pf-code, #pf-confirm'); if (b) profileDo(b.id);
 });
 function hideQuote() { document.getElementById('qv').hidden = true; document.body.classList.remove('qv-on'); }
 document.addEventListener('click', e => {

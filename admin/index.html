@@ -160,6 +160,7 @@ ul.bst small.pm { display: block; font-size: .75rem; color: var(--gold); font-we
 #builder .bem { display: inline-flex; align-items: center; gap: 4px; }
 #builder .bem input { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; width: 150px; font: inherit; }
 #builder .bem input[data-bbuy=dom] { width: 190px; }
+#builder input.bcc { width: 190px; }
 #builder .bith select { border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; font-size: .82rem; }
 .bao { font-size: .84rem; color: var(--brand); }
 #builder .bhead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--line); }
@@ -190,6 +191,13 @@ ul.bst small.pm { display: block; font-size: .75rem; color: var(--gold); font-we
 .bgrid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
 @media (max-width: 1000px) { .bgrid { grid-template-columns: minmax(0, 1fr); } }
 .bprice { position: sticky; top: 12px; }
+.bfee { border: 1.5px solid var(--gold); border-radius: 12px; background: var(--gold-soft); padding: 10px 12px; margin: 2px 0 10px; }
+.bfee > div { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; align-items: baseline; }
+.bfee b { justify-self: end; } .bfee em { grid-column: 2; justify-self: end; font-style: normal; font-size: .75rem; color: var(--muted); }
+.bfee-top { padding-bottom: 8px; margin-bottom: 6px; border-bottom: 1px dashed var(--gold); }
+.bfee-top span { font-weight: 700; font-size: .95rem; } .bfee-top small { display: block; font-weight: 400; font-size: .72rem; color: var(--muted); }
+.bfee-top b { font-size: 1.55rem; color: var(--brand); }
+.bfee-row { padding: 3px 0; font-size: .9rem; } .bfee-row b { font-size: 1.02rem; } .bfee-row b.na { font-weight: 500; color: var(--muted); font-size: .85rem; }
 .bprice h4 { margin: 14px 0 4px; font-size: .85rem; }
 .bprice tr.on td { background: var(--gold-soft); font-weight: 700; }
 .bprice details { margin-top: 12px; font-size: .85rem; }
@@ -242,6 +250,57 @@ ul.bst .bso button:disabled { opacity: .3; cursor: default; }
 .ct input.n { width: 110px; text-align: right; } .ct input.q { width: 64px; text-align: right; }
 .ct td:nth-child(2), .ct td:nth-child(3), .ct td:nth-child(4) { width: 1%; }
 .cost .edited { background: var(--gold-soft); color: var(--gold); font-size: .72rem; padding: 2px 7px; border-radius: 99px; margin-left: 4px; }
+#w-inv .ct td:nth-child(2), #w-inv .ct th:nth-child(2) { width: auto; }
+#w-inv .ct td:nth-child(1), #w-inv .ct td:nth-child(3), #w-inv .ct td:nth-child(4) { width: 1%; }
+#w-inv .ct td:nth-child(1) select { border: 1px solid var(--line); border-radius: 6px; padding: 3px; }
+/* ④ invoice (same layout as the Excel invoice) */
+#w-inv label.chk { display: flex; align-items: center; gap: 5px; font-size: .82rem; color: var(--ink); white-space: nowrap; }
+#w-inv .need { border-color: #e0a1a1; background: #fdf1f1; }
+.inv-wrap { overflow: auto; background: #e9ecef; padding: 18px; border-radius: 10px; margin-top: 12px; }
+.iv { font-family: "Malgun Gothic", "Segoe UI", "Pretendard Variable", sans-serif; color: #111; font-size: 11px; line-height: 1.35; width: 760px; margin: 0 auto; background: #fff; padding: 34px 42px 28px; box-shadow: 0 1px 6px rgba(0,0,0,.12); }
+.iv h1 { text-align: center; font-size: 26px; letter-spacing: .04em; margin: 0 0 4px; font-weight: 800; font-family: inherit; }
+.iv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.iv-top img { height: 84px; }
+.iv table { width: auto; font-size: 11px; border-collapse: collapse; margin: 0; }
+.iv th, .iv td { color: #111; text-transform: none; letter-spacing: 0; font-size: 11px; border: 0; padding: 0; vertical-align: middle; }
+.iv tbody tr { cursor: default; } .iv tbody tr:hover { background: none; }
+.iv-meta th { text-align: right; font-weight: 400; padding: 1.5px 10px 1.5px 0; }
+.iv-meta td { padding: 1.5px 0; min-width: 110px; }
+.iv-par { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 14px; }
+.iv-lab { padding-bottom: 3px; border-bottom: 2px solid #111; margin-bottom: 4px; }
+.iv-box div { padding: 1.5px 0; }
+.iv-addr { display: flex; gap: 4px; }
+.iv-ph { color: #c0392b; background: #fdecea; padding: 0 4px; border-radius: 3px; }
+.iv .iv-desc { width: 100%; border: 1.5px solid #111; }
+.iv-desc th { font-weight: 700; padding: 3px 10px; border-bottom: 1px solid #111; text-align: left; }
+.iv-desc th:last-child { text-align: center; border-left: 1px solid #111; width: 150px; }
+.iv-desc td { padding: 2px 10px; height: 19px; border-bottom: 1px solid #e6e6e6; }
+.iv-desc td:last-child { border-left: 1px solid #111; }
+.iv-desc tr:last-child td { border-bottom: 0; }
+.iv-h td:first-child, .iv-t td:first-child { font-weight: 700; }
+.iv-i td:first-child, .iv-p td:first-child { padding-left: 18px; }
+.iv-p td:first-child { color: #e3120b; } .iv-ph2 td:first-child { padding-left: 10px; }
+.iv-d { float: left; } .iv-n { float: right; }
+.iv-bot { display: grid; grid-template-columns: 1fr 270px; gap: 24px; margin-top: 6px; }
+.iv-notes { border: 1.5px solid #111; align-self: start; }
+.iv-nh { font-weight: 700; border-bottom: 1px solid #111; padding: 3px 8px; }
+.iv-nb { padding: 4px 8px; min-height: 42px; }
+.iv .iv-sum { width: 100%; }
+.iv-sum th { text-align: right; font-weight: 700; padding: 3px 14px 3px 0; }
+.iv-sum td { width: 130px; padding: 3px 0; font-weight: 700; }
+.iv-sign { position: relative; height: 84px; margin: 6px 0 0; }
+.iv-seal { position: absolute; right: 100px; top: 0; height: 78px; }
+.iv-sg { position: absolute; right: 0; top: 14px; height: 46px; }
+.iv-thx { text-align: center; padding: 6px 0 8px; border-bottom: 2px solid #111; line-height: 1.7; }
+.iv-foot { text-align: center; padding-top: 8px; line-height: 1.8; font-size: 10.5px; }
+#isheet { display: none; }
+@media print {
+  body.printing-inv header, body.printing-inv main, body.printing-inv #qsheet, body.printing-inv .pv { display: none !important; }
+  body.printing-inv #isheet { display: block !important; }
+  body.printing-inv #isheet .iv { width: auto; box-shadow: none; padding: 0; }
+  .iv * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .iv-ph { color: transparent; background: none; }
+}
 body.printing-quote #qsheet { display: block; }
 @media print { body.printing-quote header, body.printing-quote main { display: none !important; } body.printing-quote #qsheet { display: block !important; } }
 @media print { header, .dtop, #list { display: none !important; } body { background: #fff; } main { padding: 0; } .sheet { border: 0; padding: 0; } }
@@ -313,9 +372,11 @@ body.printing-quote #qsheet { display: block; }
       <button class="btn" onclick="window.print()">PDF 저장</button>
     </div>
     <div class="wf" id="wf"></div>
+    <div class="wf" id="wfinv"></div>
     <div class="sheet" id="sheet"></div>
   </section>
 </main>
+<div id="isheet"></div>
 <div id="qsheet"></div>
 <script>
 /* ===== Hakeem Travel Korea — tour builder itinerary engine =====
@@ -603,7 +664,7 @@ const MARKETS = {
 };
 
 // Guests' country (ISO 3166 alpha-3) → market rules. Middle East and India change the itinerary; others use the default.
-const COUNTRIES = [["Afghanistan","AFG"],["Albania","ALB"],["Algeria","DZA"],["American Samoa","ASM"],["Andorra","AND"],["Angola","AGO"],["Anguilla","AIA"],["Antigua and Barbuda","ATG"],["Argentina","ARG"],["Armenia","ARM"],["Aruba","ABW"],["Australia","AUS"],["Austria","AUT"],["Azerbaijan","AZE"],["Bahamas","BHS"],["Bahrain","BHR"],["Bangladesh","BGD"],["Barbados","BRB"],["Belarus","BLR"],["Belgium","BEL"],["Belize","BLZ"],["Benin","BEN"],["Bermuda","BMU"],["Bhutan","BTN"],["Bolivia","BOL"],["Bonaire, Sint Eustatius and Saba","BES"],["Bosnia and Herzegovina","BIH"],["Botswana","BWA"],["Brazil","BRA"],["British Virgin Islands","VGB"],["Brunei","BRN"],["Bulgaria","BGR"],["Burkina Faso","BFA"],["Burundi","BDI"],["Cabo Verde","CPV"],["Cambodia","KHM"],["Cameroon","CMR"],["Canada","CAN"],["Cayman Islands","CYM"],["Central African Republic","CAF"],["Chad","TCD"],["Chile","CHL"],["China","CHN"],["Christmas Island","CXR"],["Cocos Islands","CCK"],["Colombia","COL"],["Comoros","COM"],["Congo","COG"],["Cook Islands","COK"],["Costa Rica","CRI"],["Croatia","HRV"],["Cuba","CUB"],["Curaçao","CUW"],["Cyprus","CYP"],["Czech Republic","CZE"],["Côte d'Ivoire","CIV"],["DR Congo","COD"],["Denmark","DNK"],["Djibouti","DJI"],["Dominica","DMA"],["Dominican Republic","DOM"],["Ecuador","ECU"],["Egypt","EGY"],["El Salvador","SLV"],["Equatorial Guinea","GNQ"],["Eritrea","ERI"],["Estonia","EST"],["Eswatini","SWZ"],["Ethiopia","ETH"],["Falkland Islands","FLK"],["Faroe Islands","FRO"],["Fiji","FJI"],["Finland","FIN"],["France","FRA"],["French Guiana","GUF"],["French Polynesia","PYF"],["Gabon","GAB"],["Gambia","GMB"],["Georgia","GEO"],["Germany","DEU"],["Ghana","GHA"],["Gibraltar","GIB"],["Greece","GRC"],["Greenland","GRL"],["Grenada","GRD"],["Guadeloupe","GLP"],["Guam","GUM"],["Guatemala","GTM"],["Guernsey","GGY"],["Guinea","GIN"],["Guinea-Bissau","GNB"],["Guyana","GUY"],["Haiti","HTI"],["Honduras","HND"],["Hong Kong","HKG"],["Hungary","HUN"],["Iceland","ISL"],["India","IND"],["Indonesia","IDN"],["Iran","IRN"],["Iraq","IRQ"],["Ireland","IRL"],["Isle of Man","IMN"],["Israel","ISR"],["Italy","ITA"],["Jamaica","JAM"],["Japan","JPN"],["Jersey","JEY"],["Jordan","JOR"],["Kazakhstan","KAZ"],["Kenya","KEN"],["Kiribati","KIR"],["Kuwait","KWT"],["Kyrgyzstan","KGZ"],["Laos","LAO"],["Latvia","LVA"],["Lebanon","LBN"],["Lesotho","LSO"],["Liberia","LBR"],["Libya","LBY"],["Liechtenstein","LIE"],["Lithuania","LTU"],["Luxembourg","LUX"],["Macao","MAC"],["Madagascar","MDG"],["Malawi","MWI"],["Malaysia","MYS"],["Maldives","MDV"],["Mali","MLI"],["Malta","MLT"],["Marshall Islands","MHL"],["Martinique","MTQ"],["Mauritania","MRT"],["Mauritius","MUS"],["Mayotte","MYT"],["Mexico","MEX"],["Micronesia","FSM"],["Moldova","MDA"],["Monaco","MCO"],["Mongolia","MNG"],["Montenegro","MNE"],["Montserrat","MSR"],["Morocco","MAR"],["Mozambique","MOZ"],["Myanmar","MMR"],["Namibia","NAM"],["Nauru","NRU"],["Nepal","NPL"],["Netherlands","NLD"],["New Caledonia","NCL"],["New Zealand","NZL"],["Nicaragua","NIC"],["Niger","NER"],["Nigeria","NGA"],["Niue","NIU"],["Norfolk Island","NFK"],["North Macedonia","MKD"],["Northern Mariana Islands","MNP"],["Norway","NOR"],["Oman","OMN"],["Pakistan","PAK"],["Palau","PLW"],["Palestine","PSE"],["Panama","PAN"],["Papua New Guinea","PNG"],["Paraguay","PRY"],["Peru","PER"],["Philippines","PHL"],["Pitcairn","PCN"],["Poland","POL"],["Portugal","PRT"],["Puerto Rico","PRI"],["Qatar","QAT"],["Romania","ROU"],["Russia","RUS"],["Rwanda","RWA"],["Réunion","REU"],["Saint Barthélemy","BLM"],["Saint Helena","SHN"],["Saint Kitts and Nevis","KNA"],["Saint Lucia","LCA"],["Saint Martin","MAF"],["Saint Pierre and Miquelon","SPM"],["Saint Vincent and the Grenadines","VCT"],["Samoa","WSM"],["San Marino","SMR"],["Sao Tome and Principe","STP"],["Saudi Arabia","SAU"],["Senegal","SEN"],["Serbia","SRB"],["Seychelles","SYC"],["Sierra Leone","SLE"],["Singapore","SGP"],["Sint Maarten","SXM"],["Slovakia","SVK"],["Slovenia","SVN"],["Solomon Islands","SLB"],["Somalia","SOM"],["South Africa","ZAF"],["South Sudan","SSD"],["Spain","ESP"],["Sri Lanka","LKA"],["Sudan","SDN"],["Suriname","SUR"],["Svalbard and Jan Mayen","SJM"],["Sweden","SWE"],["Switzerland","CHE"],["Syria","SYR"],["Taiwan","TWN"],["Tajikistan","TJK"],["Tanzania","TZA"],["Thailand","THA"],["Timor-Leste","TLS"],["Togo","TGO"],["Tokelau","TKL"],["Tonga","TON"],["Trinidad and Tobago","TTO"],["Tunisia","TUN"],["Turkey","TUR"],["Turkmenistan","TKM"],["Turks and Caicos Islands","TCA"],["Tuvalu","TUV"],["U.S. Virgin Islands","VIR"],["Uganda","UGA"],["Ukraine","UKR"],["United Arab Emirates","ARE"],["United Kingdom","GBR"],["United States","USA"],["Uruguay","URY"],["Uzbekistan","UZB"],["Vanuatu","VUT"],["Vatican City","VAT"],["Venezuela","VEN"],["Vietnam","VNM"],["Wallis and Futuna","WLF"],["Yemen","YEM"],["Zambia","ZMB"],["Zimbabwe","ZWE"],["Åland Islands","ALA"]];
+const COUNTRIES = [["Afghanistan","AFG"],["Albania","ALB"],["Algeria","DZA"],["American Samoa","ASM"],["Andorra","AND"],["Angola","AGO"],["Anguilla","AIA"],["Antigua and Barbuda","ATG"],["Argentina","ARG"],["Armenia","ARM"],["Aruba","ABW"],["Australia","AUS"],["Austria","AUT"],["Azerbaijan","AZE"],["Bahamas","BHS"],["Bahrain","BHR"],["Bangladesh","BGD"],["Barbados","BRB"],["Belarus","BLR"],["Belgium","BEL"],["Belize","BLZ"],["Benin","BEN"],["Bermuda","BMU"],["Bhutan","BTN"],["Bolivia","BOL"],["Bonaire, Sint Eustatius and Saba","BES"],["Bosnia and Herzegovina","BIH"],["Botswana","BWA"],["Brazil","BRA"],["British Virgin Islands","VGB"],["Brunei","BRN"],["Bulgaria","BGR"],["Burkina Faso","BFA"],["Burundi","BDI"],["Cabo Verde","CPV"],["Cambodia","KHM"],["Cameroon","CMR"],["Canada","CAN"],["Cayman Islands","CYM"],["Central African Republic","CAF"],["Chad","TCD"],["Chile","CHL"],["China","CHN"],["Christmas Island","CXR"],["Cocos Islands","CCK"],["Colombia","COL"],["Comoros","COM"],["Congo","COG"],["Cook Islands","COK"],["Costa Rica","CRI"],["Croatia","HRV"],["Cuba","CUB"],["Curaçao","CUW"],["Cyprus","CYP"],["Czech Republic","CZE"],["Côte d'Ivoire","CIV"],["DR Congo","COD"],["Denmark","DNK"],["Djibouti","DJI"],["Dominica","DMA"],["Dominican Republic","DOM"],["Ecuador","ECU"],["Egypt","EGY"],["El Salvador","SLV"],["Equatorial Guinea","GNQ"],["Eritrea","ERI"],["Estonia","EST"],["Eswatini","SWZ"],["Ethiopia","ETH"],["Falkland Islands","FLK"],["Faroe Islands","FRO"],["Fiji","FJI"],["Finland","FIN"],["France","FRA"],["French Guiana","GUF"],["French Polynesia","PYF"],["Gabon","GAB"],["Gambia","GMB"],["Georgia","GEO"],["Germany","DEU"],["Ghana","GHA"],["Gibraltar","GIB"],["Greece","GRC"],["Greenland","GRL"],["Grenada","GRD"],["Guadeloupe","GLP"],["Guam","GUM"],["Guatemala","GTM"],["Guernsey","GGY"],["Guinea","GIN"],["Guinea-Bissau","GNB"],["Guyana","GUY"],["Haiti","HTI"],["Honduras","HND"],["Hong Kong","HKG"],["Hungary","HUN"],["Iceland","ISL"],["India","IND"],["Indonesia","IDN"],["Iran","IRN"],["Iraq","IRQ"],["Ireland","IRL"],["Isle of Man","IMN"],["Israel","ISR"],["Italy","ITA"],["Jamaica","JAM"],["Japan","JPN"],["Jersey","JEY"],["Jordan","JOR"],["Kazakhstan","KAZ"],["Kenya","KEN"],["Kiribati","KIR"],["Kuwait","KWT"],["Kyrgyzstan","KGZ"],["Laos","LAO"],["Latvia","LVA"],["Lebanon","LBN"],["Lesotho","LSO"],["Liberia","LBR"],["Libya","LBY"],["Liechtenstein","LIE"],["Lithuania","LTU"],["Luxembourg","LUX"],["Macao","MAC"],["Madagascar","MDG"],["Malawi","MWI"],["Malaysia","MYS"],["Maldives","MDV"],["Mali","MLI"],["Malta","MLT"],["Marshall Islands","MHL"],["Martinique","MTQ"],["Mauritania","MRT"],["Mauritius","MUS"],["Mayotte","MYT"],["Mexico","MEX"],["Micronesia","FSM"],["Moldova","MDA"],["Monaco","MCO"],["Mongolia","MNG"],["Montenegro","MNE"],["Montserrat","MSR"],["Morocco","MAR"],["Mozambique","MOZ"],["Myanmar","MMR"],["Namibia","NAM"],["Nauru","NRU"],["Nepal","NPL"],["Netherlands","NLD"],["New Caledonia","NCL"],["New Zealand","NZL"],["Nicaragua","NIC"],["Niger","NER"],["Nigeria","NGA"],["Niue","NIU"],["Norfolk Island","NFK"],["North Macedonia","MKD"],["Northern Mariana Islands","MNP"],["Norway","NOR"],["Oman","OMN"],["Pakistan","PAK"],["Palau","PLW"],["Palestine","PSE"],["Panama","PAN"],["Papua New Guinea","PNG"],["Paraguay","PRY"],["Peru","PER"],["Philippines","PHL"],["Pitcairn","PCN"],["Poland","POL"],["Portugal","PRT"],["Puerto Rico","PRI"],["Qatar","QAT"],["Romania","ROU"],["Russia","RUS"],["Rwanda","RWA"],["Réunion","REU"],["Saint Barthélemy","BLM"],["Saint Helena","SHN"],["Saint Kitts and Nevis","KNA"],["Saint Lucia","LCA"],["Saint Martin","MAF"],["Saint Pierre and Miquelon","SPM"],["Saint Vincent and the Grenadines","VCT"],["Samoa","WSM"],["San Marino","SMR"],["Sao Tome and Principe","STP"],["Saudi Arabia","SAU"],["Senegal","SEN"],["Serbia","SRB"],["Seychelles","SYC"],["Sierra Leone","SLE"],["Singapore","SGP"],["Sint Maarten","SXM"],["Slovakia","SVK"],["Slovenia","SVN"],["Solomon Islands","SLB"],["Somalia","SOM"],["South Africa","ZAF"],["South Korea","KOR"],["South Sudan","SSD"],["Spain","ESP"],["Sri Lanka","LKA"],["Sudan","SDN"],["Suriname","SUR"],["Svalbard and Jan Mayen","SJM"],["Sweden","SWE"],["Switzerland","CHE"],["Syria","SYR"],["Taiwan","TWN"],["Tajikistan","TJK"],["Tanzania","TZA"],["Thailand","THA"],["Timor-Leste","TLS"],["Togo","TGO"],["Tokelau","TKL"],["Tonga","TON"],["Trinidad and Tobago","TTO"],["Tunisia","TUN"],["Turkey","TUR"],["Turkmenistan","TKM"],["Turks and Caicos Islands","TCA"],["Tuvalu","TUV"],["U.S. Virgin Islands","VIR"],["Uganda","UGA"],["Ukraine","UKR"],["United Arab Emirates","ARE"],["United Kingdom","GBR"],["United States","USA"],["Uruguay","URY"],["Uzbekistan","UZB"],["Vanuatu","VUT"],["Vatican City","VAT"],["Venezuela","VEN"],["Vietnam","VNM"],["Wallis and Futuna","WLF"],["Yemen","YEM"],["Zambia","ZMB"],["Zimbabwe","ZWE"],["Åland Islands","ALA"]];
 const COUNTRY_MARKET = { SAU: 'mideast', ARE: 'mideast', QAT: 'mideast', KWT: 'mideast', BHR: 'mideast', OMN: 'mideast', JOR: 'mideast', EGY: 'mideast', IRQ: 'mideast', LBN: 'mideast', YEM: 'mideast', PSE: 'mideast', SYR: 'mideast', IND: 'india' };
 const marketOf = code => COUNTRY_MARKET[code] || 'other';
 
@@ -1261,6 +1322,7 @@ function drawWorkflow() {
     </div>
   </div>
   ${opsSection()}`;
+  $('wfinv').innerHTML = invoiceSection();
   $('w-qmail').href = buyerMail(false);
   $('w-hmail').href = buyerMail(true);
 }
@@ -1428,23 +1490,23 @@ const cityOf = d => d.kind === 'tour' && d.region ? d.region : /Busan|Gyeongju|H
 // every day the vehicle company works, in order. type: tour / half (travel-day sightseeing) / transfer; free = done by the touring vehicle, not charged
 function vehicleSchedule(r) {
   const out = [], mix = isMix(r), lugOn = hasLuggage(r), last = r.itinerary.length - 1;
-  const v = (i, text, type, free) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text, type, free: !!free });
+  const v = (i, text, type, free, city) => out.push({ day: i + 1, date: r.trip.arrival ? addDays(r.trip.arrival, i) : '', text, type, free: !!free, city: city || (/제주/.test(text) ? 'jeju' : /부산|김해/.test(text) ? 'busan' : 'seoul') });
   const pl = planOf(r), tourBus = mix ? ` · ${VEH_KO[pl.tour]}` : '', trVeh = mix ? ` · ${VEH_KO[pl.pickup]}` : '';
   r.itinerary.forEach((d, i) => {
-    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})${tourBus}`, 'tour');
+    if (d.kind === 'tour') return v(i, `${CITY[cityOf(d)]} 투어 종일 (${d.title})${tourBus}`, 'tour', false, cityOf(d));
     if (d.kind !== 'transfer') return;
     if (!Array.isArray(d.transfers)) return oldTransfers(r, d, i, v, lugOn);
     const paid = Array.isArray(d.paid) ? d.paid : d.transfers, adds = d.adds || [];
-    const half = () => { if (adds.length) v(i, `이동일 관광${d.tourCity ? ` (${CITY[d.tourCity]})` : ''}: ${d.tour ? d.tour + ' – ' : ''}${adds.join(', ')}${tourBus}`, 'half'); };
+    const half = () => { if (adds.length) v(i, `이동일 관광${d.tourCity ? ` (${CITY[d.tourCity]})` : ''}: ${d.tour ? d.tour + ' – ' : ''}${adds.join(', ')}${tourBus}`, 'half', false, d.tourCity || cityOf(d)); };
     if (adds.length && d.tourCity && d.tourCity === d.from) half(); // touring before leaving the city
     d.transfers.forEach((t, k) => {
       const c = CITY[T_CITY[t]] || '', free = !paid.includes(t);
-      let text;
+      let text, city = T_CITY[t];
       if (i === 0) text = `${T_KO[t]} 도착 픽업 → ${c} 호텔`;
       else if (i === last) text = t === 'ICN' && k > 0 ? `${T_KO[{ CJU: 'GMP', BUS_STN: 'SEL_STN', PUS: 'GMP' }[d.transfers[k - 1]]] || '김포공항'} 픽업 → 인천공항 샌딩` : `${c} 호텔 → ${T_KO[t]} 샌딩`;
-      else text = k === 0 ? `${CITY[d.from] || c} 호텔 → ${T_KO[t]} 샌딩` : `${T_KO[t]} 픽업 → ${CITY[d.to] || c} 호텔`;
+      else { text = k === 0 ? `${CITY[d.from] || c} 호텔 → ${T_KO[t]} 샌딩` : `${T_KO[t]} 픽업 → ${CITY[d.to] || c} 호텔`; city = (k === 0 ? d.from : d.to) || city; }
       const lug = lugOn && ((i === 0 && k === 0) || (i === last && k === d.transfers.length - 1)) ? ' + 짐차' : '';
-      v(i, text + (free ? ' (이동일 관광 차량이 진행 · 별도 요금 없음)' : trVeh + lug), 'transfer', free);
+      v(i, text + (free ? ' (이동일 관광 차량이 진행 · 별도 요금 없음)' : trVeh + lug), 'transfer', free, city);
     });
     if (adds.length && !(d.tourCity && d.tourCity === d.from)) half();
   });
@@ -1453,7 +1515,7 @@ function vehicleSchedule(r) {
 // requests saved before 2026-11-20 have no airport / station codes: always Seoul first, arrival and departure at Incheon
 function oldTransfers(r, d, i, v, lugOn) {
   const t = d.title, lug = lugOn ? ' + 짐차' : '';
-  if ((d.adds || []).length) v(i, `이동일 관광: ${d.adds.join(', ')}`, 'half');
+  if ((d.adds || []).length) v(i, `이동일 관광: ${d.adds.join(', ')}`, 'half', false, cityOf(d));
   if (/Arrival/.test(t)) v(i, `인천공항 도착 픽업 → 서울 호텔${lug}`, 'transfer');
   if (/Seoul to Jeju/.test(t)) { v(i, '서울 호텔 → 김포공항 샌딩', 'transfer'); v(i, '제주공항 픽업 → 제주 호텔', 'transfer'); }
   if (/Jeju to Busan/.test(t)) { v(i, '제주 호텔 → 제주공항 샌딩', 'transfer'); v(i, '김해공항 픽업 → 부산 호텔', 'transfer'); }
@@ -1464,11 +1526,18 @@ function oldTransfers(r, d, i, v, lugOn) {
     else v(i, `서울 호텔 → 인천공항 샌딩${lug}`, 'transfer');
   }
 }
-function vehicleText(r) {
-  const s = vehicleSchedule(r);
-  return [`[하킴트래블코리아] 차량 수배 요청`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${headsR(r)}명${r.options.foc ? ` (FOC ${r.options.foc}명 포함)` : ''} + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : []),
-    `* 기간: ${r.trip.arrival ? `${koDate(r.trip.arrival)} – ${koDate(r.trip.departure)}` : '날짜 미정'} (${r.trip.nights}박 ${r.trip.days}일)`, '', '[일정]',
-    ...s.map(x => `${x.date ? koDate(x.date) : 'Day ' + x.day} (D${x.day}) ${x.text}`), '', '시간·픽업 장소는 확정 후 다시 전달드리겠습니다.', '감사합니다.'].join('\n');
+// copy text for the vehicle company: dates without the year, grouped by city; city = 'seoul' | 'jeju' | 'busan' copies that city only
+const mdDate = iso => { if (!iso) return ''; const d = new Date(iso + 'T00:00:00'); return `${d.getMonth() + 1}월 ${d.getDate()}일(${'일월화수목금토'[d.getDay()]})`; };
+const vehCities = r => [...new Set(vehicleSchedule(r).map(x => x.city))];
+function vehicleText(r, city) {
+  const all = vehicleSchedule(r), cities = city ? [city] : [...new Set(all.map(x => x.city))];
+  const line = x => `${x.date ? mdDate(x.date) : 'Day ' + x.day} (D${x.day}) ${x.text}`;
+  const span = s => s.length && s[0].date ? (s[0].date === s[s.length - 1].date ? mdDate(s[0].date) : `${mdDate(s[0].date)} – ${mdDate(s[s.length - 1].date)}`) : '';
+  const head = [`[하킴트래블코리아] 차량 수배 요청${city ? ` · ${CITY[city]}` : ''}`, `* 단체: ${r.contact.company || r.contact.name} (요청번호 ${r.id})`, `* 인원: ${headsR(r)}명${r.options.foc ? ` (FOC ${r.options.foc}명 포함)` : ''} + 가이드`, `* 차량: ${vehicleName(r)}`, ...(r.trip.arrivalAirport && !city ? [`* 입국: ${T_KO[r.trip.arrivalAirport] || r.trip.arrivalAirport} / 출국: ${T_KO[r.trip.departureAirport] || '인천공항'}`] : [])];
+  if (city) { const s = all.filter(x => x.city === city); head.push(`* 기간: ${span(s) || '날짜 미정'} (${CITY[city]} 일정)`); }
+  else head.push(`* 기간: ${r.trip.arrival ? `${mdDate(r.trip.arrival)} – ${mdDate(r.trip.departure)}` : '날짜 미정'} (${r.trip.nights}박 ${r.trip.days}일)`);
+  const body = cities.flatMap(c => ['', `[${CITY[c]} 일정]`, ...all.filter(x => x.city === c).map(line)]);
+  return [...head, ...body, '', '시간·픽업 장소는 확정 후 다시 전달드리겠습니다.', '감사합니다.'].join('\n');
 }
 function buildOps(r) {
   const ops = [], pax = headsR(r), date = i => r.trip.arrival ? addDays(r.trip.arrival, i) : '';
@@ -1522,7 +1591,7 @@ function opsSection() {
     </tbody></table></div>` : '<p class="hint">일정·호텔 기준으로 수배 항목 목록 생성. 호텔은 ②단계에서 견적 포함한 호텔만 반영.</p>'}
     <div class="acts">
       <button class="btn${ops.length ? ' ghost' : ''}" id="o-build">${ops.length ? '일정에서 다시 만들기' : '수배 목록 만들기'}</button>
-      ${ops.length ? '<button class="btn ghost" id="o-veh">차량 일정표 복사</button><button class="btn ghost" id="o-add">+ 항목 추가</button><button class="btn ghost" id="o-print">수배 목록 인쇄</button><button class="btn" id="o-save">저장</button>' : ''}
+      ${ops.length ? `<button class="btn ghost" id="o-veh">차량 일정표 복사 (전체)</button>${vehCities(current).length > 1 ? vehCities(current).map(c => `<button class="btn ghost" data-veh="${c}">차량 일정표 · ${CITY[c]}</button>`).join('') : ''}` + '<button class="btn ghost" id="o-add">+ 항목 추가</button><button class="btn ghost" id="o-print">수배 목록 인쇄</button><button class="btn" id="o-save">저장</button>' : ''}
     </div></div>`;
 }
 function opsPrint() {
@@ -1530,7 +1599,7 @@ function opsPrint() {
   $('qsheet').innerHTML = `<div class="qh"><img src="${document.querySelector('header img.logo').src}" alt=""><div style="text-align:right"><h2>수배 목록</h2><div class="sub">${esc(r.contact.company || r.contact.name)} · ${r.trip.nights}박 ${r.trip.days}일 · ${r.options.pax}명 · 요청번호 ${r.id}</div></div></div>
     <table><tr><th>날짜</th><th>구분</th><th>항목</th><th>내용</th><th>업체</th><th>상태</th><th>확정번호·메모</th></tr>
     ${ops.map(o => `<tr><td>${o.date ? fmt(o.date) : '–'}</td><td>${OPS_CAT[o.cat]}</td><td>${esc(o.item)}</td><td>${esc(o.detail)}</td><td>${esc(o.vendor)}</td><td>${(OPS_ST.find(s => s[0] === o.status) || [])[1]}</td><td>${esc(o.ref)}</td></tr>`).join('')}</table>
-    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${headsR(r)}명)</h3><table><tr><th>날짜</th><th>Day</th><th>내용</th></tr>${vehicleSchedule(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
+    <h3 style="margin-top:14px">차량 일정 (${esc(vehicleName(r))} · ${headsR(r)}명)</h3><table><tr><th>날짜</th><th>Day</th><th>도시</th><th>내용</th></tr>${vehicleSchedule(r).map(x => `<tr><td>${x.date ? fmt(x.date) : '–'}</td><td>D${x.day}</td><td>${CITY[x.city]}</td><td>${esc(x.text)}</td></tr>`).join('')}</table>`;
   document.body.classList.add('printing-quote');
   setTimeout(() => { window.print(); document.body.classList.remove('printing-quote'); }, 50);
 }
@@ -1544,7 +1613,7 @@ $('wf').addEventListener('click', e => {
   if (b.id === 'o-add') { (wf.ops ||= []).push({ cat: 'other', date: '', item: '', detail: '', vendor: '', status: 'todo', ref: '' }); drawWorkflow(); }
   if (b.dataset.odel !== undefined) { wf.ops.splice(+b.dataset.odel, 1); drawWorkflow(); }
   if (b.id === 'o-print') opsPrint();
-  if (b.id === 'o-veh') { const txt = vehicleText(current); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => { $('w-saved').textContent = '차량 일정표 복사 완료'; }, () => { $('w-saved').textContent = '복사 불가 · 인쇄 화면으로 표시'; opsPrint(); }); }
+  if (b.id === 'o-veh' || b.dataset.veh) { const c = b.dataset.veh, txt = vehicleText(current, c); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => { $('w-saved').textContent = `차량 일정표${c ? ' · ' + CITY[c] : ''} 복사 완료`; }, () => { $('w-saved').textContent = '복사 불가 · 인쇄 화면으로 표시'; opsPrint(); }); }
   if (b.id === 'o-save') saveWorkflow(null).catch(err => { $('w-saved').textContent = KERR(err); });
 });
 // rebuilding replaces the list; ask with an inline second click instead of a browser dialog
@@ -1836,6 +1905,15 @@ const bCode3 = s => String(s || '').normalize('NFKD').toUpperCase().replace(/[^A
 function bCompanyCode() { const hit = bBuyerHit(), w = bDomWord(); return (w && !FREE_MAILS.includes(w) && bCode3(w)) || bCode3(hit && hit.company) || bCode3(hit && hit.name) || (bBuyerEmail() ? bCode3(bBuyer.id) || 'XXX' : 'HKP'); }
 const bCountry = () => { const hit = bBuyerHit(); return (hit && hit.country) || bBuyer.country || bSel.country || 'KOR'; };
 const bCountryName = c => (COUNTRIES.find(x => x[1] === c) || [c])[0];
+// buyer country box: popular markets first; accepts a name, ISO code or common short form (UAE, KSA, UK, Korea)
+const CC_TOP = ['ARE', 'SAU', 'QAT', 'KWT', 'BHR', 'OMN', 'IND', 'ESP', 'USA', 'PHL', 'KOR'];
+const CC_ALIAS = { UAE: 'ARE', KSA: 'SAU', UK: 'GBR', KOREA: 'KOR', 'SOUTH KOREA': 'KOR', 'REPUBLIC OF KOREA': 'KOR', US: 'USA', USA: 'USA', 'UNITED STATES OF AMERICA': 'USA', 'UAE ': 'ARE' };
+function bCountryFrom(v) {
+  const q = String(v || '').trim(), u = q.toUpperCase(); if (!q) return '';
+  if (CC_ALIAS[u]) return CC_ALIAS[u];
+  const hit = COUNTRIES.find(([n, c]) => n.toUpperCase() === u || c === u); if (hit) return hit[1];
+  const starts = COUNTRIES.filter(([n]) => n.toUpperCase().startsWith(u)); return starts.length === 1 ? starts[0][1] : null;
+}
 // the request's own buyer when a request is open in the builder
 const bReqBuyer = () => bFromReq ? [bFromReq.contact && bFromReq.contact.name, bFromReq.contact && bFromReq.contact.company, bFromReq.contact && bFromReq.contact.email, bFromReq.buyer && bFromReq.buyer.code].filter(Boolean).join(' · ') : '';
 const ROOMS = [['TWN', '트윈'], ['DBL', '더블'], ['SGL', '싱글'], ['TRP', '트리플'], ['FAM', '패밀리'], ['QUAD', '쿼드'], ['SUITE', '스위트']];
@@ -1920,13 +1998,15 @@ function bMealAll(m) {
   bSel.meals = onAll ? bSel.meals.filter(x => x !== m) : ['lunch', 'dinner'].filter(x => x === m || bSel.meals.includes(x));
 }
 function bAutoTitle() {
-  // same head as the number the server gives a tour staff build (HK-KOR-HKP-2611-001; buyers' requests are IND-AUR-2611-001); month = today in Korea
+  // Hakeem Travel Korea_Package_SEL_BUS_CJU_3N4D(261105-261108)_Agency_261124 (cities, nights/days, travel dates, agency, request date KST)
   const s = bSel, route = routeOf(s), n = route.reduce((a, c) => a + (+s['n' + CITY_EN[c]] || 0), 0);
-  const ymd = new Date(Date.now() + 9 * 3600e3).toISOString().slice(2, 10).replace(/-/g, '');
-  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const when = bArrival ? MON[+bArrival.slice(5, 7) - 1] : { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' }[s.season] || s.season;
-  const theme = s.concept && s.concept !== 'classic' ? ({ romantic: 'Couple' }[s.concept] || s.concept[0].toUpperCase() + s.concept.slice(1)) : '';
-  return [`HK-${bCountry()}-${bCompanyCode()}-${ymd.slice(0, 4)}`, `${n}N${n + 1}D ${route.map(c => CITY_EN[c]).join('-')}`, `${s.pax} pax${focOf(s) ? `+${focOf(s)} FOC` : ''}`, [{ B: 'Budget', R: 'Regular', L: 'Luxury' }[s.tier], theme].filter(Boolean).join(' '), when].join(' · ');
+  const CODE = { seoul: 'SEL', busan: 'BUS', jeju: 'CJU' }, yymmdd = iso => iso.slice(2, 10).replace(/-/g, '');
+  const today = yymmdd(new Date(Date.now() + 9 * 3600e3).toISOString());
+  let dates = '';
+  if (bArrival) { const end = new Date(bArrival + 'T00:00:00Z'); end.setUTCDate(end.getUTCDate() + n); dates = `(${yymmdd(bArrival)}-${yymmdd(end.toISOString())})`; }
+  const hit = bBuyerHit(), w = bDomWord();
+  const agency = ((hit && hit.company) || (w && !FREE_MAILS.includes(w) ? w[0].toUpperCase() + w.slice(1) : '') || (hit && hit.name) || '').replace(/[_\s]+/g, ' ').trim();
+  return ['Hakeem Travel Korea', 'Package', ...route.map(c => CODE[c]), `${n}N${n + 1}D${dates}`, agency, today].filter(Boolean).join('_');
 }
 function bOptions(days) {
   const s = bSel, route = routeOf(s), stays = bStays(days), hit = bBuyerHit();
@@ -1937,7 +2017,7 @@ function bOptions(days) {
     ? `<span>${esc(bReqBuyer() || '바이어 정보 없음')}</span>`
     : `<span class="em-id bem"><input data-bbuy="id" value="${esc(bBuyer.id)}" placeholder="agent" autocapitalize="off" spellcheck="false"><span>@</span><input data-bbuy="dom" value="${esc(bBuyer.dom)}" placeholder="company.com" autocapitalize="off" spellcheck="false"></span>
       ${hit ? `<span class="hint"><b>${esc(hit.code)}</b> · ${esc(hit.name)} · ${esc(hit.company)} · ${esc(bCountryName(hit.country))} (가입 바이어)</span>`
-        : `<label>국가<select data-bbuy="country"><option value="">선택</option>${COUNTRIES.map(([n, c]) => `<option value="${c}"${c === (bBuyer.country || s.country) ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>${bBuyerEmail() ? '<span class="hint">미가입 바이어</span>' : ''}`}`;
+        : `<label>국가<input data-bbuy="country" list="b-cc-list" class="bcc" value="${esc((bBuyer.country || s.country) ? bCountryName(bBuyer.country || s.country) : '')}" placeholder="입력해서 찾기" autocomplete="off" spellcheck="false" title="국가명·코드(UAE, KSA, KOR…) 입력"></label><datalist id="b-cc-list">${CC_TOP.map(c => `<option value="${esc(bCountryName(c))}">${c}</option>`).join('')}${COUNTRIES.filter(x => !CC_TOP.includes(x[1])).map(([n, c]) => `<option value="${esc(n)}">${c}</option>`).join('')}</datalist>${bBuyerEmail() ? '<span class="hint">미가입 바이어</span>' : ''}`}`;
   const cityHead = c => `<label class="bc"><input type="checkbox" data-bk="${c}"${(c === 'seoul' ? s.seoul !== false : s[c]) ? ' checked' : ''}> <b>${CITY[c]}</b></label>`;
   const nightsIn = c => `<span class="bnts"><input type="number" min="1" max="${c === 'seoul' ? 8 : 6}" data-bn="n${CITY_EN[c]}" value="${s['n' + CITY_EN[c]]}" style="width:54px"> 박</span>`;
   const cityRows = route.map(c => { const si = stays.findIndex(x => x.city === c); return `<div class="bcity">${cityHead(c)}${nightsIn(c)}${si >= 0 ? bStayHotelHTML(stays[si], si) : ''}</div>`; }).join('')
@@ -1988,9 +2068,13 @@ function bPrice(days) {
   const q = quoteFor(days, bSel), c = costBreakdown(days, bSel), tbl = bracketTable(days, bSel);
   const row = (x, cols) => `<tr>${cols.map(v => `<td${typeof v === 'number' ? ' class="num"' : ''}>${typeof v === 'number' ? v.toLocaleString('ko-KR') : esc(v)}</td>`).join('')}</tr>`;
   return `<div class="card bprice">
-    <div class="sub">1인 지상비 · ${bSel.pax}명${focOf(bSel) ? ` + FOC ${focOf(bSel)}명 (FOC 원가는 유료 인원이 나눠 부담)` : ''} (${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산)</div>
-    <div class="big">${money(q.perPerson)}</div>
-    <div>총액 ${money(q.total)} · 마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
+    ${(() => { const hq = bHotelQuote(days), hp = hq ? hq.perPerson : 0, ht = hq ? hq.total : 0; return `<div class="bfee">
+      <div class="bfee-top"><span>Tour Fee <small>1인 · 지상비 + 호텔</small></span><b>${money(q.perPerson + hp)}</b><em>총 ${money(q.total + ht)}</em></div>
+      <div class="bfee-row"><span>Land Fee</span><b>${money(q.perPerson)}</b><em>총 ${money(q.total)}</em></div>
+      <div class="bfee-row"><span>Hotel Fee</span>${hq ? `<b>${money(hp)}</b><em>총 ${money(ht)}</em>` : '<b class="na">미입력</b><em>호텔 요금 넣으면 합산</em>'}</div>
+    </div>`; })()}
+    <div class="sub">${bSel.pax}명${focOf(bSel) ? ` + FOC ${focOf(bSel)}명 (FOC 원가는 유료 인원이 나눠 부담)` : ''} · ${q.bracket[0] === q.bracket[1] ? q.bracket[0] : q.bracket.join('–')}명 구간, ${q.bracket[0]}명 기준 계산</div>
+    <div>마진 1인 $${marginFor(q.bracket[0])}${q.hanbok ? ` · 한복 1인 $${CONFIG.hanbokUSD}` : ''}</div>
     <div class="hint">${esc(bSel.vehicle !== 'std' && q.upgrade !== 'std' ? CONFIG.upgrades[q.upgrade].label : vehicleKo(q.plan))}${q.plan.extraLuggage ? ' (짐 추가 요청)' : ''}</div>
     <div class="bchk" style="margin-top:4px"><label><input type="checkbox" data-bb="luggage"${bSel.luggage ? ' checked' : ''}> 짐 추가 (짐차)</label></div>
     <div class="bpa"><button class="btn sm" data-bsavemain="1">${bFrom ? '이 요청에 저장' : '내 투어로 저장'}</button><button class="btn ghost sm" id="b-copy">일정·가격 복사 (영문)</button></div>
@@ -2001,8 +2085,7 @@ function bPrice(days) {
     <div class="hint">${(bSel.addons || []).length ? bSel.addons.map(k => { const di = days.findIndex(x => dk(x) === (bSel.addonDay || {})[k]); return `${esc(CONFIG.addonPaid[k])} ${krw(CONFIG.addons[k] || 0)}/인 · ${di >= 0 ? `Day ${di + 1}` : '날짜 미정'}`; }).join('<br>') : '서울 투어일에서 고르면 여기 표시됩니다.'}</div>
     <h4>호텔 <button class="linkbtn" data-bjump="b-hotels">호텔 칸으로</button></h4>
     <div class="row" style="gap:8px;align-items:center"><label>호텔 마진 (%)<input type="number" min="0" max="200" step="1" data-bhmk="1" value="${bMarkup}" style="width:64px"></label><span class="hint">환율 ₩${CONFIG.fx.toLocaleString('ko-KR')}/US$</span></div>
-    ${(() => { const hq = bHotelQuote(days); return `${hq ? `<div>호텔 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)} <span class="hint">(${hq.priced}/${hq.nights}박 요금 입력, 원가 ₩${hq.netKRW.toLocaleString('ko-KR')})</span></div>
-      <div class="big" style="font-size:1.3rem">지상비 + 호텔 1인 ${money(q.perPerson + hq.perPerson)}</div><div>총액 ${money(q.total + hq.total)}</div>` : '<div class="hint">위 도시·숙박 줄에 호텔과 객실 요금을 넣으면 여기 합산됩니다.</div>'}`; })()}
+    ${(() => { const hq = bHotelQuote(days); return `${hq ? `<div>호텔 1인 ${money(hq.perPerson)} · 총 ${money(hq.total)} <span class="hint">(${hq.priced}/${hq.nights}박 요금 입력, 원가 ₩${hq.netKRW.toLocaleString('ko-KR')})</span></div>` : '<div class="hint">위 도시·숙박 줄에 호텔과 객실 요금을 넣으면 여기 합산됩니다.</div>'}`; })()}
     <h4>인원 구간별 1인 가격</h4>
     <table class="ht">${tbl.map(t => `<tr${t.bracket[0] === q.bracket[0] ? ' class="on"' : ''}><td style="white-space:nowrap">${t.bracket[0] === t.bracket[1] ? t.bracket[0] : t.bracket.join('–')}명</td><td class="hint">${esc(vehicleKo(t.plan))}</td><td class="num">${money(t.perPerson)}</td></tr>`).join('')}</table>
     <details${bOpen.cost ? ' open' : ''} id="b-cost"><summary>원가 세부내용 (${c.basePax}명 기준)</summary>
@@ -2093,7 +2176,7 @@ $('builder').addEventListener('change', e => {
   else if (d.bb) bSel[d.bb] = el.checked;
   else if (d.badn) bSel.addons = Object.keys(CONFIG.addonPaid).filter(k => k === d.badn ? el.checked : (bSel.addons || []).includes(k));
   else if (d.bswap) bSel.swaps[d.bswap] = el.value;
-  else if (d.bbuy === 'country') { bBuyer.country = el.value; if (el.value) { bSel.country = el.value; bSel.market = marketOf(el.value); } }
+  else if (d.bbuy === 'country') { const c = bCountryFrom(el.value); if (c === null) { el.value = bBuyer.country ? bCountryName(bBuyer.country) : ''; el.setCustomValidity('목록에 있는 국가를 골라 주세요'); el.reportValidity(); setTimeout(() => el.setCustomValidity(''), 1500); return; } bBuyer.country = c; if (c) { bSel.country = c; bSel.market = marketOf(c); } }
   else if (d.bbuy) { bBuyer[d.bbuy] = el.value.trim(); if (d.bbuy === 'id' && bBuyer.id.includes('@')) { const [a, b2] = bBuyer.id.split('@'); bBuyer.id = a; if (b2) bBuyer.dom = b2; } const hit = bBuyerHit(); if (hit && hit.country) { bSel.country = hit.country; bSel.market = marketOf(hit.country); } }
   else if (d.baddon) { const [k, day] = d.baddon.split('|'); bSel.addonDay ||= {}; const on = el.checked; bSel.addons = Object.keys(CONFIG.addonPaid).filter(x => x === k ? on : (bSel.addons || []).includes(x)); if (on) bSel.addonDay[k] = day; else delete bSel.addonDay[k]; }
   else if (d.bml) { const [i, m] = d.bml.split('|'); bToggleMeal(+i, m, el.checked); }
@@ -2146,6 +2229,270 @@ $('builder').addEventListener('click', e => {
 });
 $('to-builder').onclick = () => openInBuilder(current);
 $('sheet').addEventListener('click', e => { const b = e.target.closest('[data-qpdf]'); if (b && current && current.quotes) qdShow(current.quotes[+b.dataset.qpdf]); });
+
+// ---- ④ invoice. Issued automatically when the status becomes 예약 확정 (booked); stored on the request as wf.invoice.
+// logo is public; bank details, seal and signature come from the server after staff log-in (settings.invoice)
+const INV_IMG = { logo: '../logo.png', get seal() { return (settings && settings.invoice && settings.invoice.seal) || ''; }, get sign() { return (settings && settings.invoice && settings.invoice.sign) || ''; } };
+const invBank = () => (settings && settings.invoice && settings.invoice.bank) || [];
+const INV_POLICY = {
+  fit: ['A Full Refund – 15 or more days before the date of arrival', 'No Refund – 14 days before the date of arrival', 'Any unused service is non-refundable'],
+  group: ['A Full Refund – More than 45 days before the date of arrival', '70% Refund – 31 ~ 45 days before the date of arrival', '50% Refund – 15 ~ 30 days before the date of arrival', '30% Refund – 7 ~ 14 days before the date of arrival', 'No Refund – 6 days before the date of arrival', 'Any unused service is non-refundable', 'Early check-out should be requested before 7 days'],
+};
+// customer ID prefix: the buyer's main airport, as on past invoices (DXB-AJT, GRU-MIN …)
+const INV_HUB = { 'United Arab Emirates': 'DXB', 'Saudi Arabia': 'RUH', 'Kuwait': 'KWI', 'Qatar': 'DOH', 'Bahrain': 'BAH', 'Oman': 'MCT', 'India': 'DEL', 'Pakistan': 'ISB', 'Bangladesh': 'DAC', 'United Kingdom': 'LON', 'Brazil': 'GRU', 'Mexico': 'MEX', 'Malaysia': 'KUL', 'Indonesia': 'CGK', 'Singapore': 'SIN', 'Turkey': 'IST', 'Egypt': 'CAI', 'Jordan': 'AMM', 'United States': 'USA', 'Australia': 'SYD' };
+const INV_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const invDate = iso => { if (!iso) return ''; const [y, m, d] = iso.split('-'); return `${d}-${INV_MON[+m - 1]}-${y.slice(2)}`; };
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th');
+const dm = iso => { const d = new Date(iso + 'T00:00:00Z'); return `${ordinal(d.getUTCDate())} ${MON[d.getUTCMonth()]}`; };
+const todayISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const yymmdd = iso => iso ? iso.slice(2).replace(/-/g, '') : '';
+const amt2 = n => (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const VEH_INV = { staria: 'Hyundai Staria', solati: 'Hyundai Solati', bus: 'Large coach (28/45 seats)' };
+const vehicleEn = r => { if (r.options.vehicle !== 'Standard') return r.options.vehicle; const p = planOf(r); return p.pickup === p.tour ? `${VEH_INV[p.tour]}${p.tour === 'staria' ? ' (driving guide)' : ''}` : `${VEH_INV[p.pickup]} (transfers), ${VEH_INV[p.tour]} (tours)`; };
+const T_EN = { ICN: 'Incheon airport', GMP: 'Gimpo airport', SEL_STN: 'Seoul station', PUS: 'Gimhae airport', BUS_STN: 'Busan station', CJU: 'Jeju airport' };
+const T_AIR = { ICN: 'ICN', GMP: 'GMP', PUS: 'PUS', CJU: 'CJU' };
+let invOpen = false, invArmed = {};
+
+// description lines from the itinerary, hotels (step ②) and the land fee (step ①)
+function invoiceLines(r) {
+  const pax = +wf.land.pax || r.options.pax, t = hotelTotals(), total = Math.round(wf.land.perPerson * pax + t.total);
+  const it = r.itinerary, date = i => r.trip.arrival ? addDays(r.trip.arrival, i) : '';
+  const L = [], head = text => L.push({ k: 'h', text, amt: '' }), item = text => L.push({ k: 'i', text: '- ' + text, amt: '' });
+  let n = 0; const sec = s => head(`${++n}. ${s}`);
+  head(`TOUR PACKAGE (${pax} PAX${r.trip.arrival ? `, ${dm(r.trip.arrival)} - ${dm(r.trip.departure)}, ${r.trip.departure.slice(0, 4)}` : ''})`);
+  if (t.offered.length) {
+    sec(`HOTEL${t.offered.some(h => h.breakfast) ? ' (INCL. BREAKFAST)' : ''}`);
+    t.offered.forEach(h => item(`${nightsBetween(h.checkIn, h.checkOut)} Nights @ ${h.name || CITY_EN[h.city] + ' hotel'} (${roomsEn(h)})`));
+  }
+  // transport, from the itinerary's transfer days
+  const other = [], ktx = [], air = [], kt = r.options.tier === 'Luxury' ? 'First class' : 'Economy class';
+  const last = it.length - 1; let arrival = false, depSeoul = false, arrOther = '';
+  const hop = (a, b, from, to) => { if (T_AIR[a] && T_AIR[b]) air.push(`${T_AIR[a]}-${T_AIR[b]}`); else if (/STN/.test(a) && /STN/.test(b)) ktx.push(`${CITY_EN[from] || ''} to ${CITY_EN[to] || ''}`.trim()); };
+  it.forEach((d, i) => {
+    if (d.kind !== 'transfer') return;
+    const t = d.title;
+    if (Array.isArray(d.transfers)) {
+      const T = d.transfers;
+      if (i === 0) { T.forEach(x => { if (x === 'ICN') arrival = true; else arrOther = x; }); if (arrOther) other.push(`${T_EN[arrOther]} - Hotel`); return; }
+      if (i === last) {
+        T.forEach((x, k) => {
+          if (x === 'ICN' && k > 0) { const via = { CJU: 'GMP', BUS_STN: 'SEL_STN', PUS: 'GMP' }[T[k - 1]] || 'GMP'; hop(T[k - 1], via, d.from, 'seoul'); other.push(`${T_EN[via]} - Incheon airport`); }
+          else if (x === 'ICN' && T.length === 1) depSeoul = true;
+          else other.push(`Hotel - ${T_EN[x]}`);
+        });
+        return;
+      }
+      if (T.length >= 2) { other.push(`Hotel - ${T_EN[T[0]]}`, `${T_EN[T[1]]} - Hotel`); hop(T[0], T[1], d.from, d.to); }
+      return;
+    }
+    if (/Arrival/.test(t)) arrival = true;
+    if (/Departure/.test(t) && !/Jeju|Busan/.test(d.route)) depSeoul = true;
+    if (/Seoul to Jeju/.test(t)) { other.push('Hotel - Gimpo airport', 'Jeju airport - Hotel'); air.push('GMP-CJU'); }
+    if (/Jeju to Busan/.test(t)) { other.push('Hotel - Jeju airport', 'Gimhae airport - Hotel'); air.push('CJU-PUS'); }
+    if (/Seoul to Busan/.test(t)) { other.push('Hotel - Seoul station', 'Busan station - Hotel'); ktx.push('Seoul to Busan'); }
+    if (/Departure/.test(t) && /Jeju/.test(d.route)) { other.push('Hotel - Jeju airport', 'Gimpo airport - Incheon airport'); air.push('CJU-GMP'); }
+    if (/Departure/.test(t) && /Busan/.test(d.route)) { other.push('Hotel - Busan station', 'Seoul station - Incheon airport'); ktx.push('Busan to Seoul'); }
+  });
+  const tourDays = it.map((d, i) => ({ d, i })).filter(x => x.d.kind === 'tour'), byCity = {};
+  tourDays.forEach(x => { const c = CITY_EN[cityOf(x.d)]; byCity[c] = (byCity[c] || 0) + 1; });
+  sec('TRANSPORTATION');
+  if (arrival && depSeoul) item('Airport Transfer : Incheon International airport - Hotel (Round trip)');
+  else if (arrival) item('Airport Transfer : Incheon International airport - Hotel');
+  else if (depSeoul) item('Airport Transfer : Hotel - Incheon International airport');
+  if (tourDays.length) item(`Daily Tour : ${Object.entries(byCity).map(([c, k]) => `${c}(${k} day${k > 1 ? 's' : ''})`).join(', ')}`);
+  if (ktx.length) item(`Train(KTX) : ${ktx.join(' & ')}, ${kt}`);
+  if (air.length) item(`Domestic Airfare (${air.join(', ')}), Economy class, luggage allowance 15 KG/PAX`);
+  if (other.length) item(`Other Transfer : ${[...new Set(other)].join(', ')}`);
+  item(`Private vehicle : ${vehicleEn(r)}`);
+  // meals, on the same days the arrangements list books restaurants
+  if (r.meals.length) {
+    const md = it.map((d, i) => ({ d, i })).filter(x => x.d.kind === 'tour' || (x.d.kind === 'transfer' && x.d.title !== 'Departure' && !x.d.title.startsWith('Arrival')));
+    const diet = [...r.diet, r.dietOther].filter(Boolean).join(', ');
+    sec('FOOD AND BEVERAGE');
+    item(`Daily ${r.meals.join(' & ').toLowerCase()}${md.length && r.trip.arrival ? `, from ${dm(date(md[0].i))} to ${dm(date(md[md.length - 1].i))}` : ''}${diet ? ` (${diet})` : ''}`);
+  }
+  sec('TOURS');
+  if (tourDays.length) {
+    const driving = r.options.vehicle === 'Standard' && planOf(r).tour === 'staria';
+    const span = r.trip.arrival ? `, ${dm(date(tourDays[0].i))} to ${dm(date(tourDays[tourDays.length - 1].i))}` : '';
+    item(`${driving ? 'Driving guide (English speaking)' : 'English speaking tour guide'}${span}`);
+  }
+  item('All Admission fees as per itinerary');
+  (r.addons || []).forEach(a => item(a));
+  L.push({ k: 'i', text: '', amt: '' });
+  L.push({ k: 't', text: 'TOTAL AMOUNT', amt: total });
+  return L;
+}
+function invoiceDefaults(r, date) {
+  const pax = +wf.land.pax || r.options.pax, arr = r.trip.arrival;
+  // due: 7 days after issue, but no later than 15 days before arrival (end of the full-refund window), never before the issue date
+  let due = addDays(date, 7);
+  if (arr && addDays(arr, -15) < due) due = addDays(arr, -15);
+  if (due < date) due = date;
+  const words = String(r.contact.company || r.contact.name || '').replace(/\(.*?\)/g, ' ').replace(/[^A-Za-z ]/g, ' ').split(/\s+/)
+    .filter(w => w && !/^(L+C|LTD|PVT|INC|CO|AND|THE|LIMITED|LLP|GMBH|SA|SDN|BHD)$/i.test(w));
+  const ini = (words.length >= 3 ? words.slice(0, 3).map(w => w[0]).join('') : (words[0] || 'XXX').slice(0, 3)).toUpperCase().padEnd(3, 'X');
+  const type = pax >= 10 ? 'GRP' : 'FIT', ym = (r.createdAt || date).slice(0, 7);
+  const sameMonth = rows.filter(x => (x.createdAt || '').slice(0, 7) === ym && ((+x.pax >= 10) === (pax >= 10))).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const seq = Math.max(1, sameMonth.findIndex(x => x.id === r.id) + 1);
+  return {
+    no: '', rev: 0, date, due, issuedAt: new Date().toISOString(), sentAt: '',
+    // Customer ID = the buyer's code; Quotation # = the last quotation sent to the buyer (request number-Q2), else the request number
+    customerId: (r.buyer && r.buyer.code) || `${INV_HUB[r.options.market] || (wf.country || String(r.options.market || 'XXX').slice(0, 3)).toUpperCase()}-${ini}`,
+    quotationNo: (r.quotes && r.quotes.length ? r.quotes[r.quotes.length - 1].ref : '') || r.id,
+    billTo: { name: r.contact.company || r.contact.name || '', address: r.contact.address || '', tel: r.contact.phone || r.contact.whatsapp || '', atten: r.contact.name || '' },
+    lines: invoiceLines(r), policy: INV_POLICY[pax >= 10 ? 'group' : 'fit'].join('\n'),
+    notes: 'All above rates are including tax & service charge', sc: false, vat: false, stamp: true,
+  };
+}
+// next HKT-INV-yymmddNN: the server reserves it, so it is never given twice (also after a void)
+async function nextInvoiceNo() { return (await api('/api/admin/invoice?id=' + encodeURIComponent(current.id), { method: 'POST', body: '{}' })).no; }
+async function issueInvoice(auto) {
+  const date = todayISO(), v = invoiceDefaults(current, date);
+  v.no = await nextInvoiceNo();
+  wf.invoice = v; invOpen = true;
+  const msg = auto ? `예약 확정 → 인보이스 ${v.no} 자동 발급` : `인보이스 ${v.no} 발급`;
+  await saveWorkflow(null, msg);
+  if ($('i-msg')) $('i-msg').textContent = msg;
+  const s = $('w-inv'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function invTotals(v) {
+  const sub = v.lines.reduce((a, l) => a + (l.amt === '' || l.amt == null ? 0 : +l.amt || 0), 0), sc = v.sc ? sub * 0.1 : 0, vat = v.vat ? (sub + sc) * 0.1 : 0;
+  return { sub, sc, vat, grand: sub + sc + vat };
+}
+const invMoney = n => `<span class="iv-d">$</span><span class="iv-n">${n === null ? '-' : amt2(n)}</span>`;
+function invoiceHTML(v) {
+  const t = invTotals(v), b = v.billTo, ph = s => `<span class="iv-ph">${s}</span>`;
+  const desc = v.lines.map(l => `<tr class="iv-${l.k}"><td>${l.k === 't' ? `${esc(l.text || 'TOTAL AMOUNT')} : US$ ${(+l.amt || 0).toLocaleString('en-US')}` : esc(l.text) || '&nbsp;'}</td><td>${l.amt === '' || l.amt == null ? '' : invMoney(+l.amt)}</td></tr>`);
+  const pol = String(v.policy || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const body = [...desc, ...Array(Math.max(0, 22 - desc.length - pol.length - 2)).fill('<tr><td>&nbsp;</td><td></td></tr>'),
+    ...(pol.length ? ['<tr class="iv-p iv-ph2"><td><b>Cancellation Policy</b></td><td></td></tr>', ...pol.map(s => `<tr class="iv-p"><td>- ${esc(s.replace(/^-\s*/, ''))}</td><td></td></tr>`)] : [])];
+  return `<div class="iv">
+    <h1>INVOICE</h1>
+    <div class="iv-top"><img src="${INV_IMG.logo}" alt="Hakeem Travel Korea">
+      <table class="iv-meta"><tr><th>Date :</th><td>${invDate(v.date)}</td></tr><tr><th>Invoice # :</th><td>${esc(v.no)}</td></tr><tr><th>Customer ID :</th><td>${esc(v.customerId)}</td></tr><tr><th>Quotation # :</th><td>${esc(v.quotationNo)}</td></tr><tr><th>Payment Due by :</th><td>${invDate(v.due)}</td></tr></table></div>
+    <div class="iv-par">
+      <div><div class="iv-lab">Bill To :</div><div class="iv-box">
+        <div>Name : ${esc(b.name) || ph('회사명')}</div><div class="iv-addr"><span>Address :</span><span>${esc(b.address).replace(/\n/g, '<br>') || ph('주소 입력 필요')}</span></div>
+        <div>Tel : ${esc(b.tel) || ph('전화 입력 필요')}</div><div>Atten : ${esc(b.atten)}</div></div></div>
+      <div><div class="iv-lab">Remittance Advice :</div><div class="iv-box">${invBank().map(([k, x]) => `<div>${k} : ${x}</div>`).join('')}</div></div>
+    </div>
+    <table class="iv-desc"><thead><tr><th>Description</th><th>Total</th></tr></thead><tbody>${body.join('')}</tbody></table>
+    <div class="iv-bot">
+      <div class="iv-notes"><div class="iv-nh">Special Notes and Instructions</div><div class="iv-nb">${esc(v.notes).replace(/\n/g, '<br>')}</div></div>
+      <table class="iv-sum"><tr><th>Subtotal</th><td>${invMoney(t.sub)}</td></tr><tr><th>Service Charge(10%)</th><td>${invMoney(v.sc ? t.sc : null)}</td></tr><tr><th>VAT(10%)</th><td>${invMoney(v.vat ? t.vat : null)}</td></tr><tr><th>Grand Total</th><td>${invMoney(t.grand)}</td></tr></table>
+    </div>
+    <div class="iv-sign">${v.stamp ? `<img class="iv-seal" src="${INV_IMG.seal}" alt=""><img class="iv-sg" src="${INV_IMG.sign}" alt="">` : ''}</div>
+    <div class="iv-thx">Make all checks payable to Hakeem Travel Korea<br>Thank you for your business!<br>Should you have any enquiries concerning this invoice, please contact on contact@hakeemtravel.com</div>
+    <div class="iv-foot">#707, SK V1 Center, Seonyu-ro 9 gil 10, Yeongdeungpo-gu, Seoul, 07281, Korea<br>Tel: +82-2-6166-7112 &nbsp; Fax: +82-2-6166-7113 &nbsp; E-mail : contact@hakeemtravel.com &nbsp; Website : www.hakeemtravel.com</div>
+  </div>`;
+}
+function invoiceSection() {
+  const v = wf.invoice;
+  if (!v) return `<div class="step" id="w-inv"><h3>④ 인보이스</h3>
+    <p class="hint">상태를 <b>예약 확정</b>으로 바꾸면 인보이스 자동 발급 (번호·발행일·입금 기한·일정 내역·금액 자동 작성). 지상비·호텔 금액은 ①·② 기준.</p>
+    <div class="acts"><button class="btn ghost" id="i-issue">지금 발급</button><span class="saved" id="i-msg"></span></div></div>`;
+  const t = invTotals(v), b = v.billTo, f = (k, l, w, type = 'text') => `<label>${l}<input data-iv="${k}" type="${type}" value="${esc(v[k])}" style="width:${w}px"></label>`;
+  const bt = (k, l, w) => `<label>${l}<input data-ib="${k}" value="${esc(b[k])}" style="width:${w}px"${!b[k] ? ' class="need"' : ''}></label>`;
+  const K = { h: '제목', i: '항목', t: '총액' };
+  return `<div class="step" id="w-inv"><h3>④ 인보이스 <span class="done">발급 ${esc(v.no)}${v.rev ? ' · R' + v.rev : ''}</span>${v.sentAt ? ` <span class="done">발송 ${fmtT(v.sentAt)}</span>` : ''}</h3>
+    <div class="row">${f('no', 'Invoice #', 170)}${f('date', '발행일', 140, 'date')}${f('due', '입금 기한 (Payment Due)', 150, 'date')}${f('customerId', 'Customer ID', 110)}${f('quotationNo', 'Quotation #', 130)}</div>
+    <div class="row">${bt('name', 'Bill To · 회사명', 260)}<label>주소<textarea data-ib="address" rows="2" style="width:300px;min-height:0"${!b.address ? ' class="need"' : ''}>${esc(b.address)}</textarea></label>${bt('tel', '전화', 160)}${bt('atten', 'Atten', 160)}</div>
+    <details class="cost" id="i-edit"${invOpen ? ' open' : ''}><summary>내역·조건 편집 <span class="hint">· 합계 US$ ${amt2(t.grand)}</span></summary>
+      <table class="ct"><tr class="g"><th>구분</th><th>내용 (영어)</th><th>금액 (US$)</th><th></th></tr>
+      ${v.lines.map((l, i) => `<tr data-il="${i}"><td><select data-ilf="k">${Object.entries(K).map(([k, x]) => `<option value="${k}"${l.k === k ? ' selected' : ''}>${x}</option>`).join('')}</select></td>
+        <td><input data-ilf="text" value="${esc(l.text)}"${l.k === 't' ? ' placeholder="TOTAL AMOUNT"' : ''}></td><td><input data-ilf="amt" class="n" type="number" step="any" value="${l.amt}"></td>
+        <td style="white-space:nowrap"><button class="btn ghost sm" data-imv="${i}:-1" title="위로">↑</button><button class="btn ghost sm" data-imv="${i}:1" title="아래로">↓</button><button class="btn ghost sm" data-idel="${i}">✕</button></td></tr>`).join('')}</table>
+      <div class="acts"><button class="btn ghost sm" id="i-add">+ 행 추가</button><button class="btn ghost sm" id="i-rebuild">일정·금액에서 다시 만들기</button></div>
+      <div class="row" style="margin-top:10px"><label>취소 규정 (한 줄에 하나)<textarea id="i-pol" rows="5" style="width:520px">${esc(v.policy)}</textarea></label>
+        <div class="acts"><button class="btn ghost sm" data-ipol="fit">FIT 규정</button><button class="btn ghost sm" data-ipol="group">그룹 규정</button></div></div>
+      <div class="row"><label>Special Notes<input data-iv="notes" value="${esc(v.notes)}" style="width:420px"></label>
+        <label class="chk"><input type="checkbox" data-ic="sc"${v.sc ? ' checked' : ''}> 봉사료 10% 별도</label><label class="chk"><input type="checkbox" data-ic="vat"${v.vat ? ' checked' : ''}> VAT 10% 별도</label><label class="chk"><input type="checkbox" data-ic="stamp"${v.stamp ? ' checked' : ''}> 직인·서명</label></div>
+    </details>
+    <div class="acts">
+      <button class="btn" id="i-pdf">인보이스 PDF</button>
+      <a class="btn ghost" id="i-mail" href="#">인보이스 메일 작성</a>
+      ${v.sentAt ? '<button class="btn ghost" id="i-sent">발송 완료 취소</button>' : '<button class="btn ghost" id="i-sent">발송 완료로 표시</button>'}
+      <button class="btn ghost" id="i-rev">수정본 발행 (R${(v.rev || 0) + 1})</button>
+      <button class="btn ghost" id="i-save">저장</button>
+      <button class="btn ghost" id="i-void">발급 취소</button>
+      <span class="saved" id="i-msg"></span>
+    </div>
+    <div class="inv-wrap"><div id="inv-prev">${invoiceHTML(v)}</div></div>
+  </div>`;
+}
+function invFileName(v) {
+  const r = current;
+  return `INVOICE_Hakeem Travel Korea_${(v.billTo.name || '').replace(/[\\/:*?"<>|]/g, '')}_${+wf.land.pax || r.options.pax}PAX_${yymmdd(r.trip.arrival)}_${r.trip.nights}N ${r.trip.days}D_${yymmdd(v.date)}${v.rev ? 'R' + v.rev : ''}`;
+}
+// PDF: inside Claude the page cannot print, so it draws the invoice (html2canvas + jsPDF) and offers the file; elsewhere it prints
+const loadJs = src => new Promise((ok, no) => { if (document.querySelector(`script[src="${src}"]`)) return ok(); const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+let invDl;
+async function invoicePDF() {
+  const v = wf.invoice;
+  if (invDl === undefined) invDl = window.claude && window.claude.use ? await Promise.race([window.claude.use('downloads'), new Promise(r => setTimeout(() => r(null), 3000))]).catch(() => null) : null;
+  if (!invDl) return invoicePrint();
+  const msg = t => { if ($('i-msg')) $('i-msg').textContent = t; };
+  msg('PDF 만드는 중…');
+  try {
+    await loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;background:#fff';
+    box.innerHTML = invoiceHTML(v); box.querySelector('.iv').style.boxShadow = 'none'; box.querySelectorAll('.iv-ph').forEach(x => { x.style.color = 'transparent'; x.style.background = 'none'; });
+    document.body.appendChild(box);
+    const canvas = await html2canvas(box.querySelector('.iv'), { scale: 2, backgroundColor: '#fff' }); box.remove();
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' }), W = 210, H = 297, m = 6;
+    let w = W - 2 * m, h = canvas.height * w / canvas.width; if (h > H - 2 * m) { h = H - 2 * m; w = canvas.width * h / canvas.height; }
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (W - w) / 2, m, w, h);
+    await invDl.save({ filename: invFileName(v) + '.pdf', data: pdf.output('blob') });
+    msg('PDF 저장 완료');
+  } catch (e) { msg(e && e.code === 'declined' ? 'PDF 저장 취소됨' : 'PDF 만들기 실패 · ' + (e && (e.message || e.code) || '')); }
+}
+function invoicePrint() {
+  const v = wf.invoice, title = document.title;
+  $('isheet').innerHTML = invoiceHTML(v);
+  document.title = invFileName(v); document.body.classList.add('printing-inv');
+  setTimeout(() => { window.print(); document.body.classList.remove('printing-inv'); document.title = title; }, 60);
+}
+function invoiceMail(v) {
+  const r = current, t = invTotals(v);
+  const subject = `Invoice ${v.no}${v.rev ? ' R' + v.rev : ''} – Korea ${r.trip.nights}N${r.trip.days}D – ${+wf.land.pax || r.options.pax} pax – Hakeem Travel Korea`;
+  const body = [`Dear ${v.billTo.atten || r.contact.name},`, '', 'Thank you for confirming your booking with Hakeem Travel Korea.', 'Please find our invoice attached as a PDF.', '',
+    `Invoice # : ${v.no}${v.rev ? ' (R' + v.rev + ')' : ''}`, `Amount : US$ ${amt2(t.grand)}`, `Payment due by : ${invDate(v.due)}`,
+    `Travel dates : ${r.trip.arrival ? `${enDate(r.trip.arrival)} – ${enDate(r.trip.departure)}` : 'to be confirmed'}`, '', 'Remittance advice:', ...invBank().map(([k, x]) => `${k} : ${x}`), '',
+    'Kindly share the remittance slip once the payment is made.', '', 'Best regards,', 'Hakeem Travel Korea'].join('\n');
+  return `mailto:${encodeURIComponent(r.contact.email)}?cc=contact@hakeemtravel.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+const invRefresh = () => { if ($('inv-prev')) $('inv-prev').innerHTML = invoiceHTML(wf.invoice); if ($('i-mail')) $('i-mail').href = invoiceMail(wf.invoice); if ($('i-msg')) $('i-msg').textContent = '저장 안 됨'; };
+const invArm = (b, key, label) => { if (Date.now() - (invArmed[key] || 0) < 4000) return true; invArmed[key] = Date.now(); b.textContent = label; return false; };
+$('wfinv').addEventListener('toggle', e => { if (e.target.id === 'i-edit') invOpen = e.target.open; }, true);
+$('wfinv').addEventListener('input', e => {
+  const el = e.target, v = wf && wf.invoice; if (!v) return;
+  if (el.dataset.iv) v[el.dataset.iv] = el.value;
+  else if (el.dataset.ib) { v.billTo[el.dataset.ib] = el.value; el.classList.toggle('need', !el.value); }
+  else if (el.dataset.ilf) { const l = v.lines[+el.closest('tr').dataset.il], k = el.dataset.ilf; l[k] = k === 'amt' ? (el.value === '' ? '' : +el.value) : el.value; }
+  else if (el.dataset.ic) v[el.dataset.ic] = el.checked;
+  else if (el.id === 'i-pol') v.policy = el.value;
+  else return;
+  invRefresh();
+});
+$('wfinv').addEventListener('click', e => {
+  const b = e.target.closest('button, a'); if (!b) return;
+  const v = wf.invoice, err = x => { if ($('i-msg')) $('i-msg').textContent = KERR(x); };
+  if (b.id === 'i-issue') { e.preventDefault(); b.disabled = true; return issueInvoice(false).catch(err); }
+  if (!v) return;
+  if (b.id === 'i-pdf') return invoicePDF();
+  if (b.id === 'i-mail') { b.href = invoiceMail(v); return; }
+  if (b.id === 'i-save') return saveWorkflow(null, '인보이스 저장 완료').then(() => { $('i-msg').textContent = '저장 완료'; }).catch(err);
+  if (b.id === 'i-sent') { if (v.sentAt && !invArm(b, 'sent', '한 번 더 누르면 취소')) return; v.sentAt = v.sentAt ? '' : new Date().toISOString(); return saveWorkflow(null).then(() => { $('i-msg').textContent = v.sentAt ? '인보이스 발송 기록 완료' : '발송 완료 취소됨'; }).catch(err); }
+  if (b.id === 'i-rev') { if (!invArm(b, 'rev', `한 번 더 누르면 R${(v.rev || 0) + 1} 발행 (발행일 오늘로)`)) return; v.rev = (v.rev || 0) + 1; v.date = todayISO(); v.sentAt = ''; return saveWorkflow(null).then(() => { $('i-msg').textContent = `수정본 R${v.rev} 발행 · PDF 다시 저장 후 발송`; }).catch(err); }
+  if (b.id === 'i-void') { if (!invArm(b, 'void', '한 번 더 누르면 발급 취소 (내용 삭제)')) return; delete wf.invoice; return saveWorkflow(null, '인보이스 발급 취소됨').catch(err); }
+  if (b.id === 'i-rebuild') { if (!invArm(b, 'rb', '한 번 더 누르면 내역 새로 작성 (수정 내용 삭제)')) return; v.lines = invoiceLines(current); drawWorkflow(); invRefresh(); return; }
+  if (b.id === 'i-add') { const ti = v.lines.findIndex(l => l.k === 't'); v.lines.splice(ti >= 0 ? ti : v.lines.length, 0, { k: 'i', text: '- ', amt: '' }); drawWorkflow(); invRefresh(); return; }
+  if (b.dataset.idel !== undefined) { v.lines.splice(+b.dataset.idel, 1); drawWorkflow(); invRefresh(); return; }
+  if (b.dataset.imv !== undefined) { const [i, d] = b.dataset.imv.split(':').map(Number), j = i + d; if (j >= 0 && j < v.lines.length) { [v.lines[i], v.lines[j]] = [v.lines[j], v.lines[i]]; drawWorkflow(); invRefresh(); } return; }
+  if (b.dataset.ipol) { v.policy = INV_POLICY[b.dataset.ipol].join('\n'); drawWorkflow(); invRefresh(); return; }
+});
 
 // ---- company directory (hotels, guides, restaurants, transport, places, buyers) from the server: contacts stay on Wix, never in this file
 let DIR = null, dirTab = 'hotels';
@@ -2378,7 +2725,7 @@ $('q').oninput = draw; $('fst').onchange = draw; $('fas').onchange = draw; $('cs
 $('das').onchange = async () => { const v = $('das').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ assignee: v }) }); current.assignee = v; const row = rows.find(x => x.id === current.id); if (row) row.assignee = v; } catch (e) { $('das').value = current.assignee || ''; } };
 $('rows').onclick = e => { const tr = e.target.closest('tr[data-id]'); if (tr) open(tr.dataset.id).catch(err => { $('count').textContent = KERR(err); }); };
 $('back').onclick = () => { $('detail').style.display = 'none'; showTab('list'); load(); };
-$('dst').onchange = async () => { try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ status: $('dst').value }) }); current.status = $('dst').value; } catch (e) { $('dst').value = current.status; } };
+$('dst').onchange = async () => { const v = $('dst').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ status: v }) }); current.status = v; const row = rows.find(x => x.id === current.id); if (row) row.status = v; } catch (e) { $('dst').value = current.status; return; } if (v === 'booked' && wf && !wf.invoice) issueInvoice(true).catch(e => { if ($('i-msg')) $('i-msg').textContent = '인보이스 자동 발급 실패: ' + KERR(e); }); };
 if (key) load();
 </script>
 </body>
