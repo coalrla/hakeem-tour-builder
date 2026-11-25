@@ -1623,12 +1623,12 @@ function openMail(u, kind = 'other') {
       if (sb) {
         const msg = m.querySelector('.mb-msg'), t = val('to'), s = val('subject');
         if (!t.trim()) { msg.textContent = '받는 사람을 넣어 주세요.'; return; }
-        if (!confirm(`contact@hakeemtravel.com에서 바로 보냅니다.\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
+        if (!confirm(`회사 메일로 바로 보냅니다 (답장은 contact@hakeemtravel.com).\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
         sb.disabled = true; sb.textContent = '보내는 중…'; msg.textContent = '';
         try {
           const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind }) });
           if (current && current.id === m._id) current.mails = d.mails;
-          sb.textContent = '보냄 ✓'; msg.style.color = '#0c6b60'; msg.textContent = `${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 발송 완료 · 요청 기록에 남김`;
+          sb.textContent = '보냄 ✓'; msg.style.color = '#0c6b60'; msg.textContent = `${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 발송 완료${d.from ? ` (보낸 주소 ${d.from})` : ''} · 요청 기록에 남김`;
           if (typeof m._sent === 'function') m._sent();
           setTimeout(() => { m.hidden = true; }, 1500);
         } catch (err) { sb.disabled = false; sb.textContent = '보내기'; msg.style.color = '#b42318'; msg.textContent = err.message || '보내지 못했습니다.'; }
@@ -1640,7 +1640,7 @@ function openMail(u, kind = 'other') {
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
   m._id = current ? current.id : ''; m._kind = kind; m._sent = null;
   const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
-  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 contact@hakeemtravel.com에서 바로 발송돼요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 회사 이름(Hakeem Travel Korea)으로 바로 발송돼요. 답장은 contact@hakeemtravel.com으로 와요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
     ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
     <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
     <div class="mb-a"><span class="mb-msg hint" style="flex:1;align-self:center"></span><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button>${m._id ? '<button type="button" class="btn" data-mbsend="1">보내기</button>' : ''}</div></div>`;
