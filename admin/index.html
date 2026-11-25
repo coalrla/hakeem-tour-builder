@@ -607,6 +607,16 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
 .opg{border:1px solid var(--line);border-radius:12px;padding:10px 12px 4px;margin:14px 0 0;background:#fff}.opg-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:6px}.opg-h b{font-size:.95rem;color:var(--purple,#4a2a73)}.opg-h .sp{flex:1}.opg-c{display:flex;gap:4px}.opc{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 12px;font:inherit;font-size:.8rem;cursor:pointer}.opc em{font-style:normal;color:var(--muted);font-size:.75rem}.opc[aria-pressed=true]{background:var(--accent-soft,#f1ecf9);border-color:var(--accent,#5b3a8c);color:var(--accent,#5b3a8c);font-weight:700}.opc.solo{cursor:default}.opg .ht.ops{margin:0}
 .op-it{display:flex;gap:4px;align-items:center}.op-it select{width:74px;flex:none;padding-left:6px;padding-right:2px}.op-it input{flex:1;min-width:0}
 .wk-sum .bq-name{max-width:min(46vw,620px);overflow:hidden;text-overflow:ellipsis;font-size:.9rem !important}
+
+/* buyer's own picks (differ from the buyer page defaults) */
+.bpick > .label { color: #b42318 !important; }
+.bpick .opt[aria-pressed="true"] { border-color: #b42318 !important; background: #fdecea !important; color: #b42318 !important; }
+.bpick .stepper, .bpick .bdp-in, .bpick .bcrow:not(.off) { border-color: #b42318 !important; }
+.bpick-v { display: block; font-size: .74rem; font-weight: 600; color: #b42318; margin-top: 2px; }
+label.chip.bpick { border-color: #b42318 !important; color: #b42318 !important; background: #fdecea !important; }
+#builder .day.bday.bpick-day { border-color: #b42318; box-shadow: inset 3px 0 0 #b42318; }
+#builder .day.bday.bpick-day h4::after { content: "바이어 변경"; margin-left: 6px; font-size: .68rem; font-weight: 800; color: #fff; background: #b42318; border-radius: 6px; padding: 1px 6px; vertical-align: 2px; }
+.bpick-key { font-size: .78rem; color: var(--muted); background: #fdecea; border-radius: 8px; padding: 6px 10px; } .bpick-key b { color: #b42318; }
 </style>
 </head>
 <body>
@@ -1642,7 +1652,8 @@ async function wkEnter(r) {
     if (!settings || !settings.defaults || !settings.defaults.vehicles) { try { settings = await api('/api/admin/settings'); } catch {} }
     bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); for (const [k, o] of Object.entries(bSel.stopOrd || {})) { const e = (bEdits[k] ||= { rm: [], add: [] }); if (Array.isArray(o) && !(e.ord || []).length) e.ord = o.slice(); } /* buyer's own order of places (buyer page drag) */ bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
     const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup ?? 10; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
-    bFold = {}; bAddOpen = {}; bTitle = ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
+    bFold = {}; bAddOpen = {}; bTitle = r.source === 'staff' && (r.titleCustom || (r.titleCustom === undefined && r.title && !/^Hakeem Travel Korea_/.test(r.title))) ? r.title : ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
+    if (r.source === 'staff') bBuyer = bBuyerOf(r);
     $('wk-trip').appendChild($('builder')); drawBuilder();
     if (wf && !wf.land.manual) { const sp = sitePrice(); if (sp && sp !== wf.land.perPerson) { wf.land.perPerson = sp; drawWorkflow(); } } // site price with today's rates
   }
@@ -2481,6 +2492,28 @@ $('rates').addEventListener('click', async e => {
 const BMARKET = [['mideast', '중동'], ['india', '인도'], ['other', '기타 (인도 기준)']];
 const BSEASON = [['spring', '봄'], ['summer', '여름'], ['autumn', '가을'], ['winter', '겨울']];
 const BTIER = [['B', 'Budget'], ['R', 'Regular'], ['L', 'Luxury']];
+// ---- what the buyer picked on the buyer page (anything other than that page's defaults) shows in red in the builder
+const BUYER_DEF = { market: 'other', pax: 10, foc: 0, season: 'spring', tier: 'R', concept: 'classic', vehicle: 'std', seoul: true, jeju: true, busan: true, order: 'seoul,jeju,busan', nSeoul: 4, nJeju: 3, nBusan: 3, luggage: false };
+const bBuyerSel = () => bFromReq && bFromReq.source !== 'staff' ? (bFromReq.buyerSel || (!bFromReq.original && !bFromReq.builder ? bFromReq.builderSel : null)) : null;
+function bMarkPicks() {
+  const bs = bBuyerSel(), root = $('builder'); if (!bs || !root) return;
+  const mark = (el, txt) => { const f = el && (el.closest('.two > div') || el.closest('.field')); if (!f || f.classList.contains('bpick')) return; f.classList.add('bpick'); if (txt) f.insertAdjacentHTML('beforeend', `<span class="bpick-v">바이어 선택: ${esc(txt)}</span>`); };
+  const segTxt = (k, v) => { const b = root.querySelector(`[data-bseg="${k}"][data-v="${v}"]`); return b ? b.firstChild.textContent.trim() : v; };
+  for (const k of ['market', 'season', 'tier', 'concept', 'vehicle']) if (bs[k] !== undefined && bs[k] !== BUYER_DEF[k]) mark(root.querySelector(`[data-bseg="${k}"]`), segTxt(k, bs[k]));
+  if ((bs.pax | 0) !== BUYER_DEF.pax) mark(root.querySelector('[data-bnum="pax"]'), bs.pax + '명');
+  if ((bs.foc | 0) !== BUYER_DEF.foc) mark(root.querySelector('[data-bnum="foc"]'), bs.foc + '명');
+  const arr = ((bFromReq.original && bFromReq.original.trip) || bFromReq.trip || {}).arrival; if (arr) mark(root.querySelector('[data-bdp]'), bDpLabel(arr));
+  const cities = ['seoul', 'jeju', 'busan'], route = (bs.order || []).filter(c => c === 'seoul' ? bs.seoul !== false : bs[c]);
+  if (cities.some(c => !!(c === 'seoul' ? bs.seoul !== false : bs[c]) !== BUYER_DEF[c] || (+bs['n' + CITY_EN[c]] || 0) !== BUYER_DEF['n' + CITY_EN[c]]) || (bs.order || []).join(',') !== BUYER_DEF.order)
+    mark(root.querySelector('.bcities'), route.map(c => `${CITY[c]} ${bs['n' + CITY_EN[c]]}박`).join(' → '));
+  if ((bs.meals || []).length || Object.keys(bs.mealOff || {}).length || Object.keys(bs.mealOn || {}).length) mark(root.querySelector('[data-bmall]'), (bs.meals || []).map(m => m === 'lunch' ? '점심' : '저녁').join('·') || '일부 날짜만');
+  const lug = document.querySelector('[data-bb="luggage"]'); if (bs.luggage && lug) lug.closest('label').classList.add('bpick');
+  // days the buyer changed: a swapped tour or a tour added on a travel day
+  for (const slot of Object.keys(bs.swaps || {})) { const s = root.querySelector(`[data-bswap="${slot}"]`); if (s) s.closest('.bday').classList.add('bpick-day'); }
+  for (const k of Object.keys(bs.moveTour || {})) { const s = root.querySelector(`[data-bmvon="${k}"]`); if (s) s.closest('.bday').classList.add('bpick-day'); }
+  const p = root.querySelector('.bpanel'); if (p && root.querySelector('.bpick, .bpick-day')) p.insertAdjacentHTML('afterbegin', '<div class="bpick-key"><b>빨간색</b> = 바이어가 직접 고른 항목 (바이어 페이지 기본값과 다른 것)</div>');
+}
+
 const BTHEME = Object.entries(THEME);
 const ORDERS = [['seoul', 'jeju', 'busan'], ['seoul', 'busan', 'jeju'], ['jeju', 'seoul', 'busan'], ['jeju', 'busan', 'seoul'], ['busan', 'seoul', 'jeju'], ['busan', 'jeju', 'seoul']];
 const bNew = () => ({ market: 'other', country: '', season: 'spring', tier: 'R', concept: 'classic', pax: 10, seoul: true, jeju: true, busan: true, order: ['seoul', 'jeju', 'busan'], nSeoul: 4, nJeju: 3, nBusan: 3,
@@ -2652,6 +2685,8 @@ async function bSend() {
 let bBuyer = { id: '', dom: '', country: '' }, bBuyAsked = false;
 const FREE_MAILS = ['gmail', 'googlemail', 'outlook', 'hotmail', 'live', 'msn', 'yahoo', 'icloud', 'me', 'aol', 'proton', 'protonmail', 'naver', 'daum', 'hanmail', 'yandex', 'mail', 'gmx', 'zoho', 'rediffmail'];
 const bBuyerEmail = () => bBuyer.id && bBuyer.dom ? `${bBuyer.id}@${bBuyer.dom}`.toLowerCase() : '';
+// agent@company and country of a saved tour, back into the builder's buyer fields
+const bBuyerOf = r => { const e = String((r && r.contact && r.contact.email) || ''), at = e.indexOf('@'); return { id: at > 0 ? e.slice(0, at) : '', dom: at > 0 ? e.slice(at + 1) : '', country: (r && r.options && r.options.country) || '' }; };
 const bBuyerHit = () => { const e = bBuyerEmail(); return e && BUY && BUY.buyers ? BUY.buyers.find(x => x.email === e) : null; };
 function bDomWord() { const p = bBuyer.dom.toLowerCase().split('.').filter(Boolean); let i = p.length - 2; if (i > 0 && ['co', 'com', 'net', 'org', 'ac', 'gov', 'edu', 'ne', 'or'].includes(p[i])) i--; return p[Math.max(0, i)] || ''; }
 const bCode3 = s => String(s || '').normalize('NFKD').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
@@ -2773,7 +2808,8 @@ const bStep = (attr, v, min, max, w) => `<div class="stepper"><button type="butt
 const bSeg = (key, list, v, cls) => `<div class="seg ${cls}">${list.map(([k, l, sm]) => `<button type="button" class="opt" data-bseg="${key}" data-v="${k}" aria-pressed="${k === v}">${l}${sm ? `<small>${sm}</small>` : ''}</button>`).join('')}</div>`;
 function bOptions(days) {
   const s = bSel, route = routeOf(s), hit = bBuyerHit();
-  const buyer = bFrom
+  const staffTour = !bFrom || (bFromReq && bFromReq.source === 'staff'); // a tour staff made: buyer and name stay editable after saving
+  const buyer = !staffTour
     ? `<div class="bbuyer">${esc(bReqBuyer() || '바이어 정보 없음')}</div>`
     : `<span class="em-id bem"><input data-bbuy="id" value="${esc(bBuyer.id)}" placeholder="agent" autocapitalize="off" spellcheck="false"><span>@</span><input data-bbuy="dom" value="${esc(bBuyer.dom)}" placeholder="company.com" autocapitalize="off" spellcheck="false"></span>
       ${hit ? `<div class="hint"><b>${esc(hit.code)}</b> · ${esc(hit.name)} · ${esc(hit.company)} · ${esc(bCountryName(hit.country))} (가입 바이어)</div>`
@@ -2783,6 +2819,7 @@ function bOptions(days) {
   return `<aside class="panel bpanel">
     ${bSvcSwitch()}
     <div class="field"><span class="label">Buyer</span>${buyer}</div>
+    ${bFrom && staffTour ? `<div class="field"><span class="label">Tour name</span><input id="b-title" value="${esc(bTitle || bAutoTitle())}" placeholder="투어 이름" title="도시·날짜·바이어가 바뀌면 자동으로 바뀜 · 직접 고치면 그 이름으로 고정 (지우면 자동 이름으로 돌아감)" style="width:100%"><span class="hint">${bTitle ? '직접 정한 이름 · 지우면 자동 이름' : '자동 이름 · 도시·날짜·바이어를 바꾸면 따라 바뀌고 Save 때 저장'}</span></div>` : ''}
     <div class="field bf-itin"><span class="label">Market (차량 기준)</span>${bSeg('market', [['mideast', '중동'], ['india', '인도'], ['other', '기타']], s.market, 'c3')}</div>
     <div class="field two"><div><span class="label">PAX</span>${bStep('data-bnum="pax"', s.pax, 1, 40)}</div>${B_HAS_FOC ? `<div><span class="label">FOC</span>${bStep('data-bnum="foc"', s.foc || 0, 0, 5)}</div>` : ''}</div>
     <div class="field bdp-wrap"><span class="label">Arrival</span><button type="button" class="bdp-in" data-bdp="open">${bArrival ? bDpLabel(bArrival) : '<span class="hint">날짜 선택</span>'}<i aria-hidden="true">▾</i></button><div class="bdp" id="bdp" hidden></div></div>
@@ -2907,6 +2944,7 @@ function drawBuilder() {
   if (wkFromReq && current && current.id === bFrom) wkMeta(current, { n: days.length - 1, pax: bSel.pax, foc: focOf(bSel), arrival: bArrival });
   if (bHeadHTML) $('builder').insertAdjacentHTML('afterbegin', bHeadHTML);
   if ($('wk-sum')) $('wk-sum').innerHTML = bSumHTML;
+  bMarkPicks();
   bPlaceHotels();
   if (!BUY && !bBuyAsked) { bBuyAsked = true; api('/api/admin/buyers').then(x => { BUY = x; drawBuilder(); }).catch(() => {}); }
   if (!DIR && !bDirAsked) { bDirAsked = true; loadDirectory().then(x => { if (x) drawBuilder(); }); }
@@ -3021,8 +3059,8 @@ function bSvcSet(path, el) {
 const bHotelPayload = () => (wfSyncBuilder(), { arrival: bArrival, markup: +bMarkup || 0, nights: bHotelsFor(builtDays()) });
 async function bSaveNew() {
   try {
-    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, buyer: { email: bBuyerEmail(), country: bBuyerHit() ? '' : (bBuyer.country || bSel.country || '') }, title: (bTitle.trim() || bAutoTitle()) }) });
-    bFrom = d.id; bTitle = ''; bBuyer = { id: '', dom: '', country: '' }; bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(d.id));
+    const d = await api('/api/admin/draft', { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, buyer: { email: bBuyerEmail(), country: bBuyerHit() ? '' : (bBuyer.country || bSel.country || '') }, title: (bTitle.trim() || bAutoTitle()), titleCustom: !!bTitle.trim() }) });
+    bFrom = d.id; bTitle = bTitle.trim(); bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(d.id)); bBuyer = bBuyerOf(bFromReq);
     try { rows = (await api('/api/admin/list')).rows; } catch {}
     drawBuilder(); $('b-msg').textContent = `${d.id}로 저장 · ${d.svcQuote ? `서비스 ${money(d.svcQuote.total)}` : `지상비 1인 ${money(d.price.perPerson)}`}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''} · '내 투어'에서 볼 수 있음`;
   } catch (err) { if ($('b-msg')) $('b-msg').textContent = KERR(err); }
@@ -3030,9 +3068,10 @@ async function bSaveNew() {
 async function bSaveToRequest() {
   const msg = $('b-msg');
   try {
-    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, by: $('das') ? $('das').value : '' }) });
+    const d = await api('/api/admin/build?id=' + encodeURIComponent(bFrom), { method: 'POST', body: JSON.stringify({ sel: bSel, edits: bEdits, order: bOrder, hotels: bHotelPayload(), svc: bSvc, by: $('das') ? $('das').value : '', ...(bFromReq && bFromReq.source === 'staff' ? { buyer: { email: bBuyerEmail(), country: bBuyerHit() ? '' : (bBuyer.country || bSel.country || '') }, title: (bTitle.trim() || bAutoTitle()), titleCustom: !!bTitle.trim() } : {}) }) });
     bFromReq = await api('/api/admin/get?id=' + encodeURIComponent(bFrom)); current = bFromReq;
-    const row = rows.find(x => x.id === bFrom); if (row) { row.perPerson = d.price.perPerson; row.total = d.price.total; row.pax = bSel.pax; row.edited = true; }
+    const row = rows.find(x => x.id === bFrom); if (row) { row.perPerson = d.price.perPerson; row.total = d.price.total; row.pax = bSel.pax; row.edited = true; if (current.contact) { row.company = current.contact.company; row.name = current.contact.name; row.email = current.contact.email; } }
+    if (wkFromReq && typeof wkMeta === 'function') wkMeta(current); // header shows the new tour name
     drawBuilder(); $('b-msg').textContent = `요청 ${bFrom}에 저장 · ${d.svcQuote ? `서비스 ${money(d.svcQuote.total)}` : `지상비 1인 ${money(d.price.perPerson)}`}${d.hotelQuote ? ` + 호텔 ${money(d.hotelQuote.perPerson)}` : ''}`;
   } catch (err) { if (msg) msg.textContent = KERR(err); }
 }
