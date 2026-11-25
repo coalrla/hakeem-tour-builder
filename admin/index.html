@@ -1531,7 +1531,7 @@ async function open(id) {
   await loadDirectory();
   const r = current, o = r.options;
   $('dst').value = r.status; fillStaff(); $('das').value = r.assignee || '';
-  $('reply').href = `mailto:${encodeURIComponent(r.contact.email)}?subject=${encodeURIComponent(`Your Korea tour quotation – ${r.trip.nights}N${r.trip.days}D – ${o.pax} pax`)}`;
+  $('reply').href = `mailto:${encodeURIComponent(r.contact.email)}?cc=contact@hakeemtravel.com&subject=${encodeURIComponent(`Your Korea tour quotation – ${r.trip.nights}N${r.trip.days}D – ${o.pax} pax`)}&body=${encodeURIComponent([`Dear ${r.contact.name || 'Sir/Madam'},`, '', 'Thank you for your request.', '', ...((r.quotes || []).length ? [`Your quotation ${r.quotes[r.quotes.length - 1].no} is ready. Please sign in and open "My quotations" to view or download it as a PDF:`, 'https://www.hakeemtravel.com/tour-builder', ''] : []), '', 'Best regards,', ...(mailName() ? [mailName()] : []), 'Hakeem Travel Korea'].join('\n'))}`;
   const line = (k, v) => v ? `<div><b>${k}</b>${v}</div>` : '';
   $('sheet').innerHTML = `
     <h2>${esc(r.contact.company || r.contact.name)}</h2>
@@ -1668,10 +1668,14 @@ function openMail(u, kind = 'other') {
         if (!t.trim()) { msg.textContent = '받는 사람을 넣어 주세요.'; return; }
         if (!ME || ME.master) { msg.style.color = '#b42318'; msg.textContent = '메일은 직원 계정으로 로그인해야 보낼 수 있어요 (관리자 비밀번호로는 발송 불가).'; return; }
         if (!ME.mail) { msg.style.color = '#b42318'; msg.textContent = '먼저 내 메일을 연결해 주세요.'; openMailConn(() => { msg.textContent = '연결됐어요. 보내기를 다시 누르세요.'; msg.style.color = '#0c6b60'; }); return; }
-        if (!confirm(`${ME.email} 주소로 바로 보냅니다.\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
+        const fi = m.querySelector('[data-mbfiles]'), files = fi ? [...fi.files] : [];
+        if (files.length + (m._autoAtt ? 1 : 0) > 5) { msg.style.color = '#b42318'; msg.textContent = '첨부파일은 5개까지 넣을 수 있어요.'; return; }
+        if (files.reduce((n, f) => n + f.size, 0) > 10 * 1024 * 1024) { msg.style.color = '#b42318'; msg.textContent = '첨부파일은 합쳐서 10MB까지 보낼 수 있어요.'; return; }
+        if (!confirm(`${ME.email} 주소로 바로 보냅니다.\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}${files.length || m._autoAtt ? `\n첨부: ${[...(m._autoAtt ? [m._autoAtt.filename] : []), ...files.map(f => f.name)].join(', ')}` : ''}`)) return;
         sb.disabled = true; sb.textContent = '보내는 중…'; msg.textContent = '';
         try {
-          const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind }) });
+          const attachments = [...(m._autoAtt ? [m._autoAtt] : []), ...await Promise.all(files.map(f => new Promise((res, rej) => { const rd = new FileReader(); rd.onload = () => res({ filename: f.name, type: f.type || 'application/octet-stream', data: String(rd.result).split(',')[1] || '' }); rd.onerror = () => rej(new Error('파일을 읽지 못했습니다: ' + f.name)); rd.readAsDataURL(f); })))];
+          const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind, attachments }) });
           if (current && current.id === m._id) current.mails = d.mails;
           sb.textContent = '보냄 ✓'; msg.style.color = '#0c6b60'; msg.textContent = `${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 발송 완료${d.from ? ` (보낸 주소 ${d.from})` : ''} · 요청 기록에 남김`;
           if (typeof m._sent === 'function') m._sent();
@@ -1683,11 +1687,13 @@ function openMail(u, kind = 'other') {
       const done = ok => { const t = c.textContent; c.textContent = ok ? '복사됨 ✓' : '복사 실패'; setTimeout(() => { c.textContent = t; }, 1400); };
       const legacy = () => { const ta = document.createElement('textarea'); ta.value = v; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); done(ok); };
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
-  m._id = current ? current.id : ''; m._kind = kind; m._sent = null;
+  m._id = current ? current.id : ''; m._kind = kind; m._sent = null; m._autoAtt = null;
   const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
-  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 ${ME && !ME.master ? `내 주소(${esc(ME.email)})` : '내 네이버웍스 주소'}로 바로 발송돼요. 참조의 contact@으로 팀도 함께 받아요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 ${ME && !ME.master ? `내 주소(${esc(ME.email)})` : '내 네이버웍스 주소'}로 바로 발송돼요. 참조의 contact@으로 팀도 함께 받아요. 첨부파일은 5개, 합쳐서 10MB까지.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
     ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
     <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
+    ${m._id && (kind === 'reply' || kind === 'quote') ? '<label class="mb-f"><span>견적서</span><select data-mbq><option value="">첨부 안 함</option><option value="tour">Tour fee (Land + Hotel)</option><option value="land">Land fee</option><option value="hotel">Hotel fee</option></select><span class="hint mb-qmsg" style="align-self:center"></span></label>' : ''}
+    <label class="mb-f"><span>첨부</span><input type="file" multiple data-mbfiles></label>
     <div class="mb-a"><span class="mb-msg hint" style="flex:1;align-self:center"></span><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button>${m._id ? '<button type="button" class="btn" data-mbsend="1">보내기</button>' : ''}</div></div>`;
   m.hidden = false;
   return m;
@@ -2666,7 +2672,7 @@ let bNote = '';
 // the buyer's PDF opens over the admin page (no pop-up window: this page has its own open()); printing shows only the quotation
 let qdSnap = null;
 // direct PDF file (no print dialog): html2canvas + jsPDF, A4 pages cut between blocks; works in Claude's in-app browser too
-async function elToPdf(el, filename, msg) {
+async function elToPdf(el, filename, msg, asBlob) {
   msg = msg || (() => {});
   msg('PDF 만드는 중…');
   try {
@@ -2689,11 +2695,12 @@ async function elToPdf(el, filename, msg) {
       y = end;
     }
     const blob = pdf.output('blob');
+    if (asBlob) return blob;
     if (invDl === undefined) invDl = window.claude && window.claude.use ? await Promise.race([window.claude.use('downloads'), new Promise(r => setTimeout(() => r(null), 3000))]).catch(() => null) : null;
     if (invDl) await invDl.save({ filename, data: blob });
     else { const a = document.createElement('a'), u = URL.createObjectURL(blob); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
     msg('PDF 저장 완료');
-  } catch (e) { msg(e && e.code === 'declined' ? 'PDF 저장 취소됨' : 'PDF 만들기 실패 · ' + (e && (e.message || e.code) || '')); }
+  } catch (e) { if (asBlob) throw e; msg(e && e.code === 'declined' ? 'PDF 저장 취소됨' : 'PDF 만들기 실패 · ' + (e && (e.message || e.code) || '')); }
 }
 const pdfName = s => String(s || 'Hakeem Travel Korea').replace(/[\\/:*?"<>|·]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) + '.pdf';
 function qdDownload() {
@@ -3797,6 +3804,45 @@ $('wk-del').onclick = async () => { const b = $('wk-del'); if (!current) return;
 $('back').onclick = () => { $('detail').style.display = 'none'; showTab('list'); load(); };
 $('dst').onchange = async () => { const v = $('dst').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ status: v }) }); current.status = v; const row = rows.find(x => x.id === current.id); if (row) row.status = v; } catch (e) { $('dst').value = current.status; return; } if (v === 'booked' && wf && !wf.invoice) issueInvoice(true).catch(e => { if ($('i-msg')) $('i-msg').textContent = '인보이스 자동 발급 실패: ' + KERR(e); }); };
 if (key) load();
+// 메일 답장: mailto 대신 페이지 안 메일 초안 창으로 열기 (내 네이버웍스 주소로 발송)
+$('reply').addEventListener('click', e => { e.preventDefault(); if (current) openMail($('reply').href, 'reply'); });
+
+// 메일 초안: 견적서 종류(Tour / Land / Hotel fee)를 고르면 PDF를 만들어 첨부하고 제목·본문을 그 견적에 맞게 채움
+const MBQ = {
+  tour: { kind: 'Tour quotation', what: 'tour quotation (land arrangements and hotels)', price: p => p.totalPerPerson, label: 'Total' },
+  land: { kind: 'Land fee quotation', what: 'land fee quotation (hotels are quoted separately)', price: p => p.landPerPerson, label: 'Land fee' },
+  hotel: { kind: 'Hotel quotation', what: 'hotel quotation', price: p => p.hotelPerPerson, label: 'Hotel fee' },
+};
+document.addEventListener('change', async e => {
+  const sel = e.target.closest && e.target.closest('#mailbox [data-mbq]'); if (!sel) return;
+  const m = $('mailbox'), qm = m.querySelector('.mb-qmsg'), mode = sel.value, set = (k, v) => { const x = m.querySelector(`[data-mbv="${k}"]`); if (x) x.value = v; };
+  m._autoAtt = null; qm.style.color = ''; qm.textContent = '';
+  if (!mode || !current) return;
+  const sb = m.querySelector('[data-mbsend]'); if (sb) sb.disabled = true; sel.disabled = true; qm.textContent = '견적서 만드는 중…';
+  try {
+    await wfEnsureSaved();
+    const d = await api('/api/admin/send?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ dry: true }) });
+    const q = qdMode(d.quote, mode), p = q.price || {}, M = MBQ[mode], pp = M.price(p);
+    if (mode === 'hotel' && !p.hotelPerPerson) throw new Error('호텔 금액이 없어요 (Hotel 탭에서 호텔을 넣고 저장해 주세요)');
+    if (mode !== 'hotel' && !p.landPerPerson) throw new Error('Land fee 금액이 없어요');
+    q.ref = current.id; q.draft = false;
+    if (!document.getElementById('mbq-css')) { const st = document.createElement('style'); st.id = 'mbq-css'; st.textContent = QD_CSS; document.head.appendChild(st); }
+    const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:-10000px;top:0;width:880px;background:#fff'; box.innerHTML = quoteDoc(q); document.body.appendChild(box);
+    let blob; try { await new Promise(r => setTimeout(r, 300)); blob = await elToPdf(box.querySelector('.hq-doc') || box, '', null, true); } finally { box.remove(); }
+    const data = await new Promise((res, rej) => { const rd = new FileReader(); rd.onload = () => res(String(rd.result).split(',')[1] || ''); rd.onerror = () => rej(new Error('PDF를 읽지 못했습니다')); rd.readAsDataURL(blob); });
+    const r = current, t = r.trip || {}, pax = p.pax || (r.options || {}).pax || '', foc = p.foc ? ` + ${p.foc} FOC` : '';
+    const filename = pdfName(`Hakeem Travel Korea ${M.kind} ${r.id}`);
+    m._autoAtt = { filename, type: 'application/pdf', data };
+    set('subject', `${M.kind} – Korea ${t.nights}N${t.days}D – ${pax} pax – Hakeem Travel Korea`);
+    set('body', [`Dear ${r.contact.name || 'Sir/Madam'},`, '', 'Thank you for your request.',
+      `Please find attached our ${M.what} for your Korea trip${t.arrival ? ` (${enDate(t.arrival)} – ${enDate(t.departure)})` : ''}, ${t.nights}N${t.days}D${t.cities ? ', ' + t.cities : ''}.`, '',
+      `${M.label}: ${usd(pp)} per person, based on ${pax} paying guests${foc}.`, ...(mode === 'land' ? ['Hotel accommodation is not included and can be quoted separately.'] : []),
+      '', 'All prices are subject to availability at the time of booking.', 'Please let us know if you would like any changes.', '',
+      'Best regards,', ...(mailName() ? [mailName()] : []), 'Hakeem Travel Korea'].join('\n'));
+    qm.style.color = '#0c6b60'; qm.textContent = `첨부됨: ${filename} · 제목·본문을 새로 채웠어요`;
+  } catch (err) { m._autoAtt = null; qm.style.color = '#b42318'; qm.textContent = KERR(err); sel.value = ''; }
+  finally { sel.disabled = false; if (sb) sb.disabled = false; }
+});
 </script>
 <script>
 // Detail header: send the current quote to the buyer's account (shows under My quotation on the buyer page)
