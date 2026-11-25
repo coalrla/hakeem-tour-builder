@@ -1472,13 +1472,17 @@ async function load() {
 const stOf = r => r.deletedAt ? 'deleted' : r.status === 'quoted' ? 'land' : r.status;
 // buyers are told apart by email: one company = one email domain (company names get typed differently);
 // free mail (gmail, hotmail…) keys on the whole address. A row with no company (e.g. a staff tour for a buyer
-// who never signed up) shows the company of a buyer or request on the same domain, else the domain itself.
+// who never signed up) shows the company of a buyer or request on the same domain, else the domain's name (free mail: the part before @).
 const coKey = e => { e = String(e || '').trim().toLowerCase(); const at = e.indexOf('@'); if (at < 1) return ''; const dom = e.slice(at + 1); return FREE_MAILS.includes(dom.split('.')[0]) ? e : dom; };
 function coName(r) {
   if (r.company) return r.company;
   const k = coKey(r.email); if (!k) return '';
   const b = BUY && (BUY.buyers || []).find(x => x.company && coKey(x.email) === k), c = b && BUY.companies && BUY.companies[b.companyKey], q = rows.find(x => x.company && coKey(x.email) === k);
-  return (c && c.name) || (b && b.company) || (q && q.company) || k;
+  if ((c && c.name) || (b && b.company) || (q && q.company)) return (c && c.name) || (b && b.company) || q.company;
+  // nobody on that domain yet: the domain's name part (alfaristours.com → Alfaristours, x.co.kr → X); free mail: the part before @
+  if (k.includes('@')) return k.split('@')[0];
+  const p = k.split('.'); let i = p.length - 2; if (i > 0 && ['co', 'com', 'net', 'org', 'ac', 'gov', 'edu', 'ne', 'or'].includes(p[i])) i--;
+  const w = p[Math.max(0, i)] || k; return w.charAt(0).toUpperCase() + w.slice(1);
 }
 function baseRows() {
   const q = $('q').value.trim().toLowerCase(), a = $('fas').value;
