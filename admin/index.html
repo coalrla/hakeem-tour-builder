@@ -1623,7 +1623,7 @@ function openMail(u, kind = 'other') {
       if (sb) {
         const msg = m.querySelector('.mb-msg'), t = val('to'), s = val('subject');
         if (!t.trim()) { msg.textContent = '받는 사람을 넣어 주세요.'; return; }
-        if (!confirm(`회사 메일로 바로 보냅니다 (답장은 contact@hakeemtravel.com).\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
+        if (!confirm(`내 이름으로 바로 보냅니다 (답장은 나와 contact@hakeemtravel.com).\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
         sb.disabled = true; sb.textContent = '보내는 중…'; msg.textContent = '';
         try {
           const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind }) });
@@ -1640,7 +1640,7 @@ function openMail(u, kind = 'other') {
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
   m._id = current ? current.id : ''; m._kind = kind; m._sent = null;
   const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
-  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 회사 이름(Hakeem Travel Korea)으로 바로 발송돼요. 답장은 contact@hakeemtravel.com으로 와요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 'contact@hakeemtravel.com · 내 이름'으로 바로 발송돼요. 답장은 나와 contact@으로 와요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
     ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
     <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
     <div class="mb-a"><span class="mb-msg hint" style="flex:1;align-self:center"></span><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button>${m._id ? '<button type="button" class="btn" data-mbsend="1">보내기</button>' : ''}</div></div>`;
@@ -1912,10 +1912,12 @@ function drawWorkflow() {
 }
 
 // ---- emails (opened in the mail app; nothing is sent automatically)
+// who signs the mail: the signed-in staff member, else the request's 담당 (assignee)
+const mailName = () => (ME && !ME.master && ME.name) || (current && current.assignee) || ($('das') && $('das').value) || '';
 function hotelMail(h) {
   const n = nightsBetween(h.checkIn, h.checkOut), pax = headsR(current);
   const subject = `[하킴트래블코리아] 객실 문의_${h.checkIn ? MON[+h.checkIn.slice(5, 7) - 1] : 'TBD'}_${n}N_${ccShow(wf.country) || 'TBD'}_${pax}PAX_${h.name || '호텔명'}`;
-  const body = [`안녕하십니까 ${h.manager ? h.manager + ' 지배인님' : '담당자님'},`, '하킴 트래블 코리아 김채민입니다.', '',
+  const body = [`안녕하십니까 ${h.manager ? h.manager + ' 지배인님' : '담당자님'},`, `하킴 트래블 코리아 ${mailName() ? mailName() + '입니다.' : '입니다.'}`, '',
     '아래와 같은 일정으로 예약 가능 여부와 단체 금액 확인 부탁드립니다.', '',
     `* 지점: ${h.name || '-'}`, `* 체크인: ${koDate(h.checkIn) || '미정'}`, `* 체크아웃: ${koDate(h.checkOut) || '미정'} (${n}박)`,
     `* 객실 타입: ${roomsKo(h)} (객실 구성 변동 가능)`, `* 투숙 인원: 성인 ${pax}명${h.breakfast ? ', 조식 포함' : ''}`,
@@ -1936,7 +1938,7 @@ function buyerMail(withHotel) {
     if (wf.hotelNote) lines.push('', wf.hotelNote);
   }
   if (L.note) lines.push('', L.note);
-  lines.push('', 'Itinerary:', ...r.itinerary.map(d => `Day ${d.day}: ${d.title}`), '', 'The detailed quotation is attached as a PDF.', '', 'Best regards,', 'Hakeem Travel Korea');
+  lines.push('', 'Itinerary:', ...r.itinerary.map(d => `Day ${d.day}: ${d.title}`), '', 'The detailed quotation is attached as a PDF.', '', 'Best regards,', ...(mailName() ? [mailName()] : []), 'Hakeem Travel Korea');
   return `mailto:${encodeURIComponent(r.contact.email)}?cc=contact@hakeemtravel.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
 }
 
@@ -2769,7 +2771,7 @@ function bHotelMail(s) {
   const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const rooms = h.rooms.filter(r => r.qty > 0).map(r => `${(ROOMS.find(z => z[0] === r.type) || [, r.type])[1]} ${r.qty}실`).join(', ') || '-';
   const subject = `[하킴트래블코리아] 객실 문의_${ci ? MON[+ci.slice(5, 7) - 1] : 'TBD'}_${n}N_${bCountry()}_${heads}PAX_${h.name}`;
-  const body = [`안녕하십니까 ${x.manager ? x.manager.replace(/님$/, '') + '님' : '담당자님'},`, `하킴 트래블 코리아 ${(ME && !ME.master && ME.name) || '김채민'}입니다.`, '',
+  const body = [`안녕하십니까 ${x.manager ? x.manager.replace(/님$/, '') + '님' : '담당자님'},`, `하킴 트래블 코리아 ${mailName() ? mailName() + '입니다.' : '입니다.'}`, '',
     '아래와 같은 일정으로 예약 가능 여부와 단체 금액 확인 부탁드립니다.', '',
     `* 지점: ${h.name}`, `* 체크인: ${ci || '미정'}`, `* 체크아웃: ${co || '미정'} (${n}박)`,
     `* 객실 타입: ${rooms} (객실 구성 변동 가능)`, `* 투숙 인원: 성인 ${heads}명`, `* 손님 국적: ${bCountryName(bCountry())}`, '', '감사합니다.'].join('\n');
@@ -3456,7 +3458,7 @@ function invoiceMail(v) {
   const body = [`Dear ${v.billTo.atten || r.contact.name},`, '', 'Thank you for confirming your booking with Hakeem Travel Korea.', 'Please find our invoice attached as a PDF.', '',
     `Invoice # : ${v.no}${v.rev ? ' (R' + v.rev + ')' : ''}`, `Amount : US$ ${amt2(t.grand)}`, `Payment due by : ${invDate(v.due)}`,
     `Travel dates : ${r.trip.arrival ? `${enDate(r.trip.arrival)} – ${enDate(r.trip.departure)}` : 'to be confirmed'}`, '', 'Remittance advice:', ...invBank().map(([k, x]) => `${k} : ${x}`), '',
-    'Kindly share the remittance slip once the payment is made.', '', 'Best regards,', 'Hakeem Travel Korea'].join('\n');
+    'Kindly share the remittance slip once the payment is made.', '', 'Best regards,', ...(mailName() ? [mailName()] : []), 'Hakeem Travel Korea'].join('\n');
   return `mailto:${encodeURIComponent(r.contact.email)}?cc=contact@hakeemtravel.com&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 const invRefresh = () => { if ($('inv-prev')) $('inv-prev').innerHTML = invoiceHTML(wf.invoice); if ($('i-mail')) $('i-mail').href = invoiceMail(wf.invoice); if ($('i-msg')) $('i-msg').textContent = '저장 안 됨'; };
