@@ -1461,6 +1461,7 @@ async function load() {
     $('login').hidden = true; $('list').hidden = false; $('logout').hidden = false; $('tabs').hidden = false; $('err').textContent = '';
     sessSet(key);
     fillStaff(); draw();
+    if (!BUY) api('/api/admin/buyers').then(x => { BUY = x; draw(); }).catch(() => {});
     const op = new URLSearchParams(location.search).get('open'); if (op) { history.replaceState(null, '', location.pathname); open(op).catch(() => {}); }
   } catch (e) {
     $('login').hidden = false; $('list').hidden = true; $('err').textContent = key ? KERR(e) : '';
@@ -1469,10 +1470,20 @@ async function load() {
 }
 // status groups for the dashboard cards ('quoted' is the old name of Land quoted)
 const stOf = r => r.deletedAt ? 'deleted' : r.status === 'quoted' ? 'land' : r.status;
+// buyers are told apart by email: one company = one email domain (company names get typed differently);
+// free mail (gmail, hotmail…) keys on the whole address. A row with no company (e.g. a staff tour for a buyer
+// who never signed up) shows the company of a buyer or request on the same domain, else the domain itself.
+const coKey = e => { e = String(e || '').trim().toLowerCase(); const at = e.indexOf('@'); if (at < 1) return ''; const dom = e.slice(at + 1); return FREE_MAILS.includes(dom.split('.')[0]) ? e : dom; };
+function coName(r) {
+  if (r.company) return r.company;
+  const k = coKey(r.email); if (!k) return '';
+  const b = BUY && (BUY.buyers || []).find(x => x.company && coKey(x.email) === k), c = b && BUY.companies && BUY.companies[b.companyKey], q = rows.find(x => x.company && coKey(x.email) === k);
+  return (c && c.name) || (b && b.company) || (q && q.company) || k;
+}
 function baseRows() {
   const q = $('q').value.trim().toLowerCase(), a = $('fas').value;
   const mine = r => !!ME && ((ME.email && (r.firstByEmail || r.builtByEmail) === ME.email) || (!!ME.name && r.assignee === ME.name));
-  return rows.filter(r => (!mineOnly || mine(r)) && (!a || (a === '-' ? !r.assignee : r.assignee === a)) && (!q || [r.id, r.company, r.name, r.email, r.buyerCode].join(' ').toLowerCase().includes(q)));
+  return rows.filter(r => (!mineOnly || mine(r)) && (!a || (a === '-' ? !r.assignee : r.assignee === a)) && (!q || [r.id, coName(r), r.name, r.email, r.buyerCode].join(' ').toLowerCase().includes(q)));
 }
 function filtered() {
   const f = $('fst').value;
@@ -1512,7 +1523,7 @@ function fillStaff() {
 function exportCSV() {
   const head = ['요청번호', '접수 시각', '상태', '하킴 담당', '회사', '바이어 담당자', '이메일', '일정', '도착일', '출발일', '인원', '국적', '등급', '테마', '호텔 등급', '식사', '1인당(USD)', '총액(USD)'];
   const cell = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const body = filtered().map(r => [r.id, new Date(r.createdAt).toLocaleString('ko-KR'), STATUS[r.status] || r.status, r.assignee, r.company, r.name, r.email, nd(r.trip), r.arrival, r.departure, r.pax, r.guests, r.tier, THEME[r.theme] || r.theme, r.hotel, r.meals, r.perPerson, r.total]);
+  const body = filtered().map(r => [r.id, new Date(r.createdAt).toLocaleString('ko-KR'), STATUS[r.status] || r.status, r.assignee, coName(r), r.name, r.email, nd(r.trip), r.arrival, r.departure, r.pax, r.guests, r.tier, THEME[r.theme] || r.theme, r.hotel, r.meals, r.perPerson, r.total]);
   const csv = '\ufeff' + [head, ...body].map(x => x.map(cell).join(',')).join('\r\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   a.download = `hakeem-quote-requests-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -1522,7 +1533,7 @@ function draw() {
   const list = filtered(), f = $('fst').value, live = rows.filter(r => !r.deletedAt);
   drawDash();
   $('count').textContent = mineOnly ? `내 투어 ${list.length}건 (내가 빌드했거나 담당인 것)` : `전체 ${live.length}건 중 ${list.length}건 · 신규 ${live.filter(r => r.status === 'new').length}건`;
-  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(r.company || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.revisionOf ? ` <span class="tag" title="이전 요청 ${esc(r.revisionOf)}">재요청</span>` : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${(([h, ...rt]) => `<span style="white-space:nowrap">${esc(h)}</span>${rt.length ? `<br><span class="sub">${rt.join(' · ').split(' → ').map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' → ')}</span>` : ''}`)(nd(r.trip).split(' · '))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td>${r.deletedAt ? `<span class="st ${r.status}">${STATUS[r.status] || r.status}</span>` : `<span class="st-wrap"><span class="st ${stOf(r)}">${({ new: 'New', land: 'Land', hotel: 'Hotel', booked: 'Confirmed', closed: 'Closed' })[stOf(r)] || esc(r.status)}&nbsp;▾</span><select class="st-sel" data-rst="${esc(r.id)}" title="상태 바꾸기">${[['new', 'New'], ['land', 'Land quoted'], ['hotel', 'Hotel quoted'], ['booked', 'Confirmed'], ['closed', 'Closed']].map(([k, l]) => `<option value="${k}"${stOf(r) === k ? ' selected' : ''}>${l}</option>`).join('')}</select></span>`}</td><td style="white-space:nowrap">${esc(r.assignee) || '<span class="sub">미지정</span>'}</td><td>${r.deletedAt ? `<span class="hint">${fmtT(r.deletedAt)} · ${esc(r.deletedBy || '')}</span>${ME && ME.master ? ` <button class="rdel" data-rrestore="${esc(r.id)}">복구</button>` : ''}` : canDel(r) ? `<button class="rdel" data-rdel="${esc(r.id)}" title="${r.source === 'staff' ? '내가 만든 투어 삭제 (목록에서 숨김, 관리자가 복구 가능)' : '관리자 삭제 (목록에서 숨김, 복구 가능)'}">삭제</button>` : ''}</td></tr>`).join('')
+  $('rows').innerHTML = list.length ? list.map(r => `<tr data-id="${r.id}"><td>${fmtT(r.createdAt)}</td><td><b>${esc(coName(r) || '–')}</b>${r.source === 'staff' ? ' <span class="tag">직원 작성</span>' : r.edited ? ' <span class="tag">수정</span>' : ''}${r.revisionOf ? ` <span class="tag" title="이전 요청 ${esc(r.revisionOf)}">재요청</span>` : ''}${r.builtBy ? `<br><span class="hint">빌드: ${esc(r.builtBy)}</span>` : ''}${r.buyerCode ? `<br><span class="hint">${esc(r.buyerCode)}</span>` : r.email ? `<br><span class="hint">${esc(r.email)}</span>` : ''}<br><span class="sub">${esc(r.name)}</span></td><td>${(([h, ...rt]) => `<span style="white-space:nowrap">${esc(h)}</span>${rt.length ? `<br><span class="sub">${rt.join(' · ').split(' → ').map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' → ')}</span>` : ''}`)(nd(r.trip).split(' · '))}</td><td>${fmt(r.arrival)}</td><td class="num">${r.pax}</td><td>${esc(r.tier)} · ${THEME[r.theme] || r.theme}</td><td class="num">${usd(r.perPerson)}</td><td class="num">${usd(r.total)}</td><td>${r.deletedAt ? `<span class="st ${r.status}">${STATUS[r.status] || r.status}</span>` : `<span class="st-wrap"><span class="st ${stOf(r)}">${({ new: 'New', land: 'Land', hotel: 'Hotel', booked: 'Confirmed', closed: 'Closed' })[stOf(r)] || esc(r.status)}&nbsp;▾</span><select class="st-sel" data-rst="${esc(r.id)}" title="상태 바꾸기">${[['new', 'New'], ['land', 'Land quoted'], ['hotel', 'Hotel quoted'], ['booked', 'Confirmed'], ['closed', 'Closed']].map(([k, l]) => `<option value="${k}"${stOf(r) === k ? ' selected' : ''}>${l}</option>`).join('')}</select></span>`}</td><td style="white-space:nowrap">${esc(r.assignee) || '<span class="sub">미지정</span>'}</td><td>${r.deletedAt ? `<span class="hint">${fmtT(r.deletedAt)} · ${esc(r.deletedBy || '')}</span>${ME && ME.master ? ` <button class="rdel" data-rrestore="${esc(r.id)}">복구</button>` : ''}` : canDel(r) ? `<button class="rdel" data-rdel="${esc(r.id)}" title="${r.source === 'staff' ? '내가 만든 투어 삭제 (목록에서 숨김, 관리자가 복구 가능)' : '관리자 삭제 (목록에서 숨김, 복구 가능)'}">삭제</button>` : ''}</td></tr>`).join('')
     : `<tr><td colspan="11" class="empty">${f === 'deleted' ? '삭제된 요청 없음.' : '견적 요청 없음.'}</td></tr>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-openreq]'); if (b) open(b.dataset.openreq).catch(err => alert(KERR(err))); });
