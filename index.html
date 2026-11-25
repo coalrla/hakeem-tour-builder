@@ -1646,7 +1646,8 @@ function movePanel(d) {
   return `<div class="mv"><label class="mv-on"><input type="checkbox" data-mv-on="${d.moveKey}"${pick ? ' checked' : ''}> Add a tour</label>${pick ? `<label class="swap"><span>Tour</span><select data-mv="${d.moveKey}" aria-label="Tour on this travel day">${group(d.moveFrom, 'before')}${group(d.moveTo, 'after')}</select></label>` : ''}</div>`;
 }
 // weekday and date of each day once the arrival date is picked
-function dayDate(i) { const a = arrival(); if (!a) return ''; const x = new Date(a); x.setDate(x.getDate() + i); return x.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
+// date under the day number, laid out like the admin page: date first, weekday in brackets (10 Apr (Sat)); month as a word so it reads the same in every country
+function dayDate(i) { const a = arrival(); if (!a) return ''; const x = new Date(a); x.setDate(x.getDate() + i); return `${x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${x.toLocaleDateString('en-GB', { weekday: 'short' })})`; }
 function renderDays(days) {
   const lg = document.getElementById('legend');
   const hasTheme = days.some(d => d.stops && d.stops.some(s => s.theme));
