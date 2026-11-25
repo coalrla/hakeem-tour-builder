@@ -86,6 +86,11 @@ tr.gone td { color: var(--muted); }
 #mailbox .mb-f { display: grid; grid-template-columns: 80px 1fr auto; gap: 8px; align-items: center; font-size: .85rem; } #mailbox .mb-f span { color: var(--muted); font-weight: 600; }
 #mailbox .mb-f input, #mailbox .mb-f textarea { border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font: inherit; background: #faf9fc; width: 100%; box-sizing: border-box; } #mailbox .mb-b { align-items: start; } #mailbox .mb-f textarea { resize: vertical; line-height: 1.5; }
 #mailbox .mb-a { display: flex; gap: 8px; justify-content: flex-end; }
+#mcbox { position: fixed; inset: 0; z-index: 310; background: rgba(28, 16, 48, .42); display: flex; align-items: flex-start; justify-content: center; padding: 10vh 16px; overflow: auto; } #mcbox[hidden] { display: none; }
+#mcbox .mc-card { background: #fff; border-radius: 14px; width: min(520px, 100%); padding: 18px 20px; box-shadow: 0 20px 60px rgba(30, 10, 60, .25); display: flex; flex-direction: column; gap: 10px; font-size: .88rem; }
+#mcbox .mc-card b { font-size: 1.05rem; color: var(--brand); } #mcbox ol { margin: 0; padding-left: 18px; line-height: 1.6; color: var(--muted); }
+#mcbox input { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit; background: #faf9fc; width: 100%; box-sizing: border-box; } #mcbox .mc-a { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+#mailconn.on { color: #0c6b60; border-color: #9fd6cd; }
 .empty { text-align: center; color: var(--muted); padding: 40px; }
 /* detail */
 #detail { display: none; }
@@ -620,7 +625,7 @@ label.chip.bpick { border-color: #b42318 !important; color: #b42318 !important; 
 </style>
 </head>
 <body>
-<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="mine">내 투어</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button><button class="tab" data-tab="staffs">직원</button><button class="tab" data-tab="buyers">바이어</button></nav><span class="sp"></span><span class="hint" id="whoami"></span><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
+<header><img src="../logo.png" alt="Hakeem Travel Korea" class="logo"><h1>Quote Requests</h1><nav class="tabs" id="tabs" hidden><button class="tab on" data-tab="list">견적 요청</button><button class="tab" data-tab="mine">내 투어</button><button class="tab" data-tab="builder">투어 빌더</button><button class="tab" data-tab="dir">업체·호텔</button><button class="tab" data-tab="rates">단가 관리</button><button class="tab" data-tab="staffs">직원</button><button class="tab" data-tab="buyers">바이어</button></nav><span class="sp"></span><span class="hint" id="whoami"></span><button class="btn ghost sm" id="mailconn" type="button" hidden title="네이버웍스 내 메일로 직접 발송">내 메일 연결</button><button class="btn ghost" id="logout" hidden>로그아웃</button></header>
 <main>
   <form id="login" class="card" onsubmit="return false">
     <b>하킴 직원 전용</b>
@@ -1452,6 +1457,7 @@ async function load() {
     try { settings = await api('/api/admin/settings'); staff = settings.staff || []; } catch {}
     try { ME = (await api('/api/admin/me')).me; } catch { ME = null; }
     $('whoami').textContent = ME ? (ME.master ? '관리자 비밀번호로 접속' : `${ME.name} (${ME.email})`) : '';
+    drawMailConn();
     $('login').hidden = true; $('list').hidden = false; $('logout').hidden = false; $('tabs').hidden = false; $('err').textContent = '';
     sessSet(key);
     fillStaff(); draw();
@@ -1612,9 +1618,46 @@ function wkSetMode(m) {
 }
 $('wk-edit').onclick = () => wkSetMode('edit');
 $('wk-toview').onclick = () => wkSetMode('view');
+// "내 메일 연결": every mail goes out from the signed-in staff member's own NAVER WORKS address,
+// so each staff member saves their NAVER WORKS external app password once (kept encrypted on the server)
+function drawMailConn() {
+  const b = $('mailconn'); if (!b) return;
+  b.hidden = !ME || ME.master;
+  if (ME && !ME.master) { b.textContent = ME.mail ? '메일 연결됨 ✓' : '내 메일 연결'; b.classList.toggle('on', !!ME.mail); }
+}
+function openMailConn(after) {
+  let m = $('mcbox'); if (!m) { m = document.createElement('div'); m.id = 'mcbox'; document.body.appendChild(m);
+    m.addEventListener('click', async e => {
+      if (e.target === m || e.target.closest('[data-mcx]')) { m.hidden = true; return; }
+      const sv = e.target.closest('[data-mcsave]'), cl = e.target.closest('[data-mcclear]'); if (!sv && !cl) return;
+      const msg = m.querySelector('.mc-msg'), pw = m.querySelector('input');
+      if (sv && !pw.value.trim()) { msg.textContent = '외부 앱 비밀번호를 넣어 주세요.'; return; }
+      if (cl && !confirm('내 메일 연결을 해제할까요? 해제하면 다시 연결할 때까지 메일을 보낼 수 없어요.')) return;
+      (sv || cl).disabled = true; msg.style.color = ''; msg.textContent = sv ? '네이버웍스에 로그인해 확인하는 중…' : '해제하는 중…';
+      try {
+        const d = await api('/api/admin/mailauth', { method: 'POST', body: JSON.stringify(sv ? { pass: pw.value.trim() } : { clear: true }) });
+        pw.value = ''; if (ME) ME.mail = !!d.connected; drawMailConn();
+        msg.style.color = '#0c6b60'; msg.textContent = d.connected ? '연결됐어요. 이제 메일이 내 주소로 나가요.' : '연결을 해제했어요.';
+        setTimeout(() => { m.hidden = true; if (d.connected && typeof m._after === 'function') m._after(); }, 900);
+      } catch (err) { msg.style.color = '#b42318'; msg.textContent = err.message || '연결하지 못했습니다.'; }
+      (sv || cl).disabled = false;
+    });
+    m.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) m.querySelector('[data-mcsave]').click(); });
+  }
+  m._after = after || null;
+  const on = ME && ME.mail;
+  m.innerHTML = `<div class="mc-card" role="dialog" aria-label="내 메일 연결"><b>내 메일 연결 · ${esc((ME && ME.email) || '')}</b>
+    <div>호텔 문의·견적·인보이스 메일은 <b style="font-size:inherit">내 네이버웍스 주소</b>로 나가요. 처음 한 번만 연결하면 돼요.${on ? ' <span style="color:#0c6b60">(지금 연결돼 있어요)</span>' : ''}</div>
+    <ol><li>네이버웍스 → 메일 → 환경설정 → 고급 설정 → <b style="font-size:inherit">IMAP/SMTP 사용</b> 켜기</li><li>네이버웍스 → 내 프로필 → 보안 → <b style="font-size:inherit">외부 앱 비밀번호</b> 만들기 (로그인 비밀번호 아님)</li><li>아래에 붙여 넣고 연결 (서버에 암호화해서 저장, 화면에 다시 보이지 않아요)</li></ol>
+    <input type="password" autocomplete="off" placeholder="외부 앱 비밀번호">
+    <div class="mc-a"><span class="mc-msg hint" style="flex:1"></span>${on ? '<button type="button" class="btn ghost" data-mcclear="1">연결 해제</button>' : ''}<button type="button" class="btn ghost" data-mcx="1">닫기</button><button type="button" class="btn" data-mcsave="1">${on ? '다시 연결' : '연결'}</button></div></div>`;
+  m.hidden = false; m.querySelector('input').focus();
+}
+$('mailconn').addEventListener('click', () => openMailConn());
+
 // mail drafts: try the mail app, and always show the draft in the page (mailto is blocked in some frames)
 function openMail(u, kind = 'other') {
-  // draft box: check or edit, then send from contact@hakeemtravel.com (server, NAVER WORKS) or copy / open the mail app
+  // draft box: check or edit, then send from my own NAVER WORKS address (server) or copy / open the mail app
   const x = new URL(u), q = x.searchParams, to = decodeURIComponent(x.pathname || ''), cc = q.get('cc') || '', subj = q.get('subject') || '', body = q.get('body') || '';
   let m = $('mailbox'); if (!m) { m = document.createElement('div'); m.id = 'mailbox'; document.body.appendChild(m);
     const val = k => (m.querySelector(`[data-mbv="${k}"]`) || {}).value || '';
@@ -1623,7 +1666,9 @@ function openMail(u, kind = 'other') {
       if (sb) {
         const msg = m.querySelector('.mb-msg'), t = val('to'), s = val('subject');
         if (!t.trim()) { msg.textContent = '받는 사람을 넣어 주세요.'; return; }
-        if (!confirm(`내 이름으로 바로 보냅니다 (답장은 나와 contact@hakeemtravel.com).\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
+        if (!ME || ME.master) { msg.style.color = '#b42318'; msg.textContent = '메일은 직원 계정으로 로그인해야 보낼 수 있어요 (관리자 비밀번호로는 발송 불가).'; return; }
+        if (!ME.mail) { msg.style.color = '#b42318'; msg.textContent = '먼저 내 메일을 연결해 주세요.'; openMailConn(() => { msg.textContent = '연결됐어요. 보내기를 다시 누르세요.'; msg.style.color = '#0c6b60'; }); return; }
+        if (!confirm(`${ME.email} 주소로 바로 보냅니다.\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
         sb.disabled = true; sb.textContent = '보내는 중…'; msg.textContent = '';
         try {
           const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind }) });
@@ -1631,7 +1676,7 @@ function openMail(u, kind = 'other') {
           sb.textContent = '보냄 ✓'; msg.style.color = '#0c6b60'; msg.textContent = `${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 발송 완료${d.from ? ` (보낸 주소 ${d.from})` : ''} · 요청 기록에 남김`;
           if (typeof m._sent === 'function') m._sent();
           setTimeout(() => { m.hidden = true; }, 1500);
-        } catch (err) { sb.disabled = false; sb.textContent = '보내기'; msg.style.color = '#b42318'; msg.textContent = err.message || '보내지 못했습니다.'; }
+        } catch (err) { sb.disabled = false; sb.textContent = '보내기'; msg.style.color = '#b42318'; msg.textContent = err.message || '보내지 못했습니다.'; if (/내 메일이 연결되지|내 메일 연결의/.test(err.message || '') && ME) { if (/연결되지/.test(err.message)) ME.mail = false; drawMailConn(); } }
         return;
       }
       const c = e.target.closest('[data-mbc]'); if (!c) return; const v = c.dataset.mbc === 'all' ? [`받는 사람: ${val('to') || '-'}`, `참조: ${val('cc') || '-'}`, `제목: ${val('subject')}`, '', val('body')].join('\n') : val(c.dataset.mbc);
@@ -1640,7 +1685,7 @@ function openMail(u, kind = 'other') {
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
   m._id = current ? current.id : ''; m._kind = kind; m._sent = null;
   const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
-  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 'contact@hakeemtravel.com · 내 이름'으로 바로 발송돼요. 답장은 나와 contact@으로 와요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 ${ME && !ME.master ? `내 주소(${esc(ME.email)})` : '내 네이버웍스 주소'}로 바로 발송돼요. 참조의 contact@으로 팀도 함께 받아요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
     ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
     <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
     <div class="mb-a"><span class="mb-msg hint" style="flex:1;align-self:center"></span><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button>${m._id ? '<button type="button" class="btn" data-mbsend="1">보내기</button>' : ''}</div></div>`;
