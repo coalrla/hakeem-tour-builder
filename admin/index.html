@@ -127,7 +127,14 @@ tr.gone td { color: var(--muted); }
 .hsec.sell { background: var(--gold-soft); border-color: #ead9b3; }
 .hs-h { font-size: .78rem; font-weight: 700; color: var(--ink); }
 .hs-h span { font-weight: 400; color: var(--muted); margin-left: 6px; }
-.hl3 { display: grid; grid-template-columns: 110px 200px 16px 170px minmax(0, 1fr); gap: 8px; align-items: end; }
+.hl3 { display: grid; grid-template-columns: minmax(110px, 180px) 130px 70px 16px 130px 16px 110px minmax(0, 1fr); gap: 8px; align-items: end; }
+.hl3 .rt { overflow-wrap: anywhere; }
+.hbase { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-bottom: 8px; padding: 8px 10px; border-radius: 8px; background: #faf6ec; }
+.hbase label { min-width: 150px; }
+.hbase .bfp { width: 110px; }
+.rbasis { grid-column: 1 / -1; margin-top: -4px; font-size: .74rem; color: var(--muted); }
+.rbasis b { color: var(--ink); }
+.hcard input[data-rf="net"][readonly] { background: #f4f1ea; color: var(--ink); font-weight: 700; }
 .hl3 .rt { padding-bottom: 8px; font-weight: 700; font-size: .88rem; }
 .hl4 { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px dashed #e2cf9f; padding-top: 8px; }
 .hl4 .hsum { font-weight: 600; color: var(--ink); }
@@ -135,6 +142,7 @@ tr.gone td { color: var(--muted); }
 .hr-l { font-size: .72rem; font-weight: 600; color: var(--muted); margin-right: 2px; }
 .rpill { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 8px; padding: 3px 6px; }
 .hcard .rpill input { width: 64px; padding: 4px 6px; }
+.hcard .rpill input[data-rf="type"] { width: auto; min-width: 70px; field-sizing: content; max-width: 260px; }
 .hcard .rpill input[data-rf="qty"] { width: 52px; }
 .rpill em { font-style: normal; font-size: .8rem; color: var(--muted); }
 .rpill .rx { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 2px; }
@@ -1412,7 +1420,11 @@ const MARKET = { 'Middle East': '중동', 'India': '인도', 'Other markets': '�
 const nd = s => String(s).replace(/(\d+)N(\d+)D/, '$1박 $2일').replace(/ (\d+)N/g, ' $1박').replace(/Seoul/g, '서울').replace(/Jeju/g, '제주').replace(/Busan/g, '부산');
 const KERR = e => e.status === 401 ? '비밀번호 오류.' : e.status === 503 ? 'Wix에 ADMIN_PASSWORD 미설정.' : '불러오기 실패. 잠시 후 다시 시도.';
 let key = '', rows = [], current = null, staff = [], settings = null, ME = null, mineOnly = false;
-try { key = sessionStorage.getItem('hk-admin') || ''; } catch {}
+const SESS_MS = 12 * 3600e3;
+const sessGet = () => { try { const v = JSON.parse(localStorage.getItem('hk-admin') || 'null'); if (v && v.k && v.exp > Date.now()) return v.k; localStorage.removeItem('hk-admin'); } catch {} try { return sessionStorage.getItem('hk-admin') || ''; } catch { return ''; } };
+const sessSet = k => { try { localStorage.setItem('hk-admin', JSON.stringify({ k, exp: Date.now() + SESS_MS })); } catch {} try { sessionStorage.setItem('hk-admin', k); } catch {} };
+const sessDel = () => { try { localStorage.removeItem('hk-admin'); } catch {} try { sessionStorage.removeItem('hk-admin'); } catch {} };
+key = sessGet();
 
 async function api(path, opts = {}) {
   const r = await hkFetch(path, opts.method || 'GET', opts.body ? JSON.parse(opts.body) : undefined, key);
@@ -1427,12 +1439,12 @@ async function load() {
     try { ME = (await api('/api/admin/me')).me; } catch { ME = null; }
     $('whoami').textContent = ME ? (ME.master ? '관리자 비밀번호로 접속' : `${ME.name} (${ME.email})`) : '';
     $('login').hidden = true; $('list').hidden = false; $('logout').hidden = false; $('tabs').hidden = false; $('err').textContent = '';
-    try { sessionStorage.setItem('hk-admin', key); } catch {}
+    sessSet(key);
     fillStaff(); draw();
     const op = new URLSearchParams(location.search).get('open'); if (op) { history.replaceState(null, '', location.pathname); open(op).catch(() => {}); }
   } catch (e) {
     $('login').hidden = false; $('list').hidden = true; $('err').textContent = key ? KERR(e) : '';
-    try { sessionStorage.removeItem('hk-admin'); } catch {}
+    if (!e.status || e.status === 401) sessDel();
   }
 }
 // status groups for the dashboard cards ('quoted' is the old name of Land quoted)
@@ -1691,7 +1703,7 @@ function wfSyncBuilder() {
   const days = builtDays(), before = JSON.stringify([bHotels, bMarkup]);
   bMarkup = +(wf.hotelMarkup ?? 10); bHotels = Array.from({ length: Math.max(0, days.length - 1) }, () => null);
   bStays(days).forEach(st => {
-    const h = wf.hotels.find(x => x.city === st.city && x.offer && x.status !== 'no' && x.name && hotelNet(x) > 0);
+    const hs = wf.hotels.filter(x => x.city === st.city && x.offer && x.status !== 'no' && x.name && hotelNet(x) > 0), h = hs.find(x => x.status === 'ok') || hs[0];
     if (!h) return;
     for (let k = st.from; k <= st.to; k++) bHotels[k] = { name: h.name, star: h.star || '', rooms: h.rooms.filter(r => +r.qty > 0).map(r => ({ type: r.type, qty: +r.qty, net: +r.net || 0 })) };
   });
@@ -1712,7 +1724,7 @@ function defaultWorkflow(r) {
     land: { perPerson: r.price.perPerson, pax: r.options.pax, note: '', sentAt: '' },
     country: ccShow(r.options.country || COUNTRY_DEFAULT[r.options.market] || ''),
     hotels: stays(r).map(s => ({ city: s.city, star: reqStar(r), name: '', manager: '', email: '', checkIn: s.checkIn, checkOut: s.checkOut,
-      rooms: (r.rooms && r.rooms.length ? r.rooms : [{ type: 'TWN', qty: Math.ceil(headsR(r) / 2) }]).map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })), breakfast: true, status: 'todo', offer: true })),
+      rooms: reqRooms(r), breakfast: true, tax: 'incl', bfm: 'incl', bfp: 0, bft: 'same', status: 'todo', offer: true })),
     hotelNote: '', hotelSentAt: '', hotelFx: (r.cost && r.cost.fx) || 1250, hotelMarkup: 10,
   };
 }
@@ -1722,11 +1734,29 @@ const reqStar = r => (String(((r && r.hotel) || [])[0] || '').match(/[345]/) || 
 function normHotel(h) {
   if (h.star === undefined || (h.star === '' && !h.name)) h.star = reqStar(current);
   if (!Array.isArray(h.rooms)) h.rooms = [{ type: h.roomType || 'TWN', qty: +h.rooms || 0, net: +h.net || 0, rate: +h.rate || 0 }];
-  delete h.roomType; delete h.net; delete h.rate; return h;
+  delete h.roomType; delete h.net; delete h.rate;
+  h.breakfast = true; if (!h.tax) h.tax = 'incl'; if (!h.bfm) h.bfm = 'incl'; if (!h.bft) h.bft = 'same'; return h;
 }
 const roomsKo = h => h.rooms.filter(r => r.qty > 0).map(r => `${r.type} ${r.qty}실`).join(', ') || '-';
 const roomsEn = h => h.rooms.filter(r => r.qty > 0).map(r => `${r.qty} x ${r.type}`).join(', ') || '-';
 const roomCount = h => h.rooms.reduce((a, r) => a + (+r.qty || 0), 0);
+// guests per room from the room type as typed (codes or free text such as "Family Room (Double+Single)" or "Twin+Extra bed")
+const capOf = t => { const s = String(t || '').toUpperCase(); let c = /QUAD/.test(s) ? 4 : /TRP|TRIPLE|FAM/.test(s) ? 3 : /\bSGL\b|SINGLE/.test(s) && !/\+/.test(s) ? 1 : 2; if (c < 3 && /EXTRA|\+\s*(SGL|SINGLE|BED)/.test(s)) c += 1; return c; };
+const headsOfReq = r => Math.max(1, (+((r || {}).options || {}).pax || 0) + (+((r || {}).options || {}).foc || 0));
+const autoQty = (type, r) => Math.max(1, Math.ceil(headsOfReq(r) / capOf(type)));
+// default rooms for a request: one room type -> enough rooms for everyone (at least 1); several types -> as the buyer chose
+const reqRooms = r => { const rq = ((r && r.rooms) || []).filter(x => x.qty > 0); return rq.length > 1 ? rq.map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })) : [{ type: (rq[0] || {}).type || 'TWN', qty: autoQty((rq[0] || {}).type || 'TWN', r), net: 0, rate: 0 }]; };
+// hotel reply -> Net per room-night (always incl. tax, service charge and breakfast)
+const TAXM = { incl: 1, t10: 1.1, t21: 1.21 }, TAXL = [['incl', '포함'], ['t10', '세금 별도 +10%'], ['t21', '봉사료+세금 별도 +21%']];
+const roomOcc = r => +r.occ > 0 ? +r.occ : capOf(r.type);
+function roomCalc(h, r) {
+  if (!(+r.quote > 0)) return null;
+  const m = TAXM[h.tax] || 1, bm = h.bft === 'incl' ? 1 : m, bfp = h.bfm === 'extra' ? +h.bfp || 0 : 0, occ = roomOcc(r);
+  const net = Math.round(r.quote * m + bfp * bm * occ), w = v => Math.round(v).toLocaleString('ko-KR');
+  const basis = `회신 ₩${w(r.quote)}${m > 1 ? ` × ${m}` : ' (세금·봉사료 포함)'}${bfp ? ` + 조식 ₩${w(bfp)}${bm > 1 ? ` × ${bm}` : ''} × ${occ}명` : ' · 조식 포함'} = <b>₩${w(net)}</b>`;
+  return { net, basis };
+}
+function recalcHotel(h) { h.rooms.forEach(r => { const c = roomCalc(h, r); if (c) { r.net = c.net; r.rate = sellRate(c.net); } }); }
 const hotelSum = h => { const n = nightsBetween(h.checkIn, h.checkOut); return h.rooms.reduce((a, r) => a + (+r.rate || 0) * (+r.qty || 0) * n, 0); };
 const hotelNet = h => { const n = nightsBetween(h.checkIn, h.checkOut); return h.rooms.reduce((a, r) => a + (+r.net || 0) * (+r.qty || 0) * n, 0); };
 // selling rate per room-night (USD) from the hotel's net rate (KRW): exchange rate + hotel markup, rounded up to a dollar
@@ -1779,14 +1809,22 @@ function drawWorkflow() {
         <button class="btn ghost sm" data-radd="${i}">+ Room type</button>
       </div>
     </div>
-    <div class="hsec sell"><div class="hs-h">Rates <span>Net → Sell</span></div>
-      ${h.rooms.map((r, j) => `<div class="hl3">
+    <div class="hsec sell"><div class="hs-h">Rates <span>호텔 회신 → Net (세금·봉사료·조식 포함) → Sell</span></div>
+      <div class="hbase"><label>세금·봉사료<select data-f="tax">${opt(TAXL, h.tax || 'incl')}</select></label>
+        <label>조식<select data-f="bfm">${opt([['incl', '포함'], ['extra', '별도 (1인 가격)']], h.bfm || 'incl')}</select></label>
+        ${h.bfm === 'extra' ? `<label>조식 1인 (₩)<input class="bfp" data-f="bfp" type="number" min="0" step="1000" value="${h.bfp || ''}" placeholder="예: 25000"></label>
+        <label>조식 세금 기준<select data-f="bft">${opt([['same', '객실과 같음'], ['incl', '포함']], h.bft || 'same')}</select></label>` : ''}</div>
+      ${h.rooms.map((r, j) => { const c = roomCalc(h, r); return `<div class="hl3">
         <span class="rt" data-rl="${i}:${j}">${esc(r.type)} ${r.qty}실</span>
-        <label>Net / room / night (₩)<input data-r="${j}" data-rf="net" type="number" min="0" step="1000" value="${r.net || ''}" placeholder="예: 180000"></label>
+        <label>회신 요금 / 1실 1박 (₩)<input data-r="${j}" data-rf="quote" type="number" min="0" step="1000" value="${r.quote || ''}" placeholder="호텔 회신 그대로"></label>
+        <label>1실 인원<input data-r="${j}" data-rf="occ" type="number" min="1" max="10" value="${r.occ || ''}" placeholder="${capOf(r.type)}"></label>
+        <span class="arrow">→</span>
+        <label>Net / room / night (₩)<input data-r="${j}" data-rf="net" type="number" min="0" step="1000" value="${r.net || ''}" placeholder="예: 180000"${c ? ' readonly title="회신 요금에서 자동 계산"' : ''}></label>
         <span class="arrow">→</span>
         <label>Sell / room / night (US$)<input data-r="${j}" data-rf="rate" type="number" min="0" step="1" value="${r.rate || ''}" placeholder="USD"></label>
         <span class="hint" data-rs="${i}:${j}">${roomLine(r, nightsBetween(h.checkIn, h.checkOut))}</span>
-      </div>`).join('')}
+        <div class="rbasis" data-rb="${i}:${j}">${c ? c.basis : '회신 요금을 넣으면 Net이 자동 계산됩니다 (직접 Net 입력도 가능)'}</div>
+      </div>`; }).join('')}
       <div class="hfig" data-fig="${i}">${hotelFigs(h)}</div>
       <div class="hl4"><span class="hint hsum" data-sum="${i}">${hotelLine(h)}</span><label class="chk"><input data-f="offer" type="checkbox"${h.offer ? ' checked' : ''}> Include in quote</label></div>
       </div>
@@ -1894,8 +1932,9 @@ function quotationPDF(withHotel) {
     ${r.itinerary.map(d => `<div class="qday"><b>Day ${d.day} · ${esc(d.title)}</b> <span class="sub">${esc(d.route)}</span><div class="sub">${esc([...d.stops, ...(d.adds || []).map(x => 'Sightseeing: ' + x)].join(' · '))}${d.requests.length ? ' · Requested: ' + esc(d.requests.join(', ')) : ''}</div></div>`).join('')}
     <p class="sub" style="margin-top:14px">Not included: ${withHotel ? '' : 'hotels, '}meals unless stated, international flights, travel insurance, tips. Rates are in US dollars and subject to availability at the time of booking.</p>
     <p class="sub">Hakeem Travel Korea · contact@hakeemtravel.com · +82-2-6166-7112 · WhatsApp +82-10-5426-7112</p>`;
-  document.body.classList.add('printing-quote');
-  setTimeout(() => { window.print(); document.body.classList.remove('printing-quote'); }, 50);
+  const qs = $('qsheet'), keep = qs.getAttribute('style') || '';
+  qs.setAttribute('style', 'display:block;position:fixed;left:-10000px;top:0;width:794px;padding:36px;background:#fff');
+  elToPdf(qs, pdfName(`Hakeem Travel Korea ${withHotel ? 'Quotation' : 'Land Fee Quotation'} ${r.id}`), t => { $('w-saved').textContent = t; }).finally(() => { if (keep) qs.setAttribute('style', keep); else qs.removeAttribute('style'); });
 }
 
 // ---- saving
@@ -1912,6 +1951,11 @@ function updateSums() {
   $('w-app').textContent = money(L.perPerson + t.pp); $('w-atot').textContent = money(t.landTotal + t.total);
   if ($('w-margin')) $('w-margin').textContent = marginText();
 }
+function hotelRatesRefresh(tr, h) {
+  h.rooms.forEach((r, j) => { const c = roomCalc(h, r), n = tr.querySelector(`[data-r="${j}"][data-rf="net"]`), s = tr.querySelector(`[data-r="${j}"][data-rf="rate"]`), b = tr.querySelector(`[data-rb$=":${j}"]`), o = tr.querySelector(`[data-r="${j}"][data-rf="occ"]`);
+    if (n) { if (c) { n.value = r.net; n.readOnly = true; } else n.readOnly = false; } if (s && c) s.value = r.rate; if (o) o.placeholder = capOf(r.type);
+    if (b) b.innerHTML = c ? c.basis : '회신 요금을 넣으면 Net이 자동 계산됩니다 (직접 Net 입력도 가능)'; });
+}
 $('wf').addEventListener('input', e => {
   const el = e.target;
   if (el.id === 'w-pp') wf.land.perPerson = +el.value || 0;
@@ -1925,12 +1969,17 @@ $('wf').addEventListener('input', e => {
   }
   else if (el.dataset.rf) {
     const tr = el.closest('tr'), i = +tr.dataset.i, j = +el.dataset.r, r = wf.hotels[i].rooms[j], f = el.dataset.rf;
-    r[f] = f === 'type' ? el.value.toUpperCase() : +el.value || 0;
+    const h = wf.hotels[i];
+    r[f] = f === 'type' ? el.value : +el.value || 0;
+    if (f === 'type' && h.rooms.length === 1) { r.qty = autoQty(r.type, current); const q = tr.querySelector(`[data-r="${j}"][data-rf="qty"]`); if (q) q.value = r.qty; }
+    if (f === 'type' || f === 'quote' || f === 'occ') { recalcHotel(h); if (f === 'quote' && !r.quote) { r.net = 0; r.rate = 0; } hotelRatesRefresh(tr, h); }
     if (f === 'net' && r.net > 0) { r.rate = sellRate(r.net); tr.querySelector(`[data-r="${j}"][data-rf="rate"]`).value = r.rate; }
   }
   else if (el.dataset.f) {
     const tr = el.closest('tr'), h = wf.hotels[+tr.dataset.i], f = el.dataset.f;
-    h[f] = el.type === 'checkbox' ? el.checked : el.value;
+    h[f] = el.type === 'checkbox' ? el.checked : f === 'bfp' ? +el.value || 0 : el.value;
+    if (f === 'bfm') { recalcHotel(h); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
+    if (f === 'tax' || f === 'bfp' || f === 'bft') { recalcHotel(h); hotelRatesRefresh(tr, h); }
     if (f === 'name') { const x = dirHotel(h.name); if (x) { if (!h.manager && x.manager) { h.manager = x.manager; tr.querySelector('[data-f="manager"]').value = h.manager; } if (!h.email && x.email) { h.email = x.email.split(/\s*\/\s*/)[0]; tr.querySelector('[data-f="email"]').value = h.email; } } }
     if (f === 'city' || f === 'star') { const nm = tr.querySelector('[data-f="name"]'); nm.setAttribute('list', hotelListId(h)); nm.placeholder = `${h.star ? h.star + '★ ' : ''}hotel (목록에서 선택)`; }
     const hi = tr.querySelector('[data-hinfo]'); if (hi) hi.innerHTML = hotelInfo(h);
@@ -1944,7 +1993,7 @@ $('wf').addEventListener('input', e => {
 $('wf').addEventListener('change', e => { if (e.target.matches('select, input[type=checkbox], input[type=date]')) { drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; } });
 $('wf').addEventListener('click', e => {
   const b = e.target.closest('button, a'); if (!b) return;
-  if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.net = +b.dataset.hest; r.rate = sellRate(r.net); }); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
+  if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.quote = +b.dataset.hest; }); h.tax = 'incl'; recalcHotel(h); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
   if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; openMail(hotelMail(h)); drawWorkflow(); return; }
   if (b.dataset.askcopy !== undefined) {
     // copy the same inquiry mail as text (to / cc / subject / body) for pasting into any mail app
@@ -1958,8 +2007,8 @@ $('wf').addEventListener('click', e => {
   if (b.dataset.del !== undefined) { wf.hotels.splice(+b.dataset.del, 1); drawWorkflow(); return; }
   if (b.dataset.radd !== undefined) { e.preventDefault(); wf.hotels[+b.dataset.radd].rooms.push({ type: 'DBL', qty: 1, net: 0, rate: 0 }); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
   if (b.dataset.rdel !== undefined) { e.preventDefault(); const [i, j] = b.dataset.rdel.split(':').map(Number); wf.hotels[i].rooms.splice(j, 1); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; return; }
-  if (b.dataset.hcity) { const [city, ci, co, nm] = b.dataset.hcity.split('|'); const rq = (current.rooms || []).filter(x => x.qty > 0); const st0 = (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], nh = { city, star: nm ? (starOfDir(dirHotel(nm)) || st0) : st0, name: nm || '', manager: '', email: '', checkIn: ci, checkOut: co, rooms: rq.length ? rq.map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })) : [{ type: 'TWN', qty: Math.ceil(((+current.options.pax || 0) + (+current.options.foc || 0)) / 2), net: 0, rate: 0 }], breakfast: true, status: 'todo', offer: true }; if (typeof normHotel === 'function') normHotel(nh); wf.hotels.push(nh); drawWorkflow(); return; }
-  if (b.id === 'w-hadd') { const s = stays(current)[0] || {}; wf.hotels.push({ city: s.city || 'seoul', star: (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], name: '', manager: '', email: '', checkIn: s.checkIn || '', checkOut: s.checkOut || '', rooms: [{ type: 'TWN', qty: Math.ceil(current.options.pax / 2), net: 0, rate: 0 }], breakfast: true, status: 'todo', offer: true }); drawWorkflow(); return; }
+  if (b.dataset.hcity) { const [city, ci, co, nm] = b.dataset.hcity.split('|'); const rq = (current.rooms || []).filter(x => x.qty > 0); const st0 = (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], nh = { city, star: nm ? (starOfDir(dirHotel(nm)) || st0) : st0, name: nm || '', manager: '', email: '', checkIn: ci, checkOut: co, rooms: reqRooms(current), breakfast: true, tax: 'incl', bfm: 'incl', bfp: 0, bft: 'same', status: 'todo', offer: true }; if (typeof normHotel === 'function') normHotel(nh); wf.hotels.push(nh); drawWorkflow(); return; }
+  if (b.id === 'w-hadd') { const s = stays(current)[0] || {}; wf.hotels.push({ city: s.city || 'seoul', star: (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], name: '', manager: '', email: '', checkIn: s.checkIn || '', checkOut: s.checkOut || '', rooms: reqRooms(current), breakfast: true, tax: 'incl', bfm: 'incl', bfp: 0, bft: 'same', status: 'todo', offer: true }); drawWorkflow(); return; }
   if (b.id === 'w-qpdf') return quotationPDF(false);
   if (b.id === 'w-hpdf') return quotationPDF(true);
   if (b.id === 'w-qmail') { b.href = buyerMail(false); return; }
@@ -2493,6 +2542,42 @@ ${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` 
 const B_HAS_FOC = focOf({ foc: 1, pax: 1 }) === 1;
 let bNote = '';
 // the buyer's PDF opens over the admin page (no pop-up window: this page has its own open()); printing shows only the quotation
+let qdSnap = null;
+// direct PDF file (no print dialog): html2canvas + jsPDF, A4 pages cut between blocks; works in Claude's in-app browser too
+async function elToPdf(el, filename, msg) {
+  msg = msg || (() => {});
+  msg('PDF 만드는 중…');
+  try {
+    await loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    // page cuts only between blocks: never inside a day, a table row, a list item or a heading
+    const top0 = el.getBoundingClientRect().top, cuts = new Set(), keep = [];
+    el.querySelectorAll('*').forEach(x => { const r = x.getBoundingClientRect(); if (r.height > 0) { cuts.add(Math.round(r.top - top0)); cuts.add(Math.round(r.bottom - top0)); } });
+    el.querySelectorAll('tr,li,h1,h2,h3,p,img,.qd-day,.qd-fact,.qd-cols,.qd-hero,.qd-ft,.qd-pbox,.qd-hlk,.qd-note,.qd-row,.qday,.qh').forEach(x => { const r = x.getBoundingClientRect(); if (r.height > 0) keep.push([r.top - top0, r.bottom - top0]); });
+    const sc = 2, canvas = await html2canvas(el, { scale: sc, backgroundColor: '#fff', useCORS: true });
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' }), W = 210, H = 297, m = 8, cw = canvas.width, pxPerMm = cw / (W - 2 * m), pageH = Math.floor((H - 2 * m) * pxPerMm);
+    const maxKeep = (H - 2 * m) * pxPerMm / sc * 0.9, cs = [...cuts].filter(c => !keep.some(([t, bt]) => bt - t < maxKeep && t + 1 < c && c < bt - 1)).map(v => v * sc).sort((a, b) => a - b);
+    let y = 0, first = true;
+    while (y < canvas.height - 2) {
+      let end = Math.min(canvas.height, y + pageH);
+      if (end < canvas.height) { const c = cs.filter(v => v > y + pageH * 0.4 && v <= end).pop(); if (c) end = c; }
+      const pc = document.createElement('canvas'); pc.width = cw; pc.height = end - y; const g = pc.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, cw, pc.height); g.drawImage(canvas, 0, y, cw, end - y, 0, 0, cw, end - y);
+      if (!first) pdf.addPage(); first = false;
+      pdf.addImage(pc.toDataURL('image/jpeg', 0.92), 'JPEG', m, m, W - 2 * m, (end - y) / pxPerMm);
+      y = end;
+    }
+    const blob = pdf.output('blob');
+    if (invDl === undefined) invDl = window.claude && window.claude.use ? await Promise.race([window.claude.use('downloads'), new Promise(r => setTimeout(() => r(null), 3000))]).catch(() => null) : null;
+    if (invDl) await invDl.save({ filename, data: blob });
+    else { const a = document.createElement('a'), u = URL.createObjectURL(blob); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+    msg('PDF 저장 완료');
+  } catch (e) { msg(e && e.code === 'declined' ? 'PDF 저장 취소됨' : 'PDF 만들기 실패 · ' + (e && (e.message || e.code) || '')); }
+}
+const pdfName = s => String(s || 'Hakeem Travel Korea').replace(/[\\/:*?"<>|·]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) + '.pdf';
+function qdDownload() {
+  const d = document.querySelector('#qd-overlay .hq-doc'), s = qdSnap || {}; if (!d) return;
+  elToPdf(d, pdfName(`Hakeem Travel Korea ${s.docKind && s.docKind !== 'Private tour of Korea' ? s.docKind : 'Quotation'} ${s.ref || ''} ${s.title || ''}`), t => { const m = $('qd-msg'); if (m) m.textContent = t; });
+}
 function qdShow(snap) {
   let ov = $('qd-overlay');
   if (!ov) {
@@ -2500,10 +2585,10 @@ function qdShow(snap) {
     st.textContent = QD_CSS + '#qd-overlay{position:fixed;inset:0;z-index:200;overflow:auto;background:#ECE8E1}#qd-overlay[hidden]{display:none}.qd-bar{position:sticky;top:0;z-index:2;display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;background:rgba(236,232,225,.92);font-size:.9rem}.qd-bar .sp{flex:1}#qd-overlay .hq-doc{margin:8px auto 40px;box-shadow:0 10px 30px rgba(0,0,0,.12)}@media print{body.qd-on>*:not(#qd-overlay){display:none !important}body.qd-on #qd-overlay{position:static;overflow:visible;background:#fff}body.qd-on .qd-bar{display:none !important}body.qd-on #qd-overlay .hq-doc{box-shadow:none;margin:0}}';
     document.head.appendChild(st);
     ov = document.createElement('div'); ov.id = 'qd-overlay'; ov.hidden = true; document.body.appendChild(ov);
-    ov.addEventListener('click', e => { if (e.target.closest('[data-qdclose]')) { ov.hidden = true; document.body.classList.remove('qd-on'); } if (e.target.closest('[data-qdprint]')) window.print(); });
+    ov.addEventListener('click', e => { if (e.target.closest('[data-qdclose]')) { ov.hidden = true; document.body.classList.remove('qd-on'); } if (e.target.closest('[data-qdprint]')) window.print(); if (e.target.closest('[data-qdpdf]')) qdDownload(); });
   }
   const ko = (snap.hotels || []).some(h => /[가-힣]/.test(h.name));
-  ov.innerHTML = `<div class="qd-bar">${ko ? '<span class="hint" style="color:#b3261e">호텔 이름이 한글입니다. 바이어용은 영문 이름으로 고쳐 주세요 · </span>' : ''}${snap.draft ? '<span class="hint">미리보기 · 아직 바이어에게 보내지 않음</span>' : `<span class="hint">${esc(snap.ref || '')} · ${fmtT(snap.sentAt)} 보냄${snap.by ? ' · ' + esc(snap.by) : ''}</span>`}<span class="sp"></span><button class="btn ghost sm" data-qdclose="1">닫기</button><button class="btn sm" data-qdprint="1">PDF로 저장 / 인쇄</button></div>${quoteDoc(snap)}`;
+  ov.innerHTML = `<div class="qd-bar">${ko ? '<span class="hint" style="color:#b3261e">호텔 이름이 한글입니다. 바이어용은 영문 이름으로 고쳐 주세요 · </span>' : ''}${snap.draft ? '<span class="hint">미리보기 · 아직 바이어에게 보내지 않음</span>' : `<span class="hint">${esc(snap.ref || '')} · ${fmtT(snap.sentAt)} 보냄${snap.by ? ' · ' + esc(snap.by) : ''}</span>`}<span class="sp"></span><button class="btn ghost sm" data-qdclose="1">닫기</button><span class="hint" id="qd-msg"></span><button class="btn ghost sm" data-qdprint="1">인쇄</button><button class="btn sm" data-qdpdf="1">PDF 다운로드</button></div>${quoteDoc(snap)}`; qdSnap = snap;
   ov.hidden = false; document.body.classList.add('qd-on'); ov.scrollTop = 0;
 }
 async function bEnsureSaved() { if (bFrom) await bSaveToRequest(); else await bSaveNew(); return bFrom; }
@@ -2581,12 +2666,12 @@ function bSetStay(s, h) { for (let k = s.from; k <= s.to; k++) bHotels[k] = h ? 
 const bStayStar = {};
 const bReqStar = () => { const m = String(((bFromReq && bFromReq.hotel) || [])[0] || '').match(/[345]/); return m ? m[0] : ''; };
 const bStayStarOf = (s, si) => { const h = bStayHotel(s); return h && h.st !== undefined ? h.st : bStayStar[si] !== undefined ? bStayStar[si] : (h && h.star ? String(h.star) : bReqStar()); };
-const bReqRooms = () => { const r = ((bFromReq && bFromReq.rooms) || []).filter(x => x.qty > 0); return r.length ? r.map(x => ({ type: x.type, qty: x.qty, net: 0 })) : [{ type: 'TWN', qty: Math.ceil(bHeads() / 2), net: 0 }]; };
+const bReqRooms = () => { const r = ((bFromReq && bFromReq.rooms) || []).filter(x => x.qty > 0); return r.length > 1 ? r.map(x => ({ type: x.type, qty: x.qty, net: 0 })) : [{ type: (r[0] || {}).type || 'TWN', qty: Math.max(1, Math.ceil(bHeads() / capOf((r[0] || {}).type || 'TWN'))), net: 0 }]; };
 function bStayHotelHTML(s, si) {
   const h = bStayHotel(s), n = s.to - s.from + 1, date = bNightDate(s.from);
   const est = h && h.name && date ? hotelRateEstimate(s.city, h.star || bStarOf(h.name), date, addDays(date, n)) : null;
   const sub = h ? h.rooms.reduce((a, x) => a + (x.qty | 0) * (+x.net || 0), 0) : 0, x = h && h.name && dirHotel(h.name);
-  const rooms = h ? h.rooms.map((x, j) => `<div class="bhr"><select data-bhr="${si}|${j}|type">${opt(ROOMS, x.type)}</select><input type="number" min="0" max="60" data-bhr="${si}|${j}|qty" value="${x.qty}">실 × 1박 ₩<input class="net" type="number" min="0" step="1000" data-bhr="${si}|${j}|net" value="${x.net || ''}" placeholder="원가 (세금 포함)"><button class="btn ghost sm" data-bhx="${si}|${j}" title="이 객실 빼기">✕</button></div>`).join('') : '';
+  const rooms = h ? h.rooms.map((x, j) => `<div class="bhr"><select data-bhr="${si}|${j}|type">${opt(ROOMS.some(z => z[0] === x.type) ? ROOMS : [...ROOMS, [x.type, x.type]], x.type)}</select><input type="number" min="0" max="60" data-bhr="${si}|${j}|qty" value="${x.qty}">실 × 1박 ₩<input class="net" type="number" min="0" step="1000" data-bhr="${si}|${j}|net" value="${x.net || ''}" placeholder="원가 (세금 포함)"><button class="btn ghost sm" data-bhx="${si}|${j}" title="이 객실 빼기">✕</button></div>`).join('') : '';
   return `<div class="bhot"><div class="bhh"><span class="hint">${date ? `${date.slice(5).replace('-', '/')}–${addDays(date, n).slice(5).replace('-', '/')}` : `Day ${s.from + 1}–${s.to + 2}`}</span>
       <select class="bhst" data-bhst="${si}" aria-label="Star">${[['', 'All'], ['3', '3★'], ['4', '4★'], ['5', '5★']].map(([v, l]) => `<option value="${v}"${bStayStarOf(s, si) === v ? ' selected' : ''}>${l}</option>`).join('')}</select>
       <input class="bhn" list="b-hotel-${s.city}${bStayStarOf(s, si) ? '-' + bStayStarOf(s, si) : ''}" data-bhn="${si}" value="${esc(h ? h.name : '')}" placeholder="${bStayStarOf(s, si) ? bStayStarOf(s, si) + '★ ' : ''}호텔 (업체 목록에서 고르거나 이름 입력)">
@@ -3558,7 +3643,7 @@ $('staffs').addEventListener('change', async e => {
   const em = e.target.dataset.sact; if (!em) return;
   try { await api('/api/admin/staffs', { method: 'POST', body: JSON.stringify({ staff: [{ email: em, active: e.target.checked }] }) }); openStaffs(); } catch (err) { e.target.checked = !e.target.checked; const h = $('staffs').querySelector('p.hint'); if (h) h.textContent = KERR(err); }
 });
-$('logout').onclick = () => { key = ''; try { sessionStorage.removeItem('hk-admin'); } catch {} location.reload(); };
+$('logout').onclick = () => { key = ''; sessDel(); location.reload(); };
 $('reload').onclick = load;
 $('q').oninput = draw; $('fst').onchange = draw; $('fas').onchange = draw; $('csv').onclick = exportCSV;
 $('das').onchange = async () => { const v = $('das').value; try { await api('/api/admin/status?id=' + encodeURIComponent(current.id), { method: 'POST', body: JSON.stringify({ assignee: v }) }); current.assignee = v; const row = rows.find(x => x.id === current.id); if (row) row.assignee = v; } catch (e) { $('das').value = current.assignee || ''; } };

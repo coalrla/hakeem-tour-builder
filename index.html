@@ -1494,7 +1494,9 @@ const ROOM_TYPES = [['SGL', 'Single (1 PAX, 1 Queen size bed)', 1], ['TWN', 'Twi
 const EXTRA_BED = 'Extra Bed (1 PAX, 1 Extra bed)';
 const roomCap = r => ((ROOM_TYPES.find(x => x[0] === r.type) || [0, 0, 2])[2]) + (r.xb && r.type !== 'SGL' ? 1 : 0);
 let roomPick = null;
-const roomsNow = () => roomPick || [{ type: 'TWN', qty: Math.ceil(headsOf(sel) / 2) }];
+// one room type -> enough rooms for everyone (at least 1) until the buyer types a number of rooms
+const roomAuto = r => Math.max(1, Math.ceil(headsOf(sel) / roomCap(r)));
+const roomsNow = () => !roomPick ? [{ type: 'TWN', qty: roomAuto({ type: 'TWN' }) }] : roomPick.length === 1 && roomPick[0].auto ? [{ ...roomPick[0], qty: roomAuto(roomPick[0]) }] : roomPick;
 const roomName = c => (ROOM_TYPES.find(x => x[0] === c) || [c, c])[1];
 function roomsText() { return roomsNow().filter(r => r.qty > 0).map(r => `${r.qty} x ${roomName(r.type)}${r.xb && r.type !== 'SGL' ? ` + ${EXTRA_BED}` : ''}`).join(', ') || '-'; }
 function renderRooms() {
@@ -1508,7 +1510,8 @@ document.getElementById('room-rows').addEventListener('change', e => {
   roomPick = roomsNow().map(r => ({ ...r }));
   if (e.target.dataset.xb) roomPick[+i].xb = e.target.checked;
   else if (e.target.tagName === 'SELECT') { roomPick[+i].type = e.target.value; if (e.target.value === 'SGL') roomPick[+i].xb = false; }
-  else roomPick[+i].qty = Math.max(0, Math.min(40, Math.round(+e.target.value) || 0));
+  else { roomPick[+i].qty = Math.max(0, Math.min(40, Math.round(+e.target.value) || 0)); roomPick[+i].auto = false; }
+  if (roomPick.length === 1 && !e.target.type?.match(/number/) && roomPick[0].auto !== false) { roomPick[0].auto = true; roomPick[0].qty = roomAuto(roomPick[0]); }
   renderRooms(); updateRequest();
 });
 document.getElementById('room-rows').addEventListener('click', e => {
@@ -2059,7 +2062,7 @@ let lastReq = null;
 function requestPayload() {
   const v = id => document.getElementById(id).value.trim(), picked = id => [...document.querySelectorAll(`#${id} input:checked`)].map(x => x.value);
   return { sel, auth: authOf(), arrival: document.getElementById('f-dates').value,
-    hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
+    hotel: picked('f-hotel'), rooms: roomsNow().filter(r => r.qty > 0).map(({ auto, ...r }) => r), meals: sel.meals.map(m => m[0].toUpperCase() + m.slice(1)), diet: picked('f-diet').filter(x => x !== 'Other'), dietOther: picked('f-diet').includes('Other') ? v('f-diet-other') : '',
     addons: pickedAddonNames(), notes: v('f-notes'), dayRequests: dayReq, website: v('f-website'), ...(REVISE ? { revisionOf: REVISE } : {}) };
 }
 async function doRequest(btn) {
