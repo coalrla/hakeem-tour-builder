@@ -710,7 +710,7 @@ const CONFIG = {
   budgetMaxAdmission: 20000,      // Budget: skip stops whose admission is above this (KRW)
   budgetFreeDayFrom: 3,           // Budget: the last touring day in a city is a free day when that city has this many touring days
   water: 0, tissue: 0, halfDay: 1, meals: { lunch: 0, dinner: 0 },
-  guideMeal: 0, guides: 1, // guide's meal: KRW per guide per meal, on every meal of a day the guide works (touring days and travel-day sightseeing); rate from the server
+  guideMeal: 0, guides: 1, // guide's meal: KRW per guide per guided day (touring days and travel-day sightseeing); rate from the server
   tickets: { flight: 0, ktx: 0, ktx1st: 0 },
   upgrades: { g90: { label: 'Genesis G90 luxury sedan', short: 'Genesis G90', maxPax: 3 }, sclass: { label: 'Mercedes S-Class VVIP sedan', short: 'S-Class', maxPax: 3 }, sprinter: { label: 'Mercedes Sprinter VVIP van', short: 'Sprinter VVIP', maxPax: 7 } },
   upgradeBase: {},
@@ -1272,7 +1272,7 @@ function priceFor(days, pax, sel) {
       common += V[p.tour].day + guide;
       for (const s of d.stops) { personal += s.price || 0; if (s.key === HANBOK_KEY) hanbok++; }
     }
-    if (d.kind === 'tour' || (d.adds && d.adds.length)) common += (d.meals || []).length * (CONFIG.guides || 1) * (CONFIG.guideMeal || 0); // guide's meals
+    if (d.kind === 'tour' || (d.adds && d.adds.length)) common += (CONFIG.guides || 1) * (CONFIG.guideMeal || 0); // guide's meal: one per guided day (touring day or travel-day sightseeing)
   }
   common += (guidedDays + halfDays) * (pax + 1) * (CONFIG.water + CONFIG.tissue);
   for (const a of sel.addons || []) if (a in CONFIG.addonPaid) personal += CONFIG.addons[a] || 0; // add-ons we book and pay
@@ -1323,8 +1323,8 @@ function costBreakdown(days, sel) {
   }
   if (p.luggage) common.push({ item: `짐차 (도착·출국)${p.extraLuggage ? ' · 고객 요청' : ''}`, detail: '', unit: CONFIG.luggage, qty: CONFIG.luggageTrips });
   if (tours.length + halfs.length) common.push({ item: '생수·티슈', detail: `(${base}명 + 가이드 1) × ${tours.length + halfs.length}일`, unit: CONFIG.water + CONFIG.tissue, qty: (base + 1) * (tours.length + halfs.length) });
-  { const g = CONFIG.guides || 1, gd = days.map((d, i) => ({ n: d.kind === 'tour' || (d.adds && d.adds.length) ? (d.meals || []).length : 0, i })).filter(x => x.n), gm = gd.reduce((a, x) => a + x.n, 0);
-    if (gm && CONFIG.guideMeal) common.push({ item: `가이드 식대 ${gm * g}회`, detail: `가이드 ${g}명 × 식사 ${gm}회 (${gd.map(x => 'D' + (x.i + 1)).join(', ')})`, unit: CONFIG.guideMeal, qty: gm * g }); }
+  { const g = CONFIG.guides || 1, gd = days.map((d, i) => ({ d, i })).filter(x => x.d.kind === 'tour' || (x.d.adds && x.d.adds.length));
+    if (gd.length && CONFIG.guideMeal) common.push({ item: `가이드 식대 ${gd.length * g}회`, detail: `가이드 ${g}명 × 가이드 투어 ${gd.length}일 (${gd.map(x => 'D' + (x.i + 1)).join(', ')})`, unit: CONFIG.guideMeal, qty: gd.length * g }); }
   days.forEach((d, i) => {
     for (const [name, x] of d.tickets || []) personal.push({ day: i + 1, item: name, unit: x });
     if (d.kind === 'tour') for (const s of d.stops) { if (s.price) personal.push({ day: i + 1, item: s.custom ? s.key : PRETTY(s.key), unit: s.price }); if (s.key === HANBOK_KEY) supp.push({ day: i + 1, item: `한복 대여 (1인 US$${CONFIG.hanbokUSD})`, usd: CONFIG.hanbokUSD * base }); }
@@ -1631,7 +1631,7 @@ function wkTab(k) {
   document.querySelectorAll('#wk-tabs button').forEach(b => b.classList.toggle('on', b.dataset.wk === k));
   $('builder').hidden = k !== 'trip';
   const lq = document.querySelector('#wf .step[data-wk=quote]'); if (lq) lq.classList.toggle('land-here', k === 'hotel' && document.querySelector('#wk-tabs [data-wk=trip]').hidden);
-  if (k === 'trip' && bHotelDirty && typeof drawBuilder === 'function') drawBuilder();
+  if (k === 'trip' && (bHotelDirty || bLandDirty) && typeof drawBuilder === 'function') { bLandDirty = false; drawBuilder(); }
   if (k === 'hotel' && current && typeof wf !== 'undefined' && wf) { const sv = $('w-saved') ? $('w-saved').textContent : ''; drawWorkflow(); if ($('w-saved')) $('w-saved').textContent = sv; }
 }
 async function wkEnter(r) {
@@ -1644,6 +1644,7 @@ async function wkEnter(r) {
     const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup ?? 10; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
     bFold = {}; bAddOpen = {}; bTitle = ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
     $('wk-trip').appendChild($('builder')); drawBuilder();
+    if (wf && !wf.land.manual) { const sp = sitePrice(); if (sp && sp !== wf.land.perPerson) { wf.land.perPerson = sp; drawWorkflow(); } } // site price with today's rates
   }
   wkCur = r.builderSel ? 'trip' : 'hotel'; wkTab(wkCur); wkSetMode('view');
 }
@@ -1708,7 +1709,9 @@ function wfSyncBuilder() {
   });
   const changed = before !== JSON.stringify([bHotels, bMarkup]); if (changed) bHotelDirty = true; return changed;
 }
-let bHotelDirty = false;
+let bHotelDirty = false, bLandDirty = false;
+// land fee changed on the work tabs: refresh the price card above the itinerary at once (it shows the staff land fee)
+function landChanged() { bLandDirty = true; const el = document.querySelector('#builder .bquote'); if (!el || typeof bPrice !== 'function' || typeof builtDays !== 'function') return; try { el.outerHTML = bPrice(builtDays()); bLandDirty = false; } catch (_) {} }
 function stays(r) {
   const out = []; let d = r.trip.arrival;
   for (const m of r.trip.cities.matchAll(/(Seoul|Jeju|Busan) (\d+)N/g)) {
@@ -1744,7 +1747,10 @@ const capOf = t => { const s = String(t || '').toUpperCase(); let c = /QUAD/.tes
 const headsOfReq = r => Math.max(1, (+((r || {}).options || {}).pax || 0) + (+((r || {}).options || {}).foc || 0));
 const autoQty = (type, r) => Math.max(1, Math.ceil(headsOfReq(r) / capOf(type)));
 // default rooms for a request: one room type -> enough rooms for everyone (at least 1); several types -> as the buyer chose
-const reqRooms = r => { const rq = ((r && r.rooms) || []).filter(x => x.qty > 0); return rq.length > 1 ? rq.map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })) : [{ type: (rq[0] || {}).type || 'TWN', qty: autoQty((rq[0] || {}).type || 'TWN', r), net: 0, rate: 0 }]; };
+// default rooms when the buyer chose none (same rule as the buyer page): paying 1 = Single, 3 = Triple, otherwise Doubles + one Single for an odd number; every FOC gets a Single
+const roomsByHeads = (n, foc = 0) => { n = Math.max(1, n | 0); const sgl = (n <= 1 ? 1 : n !== 3 && n % 2 ? 1 : 0) + Math.max(0, foc | 0);
+  return [...(n === 3 ? [{ type: 'TRP', qty: 1 }] : n >= 2 ? [{ type: 'DBL', qty: Math.floor(n / 2) }] : []), ...(sgl ? [{ type: 'SGL', qty: sgl }] : [])]; };
+const reqRooms = r => { const rq = ((r && r.rooms) || []).filter(x => x.qty > 0), o = (r && r.options) || {}; return rq.length > 1 ? rq.map(x => ({ type: x.type, qty: x.qty, net: 0, rate: 0 })) : rq.length ? [{ type: rq[0].type, qty: autoQty(rq[0].type, r), net: 0, rate: 0 }] : roomsByHeads(o.pax, o.foc).map(x => ({ ...x, net: 0, rate: 0 })); };
 // hotel reply -> Net per room-night (always incl. tax, service charge and breakfast)
 const TAXM = { incl: 1, t10: 1.1, t21: 1.21 }, TAXL = [['incl', '포함'], ['t10', '세금 별도 +10%'], ['t21', '봉사료+세금 별도 +21%']];
 const roomOcc = r => +r.occ > 0 ? +r.occ : capOf(r.type);
@@ -1782,6 +1788,9 @@ function hotelTotals() {
 }
 function renderWorkflow() {
   wf = current.workflow ? JSON.parse(JSON.stringify(current.workflow)) : defaultWorkflow(current);
+  // land fee set by staff (sent to the buyer as is) or the site price; workflows saved before the flag existed count as staff-set when they differ
+  if (typeof wf.land.manual !== 'boolean') wf.land.manual = !!current.price && +wf.land.perPerson > 0 && +wf.land.perPerson !== +current.price.perPerson;
+  if (!wf.land.manual && current.price) wf.land.perPerson = sitePrice();
   wf.hotels.forEach(normHotel);
   drawWorkflow();
 }
@@ -1834,7 +1843,7 @@ function drawWorkflow() {
       <label>Land Fee / pax (US$)<input id="w-pp" type="number" min="0" value="${L.perPerson}"></label>
       <label>PAX<input id="w-pax" type="number" min="1" value="${L.pax}" style="width:80px"></label>
       <div><span class="hint">Total</span><br><span class="big" id="w-ltot">${money(L.perPerson * L.pax)}</span></div>
-      <span class="hint">사이트 계산가 ${money(current.price.perPerson)} · 수정 시 바이어 견적서에 수정 금액 반영</span>
+      <span class="hint">${L.manual ? `<b style="color:#b42318">직원 지정 Land Fee</b> · 바이어에게 보내기·PDF·견적 메일 모두 이 금액 (사이트 계산가 ${money(sitePrice())}) <button class="btn ghost sm" id="w-land-site">사이트 계산가로 되돌리기</button>` : `사이트 계산가 ${money(sitePrice())} · 금액을 고치거나 원가표를 고치면 직원 지정 금액이 되어 바이어에게 보내는 견적에도 그대로 들어감`}</span>
     </div>
     ${costBlock()}
     <label class="hint">바이어용 메모 (영어, 견적서·메일에 포함)</label>
@@ -1957,7 +1966,7 @@ function hotelRatesRefresh(tr, h) {
 }
 $('wf').addEventListener('input', e => {
   const el = e.target;
-  if (el.id === 'w-pp') wf.land.perPerson = +el.value || 0;
+  if (el.id === 'w-pp') { wf.land.perPerson = +el.value || 0; wf.land.manual = true; landChanged(); }
   else if (el.id === 'w-pax') wf.land.pax = Math.max(1, +el.value || 1);
   else if (el.id === 'w-note') wf.land.note = el.value;
   else if (el.id === 'w-hnote') wf.hotelNote = el.value;
@@ -2285,14 +2294,18 @@ function siteCost() {
   const c = current.cost; if (!c) return null;
   const common = c.common.map(x => ({ ...x }));
   // guide meals: added here when the request was priced before the rule existed
-  if (CONFIG.guideMeal && !common.some(x => /^가이드 식대/.test(x.item || ''))) {
-    const g = CONFIG.guides || 1, ds = (current.itinerary || []).filter(d => (d.kind === 'tour' || (d.adds || []).length) && (d.meals || []).length), gm = ds.reduce((a, d) => a + d.meals.length, 0);
-    if (gm) common.push({ item: `가이드 식대 ${gm * g}회`, detail: `가이드 ${g}명 × 식사 ${gm}회 (${ds.map(d => 'D' + d.day).join(', ')}) · 자동 추가`, unit: CONFIG.guideMeal, qty: gm * g });
+  // the rate may not be applied to CONFIG yet when the request first opens: fall back to the saved rate, then the server default
+  const gmu = CONFIG.guideMeal || (settings && settings.rates && settings.rates.guideMeal) || (settings && settings.defaults && settings.defaults.guideMeal) || 0;
+  if (gmu && !common.some(x => /^가이드 식대/.test(x.item || ''))) {
+    const g = CONFIG.guides || 1, ds = (current.itinerary || []).filter(d => d.kind === 'tour' || (d.adds || []).length);
+    if (ds.length) common.push({ item: `가이드 식대 ${ds.length * g}회`, detail: `가이드 ${g}명 × 가이드 투어 ${ds.length}일 (${ds.map(d => 'D' + d.day).join(', ')}) · 자동 추가`, unit: gmu, qty: ds.length * g });
   }
   return { basePax: c.basePax, fx: c.fx, margin: c.parts.margin, roundTo: c.roundTo, foc: c.foc || 0, paying: c.pax,
     common, personal: c.personal.map(x => ({ ...x })), supp: c.supp.map(x => ({ ...x })), editedAt: '' };
 }
 const costModel = () => wf.cost || siteCost();
+// the site price as the server would work it out now (same engine and rates as the server; the price saved on the request may predate a rate change)
+function sitePrice() { try { if (typeof bFrom !== 'undefined' && bFrom && current && bFrom === current.id && bRatesOK) return quoteFor(builtDays(), bSel).perPerson; } catch (_) {} return current && current.price ? current.price.perPerson : 0; }
 function costCalc(m) {
   const commonKRW = m.common.reduce((a, x) => a + (+x.unit || 0) * (+x.qty || 0), 0), personalKRW = m.personal.reduce((a, x) => a + (+x.unit || 0), 0), suppUSD = m.supp.reduce((a, x) => a + (+x.usd || 0), 0);
   const pax = Math.max(1, +m.basePax || 1), fx = +m.fx || 1250;
@@ -2338,8 +2351,8 @@ function costBlock() {
     </table>
     <div class="acts">
       <button class="btn" id="c-apply">계산가를 지상비에 반영</button>
-      ${wf.cost && site ? '<button class="btn ghost" id="c-reset">사이트 원가로 되돌리기</button>' : ''}
-      <span class="hint">${site ? `사이트 계산가 ${money(site.perPerson)}` : ''} · 수정한 원가표는 저장 버튼을 눌러야 유지됨</span>
+      ${site ? `<button class="btn ghost" id="c-reset" title="사이트 원가로 되돌리기 (두 번 누르기)"${wf.cost ? '' : ' hidden'}>RESET</button>` : ''}
+      <span class="hint">${site ? `사이트 계산가 ${money(site.perPerson)}` : ''} · 원가표를 고치면 Land Fee에 바로 반영 · 저장 버튼을 눌러야 유지됨</span>
     </div></details>
     <div class="hint" style="margin:4px 0 8px">입력한 지상비 기준 마진: <b id="w-margin">${marginText()}</b></div>`;
 }
@@ -2355,23 +2368,30 @@ function refreshCost() {
   set('c-ctot', krw(k.commonKRW)); set('c-cpp', usd1(k.parts.common) + ' /인'); set('c-ptot', krw(k.personalKRW)); set('c-ppp', usd1(k.parts.personal) + ' /인');
   set('c-stot', usd1(k.suppUSD)); set('c-spp', usd1(k.parts.supp) + ' /인'); set('c-net', usd1(k.net) + ' /인'); set('c-mg', usd1(k.parts.margin) + ' /인');
   set('c-raw', usd1(k.raw)); set('c-pp', money(k.perPerson)); set('w-margin', marginText());
+  if ($('c-reset')) $('c-reset').hidden = !wf.cost; // shows as soon as the sheet is edited
 }
 $('wf').addEventListener('input', e => {
   const el = e.target;
   if (el.id === 'c-pax' || el.id === 'c-fx' || el.id === 'c-margin') { const m = editCost(); m[{ 'c-pax': 'basePax', 'c-fx': 'fx', 'c-margin': 'margin' }[el.id]] = +el.value || 0; }
   else if (el.dataset.cs) { const m = editCost(), f = el.dataset.cf; m[el.dataset.cs][+el.dataset.ci][f] = ['item', 'detail'].includes(f) ? el.value : +el.value || 0; }
   else return;
-  refreshCost(); $('w-saved').textContent = '저장 안 됨';
+  refreshCost(); costToLand(); $('w-saved').textContent = '저장 안 됨';
 });
+// an edit to the cost sheet goes straight into the land fee (the land fee box can still be typed over afterwards)
+function costToLand() { const m = costModel(); if (!m) return; wf.land.perPerson = costCalc(m).perPerson; wf.land.manual = true; landChanged(); if ($('w-pp')) $('w-pp').value = wf.land.perPerson; updateSums(); }
 $('wf').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.id === 'c-new') { editCost(); costOpen = true; drawWorkflow(); }
-  if (b.dataset.cadd) { const m = editCost(), s = b.dataset.cadd; m[s].push(s === 'common' ? { item: '', detail: '', unit: 0, qty: 1 } : s === 'personal' ? { day: 0, item: '', unit: 0 } : { day: 0, item: '', usd: 0 }); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; }
-  if (b.dataset.cdel) { const [s, i] = b.dataset.cdel.split(':'); editCost()[s].splice(+i, 1); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; }
-  if (b.id === 'c-apply') { wf.land.perPerson = costCalc(costModel()).perPerson; drawWorkflow(); $('w-saved').textContent = '지상비 반영 완료 · 저장 안 됨'; }
+  if (b.dataset.cadd) { const m = editCost(), s = b.dataset.cadd; m[s].push(s === 'common' ? { item: '', detail: '', unit: 0, qty: 1 } : s === 'personal' ? { day: 0, item: '', unit: 0 } : { day: 0, item: '', usd: 0 }); wf.land.perPerson = costCalc(m).perPerson; wf.land.manual = true; landChanged(); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; }
+  if (b.dataset.cdel) { const [s, i] = b.dataset.cdel.split(':'); const m = editCost(); m[s].splice(+i, 1); wf.land.perPerson = costCalc(m).perPerson; wf.land.manual = true; landChanged(); drawWorkflow(); $('w-saved').textContent = '저장 안 됨'; }
+  if (b.id === 'c-apply') { wf.land.perPerson = costCalc(costModel()).perPerson; wf.land.manual = true; landChanged(); drawWorkflow(); $('w-saved').textContent = '지상비 반영 완료 · 저장 안 됨'; }
   if (b.id === 'c-reset') {
     if (Date.now() - costResetArmed > 4000) { costResetArmed = Date.now(); b.textContent = '한 번 더 누르면 수정 내용 삭제'; return; }
-    wf.cost = null; drawWorkflow(); $('w-saved').textContent = '저장 안 됨';
+    wf.cost = null; wf.land.manual = false; wf.land.perPerson = sitePrice(); landChanged(); drawWorkflow(); $('w-saved').textContent = '저장 안 됨';
+  }
+  if (b.id === 'w-land-site') {
+    // back to the site price: the buyer quote is priced by the server again
+    wf.land.manual = false; wf.land.perPerson = sitePrice(); landChanged(); drawWorkflow(); $('w-saved').textContent = '사이트 계산가로 되돌림 · 저장 안 됨';
   }
 });
 $('wf').addEventListener('toggle', e => { if (e.target.id === 'w-cost') costOpen = e.target.open; }, true);
@@ -2409,7 +2429,7 @@ function drawRates() {
   const nChg = Object.keys(rDraft.sights || {}).length;
   $('rates').innerHTML = `
   <div class="card"><h3>기본</h3><div class="sub">환율과 생수·티슈 (1인·1투어일 기준, 가이드 포함 인원)</div>
-    <div class="rgrid"><label>환율 (₩/US$)${rIn(['fx'], '')}</label><label>생수 1병${rIn(['water'])}</label><label>티슈${rIn(['tissue'])}</label><label>가이드 식대 1회 (가이드 1명, 손님 식사가 있는 투어일·이동일 관광)${rIn(['guideMeal'])}</label><label>이동일 관광 (종일 대비 비율, 1 = 종일과 동일)${rIn(['halfDay'], '')}</label></div></div>
+    <div class="rgrid"><label>환율 (₩/US$)${rIn(['fx'], '')}</label><label>생수 1병${rIn(['water'])}</label><label>티슈${rIn(['tissue'])}</label><label>가이드 식대 (가이드 1명 · 가이드 투어 1일)${rIn(['guideMeal'])}</label><label>이동일 관광 (종일 대비 비율, 1 = 종일과 동일)${rIn(['halfDay'], '')}</label></div></div>
   <div class="card"><h3>차량 · 가이드 · 짐차</h3><div class="sub">원화. 픽업·샌딩은 편도 1회, 투어는 1일. 스타리아 투어일은 드라이빙가이드라 가이드비 없음. 짐차는 1회 (도착·출국 2회)</div>
     <table><tr><th>차량</th><th>픽업·샌딩 1회</th><th>투어 1일</th></tr>
     ${Object.keys(D.vehicles).map(v => `<tr><td>${VEH_KO[v] || v}</td><td><label>${rIn(['vehicles', v, 'transfer'])}</label></td><td><label>${rIn(['vehicles', v, 'day'])}</label></td></tr>`).join('')}</table>
@@ -2596,7 +2616,9 @@ function qdShow(snap) {
   ov.innerHTML = `<div class="qd-bar">${ko ? '<span class="hint" style="color:#b3261e">호텔 이름이 한글입니다. 바이어용은 영문 이름으로 고쳐 주세요 · </span>' : ''}${snap.draft ? '<span class="hint">미리보기 · 아직 바이어에게 보내지 않음</span>' : `<span class="hint">${esc(snap.ref || '')} · ${fmtT(snap.sentAt)} 보냄${snap.by ? ' · ' + esc(snap.by) : ''}</span>`}<span class="sp"></span><button class="btn ghost sm" data-qdclose="1">닫기</button><span class="hint" id="qd-msg"></span><button class="btn ghost sm" data-qdprint="1">인쇄</button><button class="btn sm" data-qdpdf="1">PDF 다운로드</button></div>${quoteDoc(snap)}`; qdSnap = snap;
   ov.hidden = false; document.body.classList.add('qd-on'); ov.scrollTop = 0;
 }
-async function bEnsureSaved() { if (bFrom) await bSaveToRequest(); else await bSaveNew(); return bFrom; }
+async function bEnsureSaved() { if (bFrom) await bSaveToRequest(); else await bSaveNew(); await wfEnsureSaved(); return bFrom; }
+// unsaved changes on the request's work tabs (land fee, cost sheet, hotels) are saved first, so the buyer gets what staff see
+async function wfEnsureSaved() { if (typeof wf !== 'undefined' && wf && current && $('w-saved') && /저장 안 됨/.test($('w-saved').textContent)) await saveWorkflow(null); }
 // one buyer document, three versions: tour (land + hotel), land fee only, hotel fee only
 function qdMode(s, mode) {
   s = JSON.parse(JSON.stringify(s)); const p = s.price || (s.price = {}), n = p.pax || 1;
@@ -2671,7 +2693,7 @@ function bSetStay(s, h) { for (let k = s.from; k <= s.to; k++) bHotels[k] = h ? 
 const bStayStar = {};
 const bReqStar = () => { const m = String(((bFromReq && bFromReq.hotel) || [])[0] || '').match(/[345]/); return m ? m[0] : ''; };
 const bStayStarOf = (s, si) => { const h = bStayHotel(s); return h && h.st !== undefined ? h.st : bStayStar[si] !== undefined ? bStayStar[si] : (h && h.star ? String(h.star) : bReqStar()); };
-const bReqRooms = () => { const r = ((bFromReq && bFromReq.rooms) || []).filter(x => x.qty > 0); return r.length > 1 ? r.map(x => ({ type: x.type, qty: x.qty, net: 0 })) : [{ type: (r[0] || {}).type || 'TWN', qty: Math.max(1, Math.ceil(bHeads() / capOf((r[0] || {}).type || 'TWN'))), net: 0 }]; };
+const bReqRooms = () => { const r = ((bFromReq && bFromReq.rooms) || []).filter(x => x.qty > 0); return r.length > 1 ? r.map(x => ({ type: x.type, qty: x.qty, net: 0 })) : r.length ? [{ type: r[0].type, qty: Math.max(1, Math.ceil(bHeads() / capOf(r[0].type))), net: 0 }] : roomsByHeads(bSel.pax, bSel.foc).map(x => ({ ...x, net: 0 })); };
 function bStayHotelHTML(s, si) {
   const h = bStayHotel(s), n = s.to - s.from + 1, date = bNightDate(s.from);
   const est = h && h.name && date ? hotelRateEstimate(s.city, h.star || bStarOf(h.name), date, addDays(date, n)) : null;
@@ -2833,10 +2855,12 @@ function bPrice(days) {
   // the menu's tour builder gets the same header + tab bar as a request's work screen (title on top, summary beside the tab)
   bHeadHTML = wkFromReq ? '' : `<div class="wk-head dtop bk-head"><div class="wk-id">${bFrom ? `<div class="wk-t">${esc(bTitle || bFrom)}</div>` : `<input id="b-title" class="bk-title" placeholder="투어 이름" title="기본 정보로 자동 지정 · 직접 고치면 그 이름으로 저장 (지우면 자동 이름으로 돌아감)" value="${esc(bTitle || bAutoTitle())}">`}</div></div>
     <nav class="wk-tabs bk-tabs"><button type="button" class="on">Itinerary</button><div class="wk-sum"><h2 class="bq-t">${routeTxt}</h2>${chips}</div></nav>`;
+  // the land fee staff set on the request (Hotel tab) is what the buyer gets; otherwise the price worked out here
+  const lpStaff = wkFromReq && typeof wf !== 'undefined' && wf && wf.land && wf.land.manual && current && bFrom === current.id, lp = lpStaff ? +wf.land.perPerson : q.perPerson;
   return `<div class="card bquote nol">
     <div class="bq-r">
-      ${bSvc.on.itin ? `<div class="bq-k">Tour Fee <small>/ pax · Land + Hotel</small></div><div class="bq-p">${money(q.perPerson + hp)}</div><div class="bq-s">Total ${money(q.total + ht)}</div>
-      <div class="bq-split"><span>Land <b>${money(q.perPerson)}</b></span>${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(hp) : '<i>미입력</i>'}</b></span>` : '<span>Hotel <b>제외</b></span>'}</div>`
+      ${bSvc.on.itin ? `<div class="bq-k">Tour Fee <small>/ pax · Land + Hotel</small></div><div class="bq-p">${money(lp + hp)}</div><div class="bq-s">Total ${money(lp * q.pax + ht)}</div>
+      <div class="bq-split"><span>Land <b>${money(lp)}</b>${lpStaff ? ' <i title="Hotel 탭 Land Fee에서 직원이 정한 금액 · 바이어에게 보내는 견적도 이 금액">직원 지정</i>' : ''}</span>${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(hp) : '<i>미입력</i>'}</b></span>` : '<span>Hotel <b>제외</b></span>'}</div>`
       : `<div class="bq-k">Total Fee <small>/ pax · ${SVC_LBL.filter(([k]) => bSvc.on[k]).map(([, l]) => l).join(' + ')}</small></div><div class="bq-p">${money((sq ? sq.perPerson : 0) + hp)}</div><div class="bq-s">Total ${money((sq ? sq.total : 0) + ht)}</div>
       <div class="bq-split">${bSvc.on.hotel ? `<span>Hotel <b>${hq ? money(ht) : '<i>미입력</i>'}</b></span>` : ''}${['veh', 'guide', 'flight'].filter(k => bSvc.on[k]).map(k => `<span>${Object.fromEntries(SVC_LBL)[k]} <b>${money(sq ? sq.lines.filter(l => l.type === k).reduce((a, l) => a + l.amount, 0) : 0)}</b></span>`).join('')}</div>`}</div>
     <div class="bq-a"><button class="btn" data-bsavemain="1" title="${bFrom ? '이 요청에 저장' : '내 투어로 저장'}">Save</button>${!bSvc.on.itin ? '<button class="btn ghost" data-bpdfm="tour" title="바이어용 견적서 미리보기 · PDF로 저장">PDF</button>' : ''}<span class="bpdf-w"${bSvc.on.itin ? '' : ' hidden'}><button class="btn ghost" data-bpdf="1" title="바이어용 견적서 미리보기 · PDF로 저장">PDF ▾</button><span class="bpdf-m" id="bpdf-m" hidden><button type="button" data-bpdfm="tour">Tour Fee <small>Land + Hotel</small></button><button type="button" data-bpdfm="land">Land Fee only</button><button type="button" data-bpdfm="hotel"${bHotelQuote(days) ? '' : ' disabled title="호텔 요금을 먼저 넣어 주세요"'}>Hotel Fee only</button></span></span>${bFrom && bFromReq && bFromReq.buyer ? `<button class="btn ghost" data-bsend="1">바이어에게 보내기${(bFromReq.quotes || []).length ? ` (Q${bFromReq.quotes.length + 1})` : ''}</button>` : ''}<button class="btn ghost" id="b-copy" title="일정·가격을 영문 텍스트로 복사">Copy</button><span class="saved" id="b-msg">${bFrom && bFromReq && bFromReq.builder ? `마지막 저장 ${fmtT(bFromReq.builder.savedAt)}` : ''}</span></div>
@@ -3683,6 +3707,7 @@ if (key) load();
     const note = prompt(`${who(r)} 계정의 My quotation으로 견적을 보냅니다.\n지금 저장된 일정·호텔·금액이 그대로 올라갑니다.\n\n바이어에게 남길 메모 (선택):`, ''); if (note === null) return;
     const t = b.textContent; b.disabled = true; b.textContent = '보내는 중…';
     try {
+      await wfEnsureSaved();
       const d = await api('/api/admin/send?id=' + encodeURIComponent(r.id), { method: 'POST', body: JSON.stringify({ note }) });
       if (stOf(r) === 'new' || stOf(r) === 'land') { const ns = r.hotelQuote && d.quote && d.quote.price && d.quote.price.hotelPerPerson ? 'hotel' : 'land'; try { await api('/api/admin/status?id=' + encodeURIComponent(r.id), { method: 'POST', body: JSON.stringify({ status: ns }) }); const row = rows.find(x => x.id === r.id); if (row) row.status = ns; } catch {} }
       { const row = rows.find(x => x.id === r.id); if (row) row.quoteCount = ((r.quotes || []).length) + 1; }
