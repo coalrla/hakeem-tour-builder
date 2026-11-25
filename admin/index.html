@@ -1613,22 +1613,39 @@ function wkSetMode(m) {
 $('wk-edit').onclick = () => wkSetMode('edit');
 $('wk-toview').onclick = () => wkSetMode('view');
 // mail drafts: try the mail app, and always show the draft in the page (mailto is blocked in some frames)
-function openMail(u) {
-  try { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); } catch (_) {}
+function openMail(u, kind = 'other') {
+  // draft box: check or edit, then send from contact@hakeemtravel.com (server, NAVER WORKS) or copy / open the mail app
   const x = new URL(u), q = x.searchParams, to = decodeURIComponent(x.pathname || ''), cc = q.get('cc') || '', subj = q.get('subject') || '', body = q.get('body') || '';
   let m = $('mailbox'); if (!m) { m = document.createElement('div'); m.id = 'mailbox'; document.body.appendChild(m);
-    m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-mbx=close]')) { m.hidden = true; return; }
-      const c = e.target.closest('[data-mbc]'); if (!c) return; const v = c.dataset.mbc === 'all' ? m._all : (m.querySelector(`[data-mbv="${c.dataset.mbc}"]`) || {}).value || '';
+    const val = k => (m.querySelector(`[data-mbv="${k}"]`) || {}).value || '';
+    m.addEventListener('click', async e => { if (e.target === m || e.target.closest('[data-mbx=close]')) { m.hidden = true; return; }
+      const sb = e.target.closest('[data-mbsend]');
+      if (sb) {
+        const msg = m.querySelector('.mb-msg'), t = val('to'), s = val('subject');
+        if (!t.trim()) { msg.textContent = '받는 사람을 넣어 주세요.'; return; }
+        if (!confirm(`contact@hakeemtravel.com에서 바로 보냅니다.\n\n받는 사람: ${t}\n참조: ${val('cc') || '-'}\n제목: ${s}`)) return;
+        sb.disabled = true; sb.textContent = '보내는 중…'; msg.textContent = '';
+        try {
+          const d = await api('/api/admin/mail?id=' + encodeURIComponent(m._id), { method: 'POST', body: JSON.stringify({ to: t, cc: val('cc'), subject: s, body: val('body'), kind: m._kind }) });
+          if (current && current.id === m._id) current.mails = d.mails;
+          sb.textContent = '보냄 ✓'; msg.style.color = '#0c6b60'; msg.textContent = `${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 발송 완료 · 요청 기록에 남김`;
+          if (typeof m._sent === 'function') m._sent();
+          setTimeout(() => { m.hidden = true; }, 1500);
+        } catch (err) { sb.disabled = false; sb.textContent = '보내기'; msg.style.color = '#b42318'; msg.textContent = err.message || '보내지 못했습니다.'; }
+        return;
+      }
+      const c = e.target.closest('[data-mbc]'); if (!c) return; const v = c.dataset.mbc === 'all' ? [`받는 사람: ${val('to') || '-'}`, `참조: ${val('cc') || '-'}`, `제목: ${val('subject')}`, '', val('body')].join('\n') : val(c.dataset.mbc);
       const done = ok => { const t = c.textContent; c.textContent = ok ? '복사됨 ✓' : '복사 실패'; setTimeout(() => { c.textContent = t; }, 1400); };
       const legacy = () => { const ta = document.createElement('textarea'); ta.value = v; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); done(ok); };
       (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => done(true), legacy); }); }
-  m._all = [`받는 사람: ${to || '-'}`, `참조: ${cc || '-'}`, `제목: ${subj}`, '', body].join('\n');
-  const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" readonly value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
-  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">메일 앱이 열리지 않으면 아래 내용을 복사해 보내세요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
+  m._id = current ? current.id : ''; m._kind = kind; m._sent = null;
+  const f = (k, l, v) => `<label class="mb-f"><span>${l}</span><input data-mbv="${k}" value="${esc(v)}"><button type="button" class="btn ghost sm" data-mbc="${k}">복사</button></label>`;
+  m.innerHTML = `<div class="mb-card" role="dialog" aria-label="메일 초안"><div class="mb-h"><b>메일 초안</b><span class="hint">내용을 확인·수정하고 보내기를 누르면 contact@hakeemtravel.com에서 바로 발송돼요. 첨부파일은 넣을 수 없어요.</span><button type="button" class="btn ghost sm" data-mbx="close">닫기</button></div>
     ${f('to', '받는 사람', to)}${f('cc', '참조', cc)}${f('subject', '제목', subj)}
-    <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" readonly rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
-    <div class="mb-a"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button></div></div>`;
+    <label class="mb-f mb-b"><span>본문</span><textarea data-mbv="body" rows="12">${esc(body)}</textarea><button type="button" class="btn ghost sm" data-mbc="body">복사</button></label>
+    <div class="mb-a"><span class="mb-msg hint" style="flex:1;align-self:center"></span><a class="btn ghost" href="${esc(u)}" target="_blank" rel="noopener">메일 앱으로 열기</a><button type="button" class="btn ghost" data-mbc="all">전체 복사</button>${m._id ? '<button type="button" class="btn" data-mbsend="1">보내기</button>' : ''}</div></div>`;
   m.hidden = false;
+  return m;
 }
 function wkMeta(r, live) {
   const o = { ...(r.options || {}), ...(live ? { pax: live.pax, foc: live.foc } : {}) }, tr = { ...(r.trip || {}), ...(live ? { nights: live.n, days: live.n + 1, arrival: live.arrival || (r.trip || {}).arrival } : {}) };
@@ -2013,7 +2030,7 @@ $('wf').addEventListener('change', e => { if (e.target.matches('select, input[ty
 $('wf').addEventListener('click', e => {
   const b = e.target.closest('button, a'); if (!b) return;
   if (b.dataset.hest !== undefined) { e.preventDefault(); const h = wf.hotels[+b.closest('tr').dataset.i]; h.rooms.forEach(r => { r.quote = +b.dataset.hest; }); h.tax = 'incl'; recalcHotel(h); drawWorkflow(); $('w-saved').textContent = '기준 요금 입력 · 저장 안 됨'; return; }
-  if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; openMail(hotelMail(h)); drawWorkflow(); return; }
+  if (b.dataset.ask !== undefined) { e.preventDefault(); const h = wf.hotels[+b.dataset.ask]; if (h.status === 'todo') h.status = 'asked'; openMail(hotelMail(h), 'hotel'); drawWorkflow(); return; }
   if (b.dataset.askcopy !== undefined) {
     // copy the same inquiry mail as text (to / cc / subject / body) for pasting into any mail app
     e.preventDefault(); const h = wf.hotels[+b.dataset.askcopy], u = new URL(hotelMail(h)), q = u.searchParams;
@@ -2030,8 +2047,8 @@ $('wf').addEventListener('click', e => {
   if (b.id === 'w-hadd') { const s = stays(current)[0] || {}; wf.hotels.push({ city: s.city || 'seoul', star: (String((current.hotel || [])[0] || '').match(/[345]/) || [''])[0], name: '', manager: '', email: '', checkIn: s.checkIn || '', checkOut: s.checkOut || '', rooms: reqRooms(current), breakfast: true, tax: 'incl', bfm: 'incl', bfp: 0, bft: 'same', status: 'todo', offer: true }); drawWorkflow(); return; }
   if (b.id === 'w-qpdf') return quotationPDF(false);
   if (b.id === 'w-hpdf') return quotationPDF(true);
-  if (b.id === 'w-qmail') { b.href = buyerMail(false); return; }
-  if (b.id === 'w-hmail') { b.href = buyerMail(true); return; }
+  if (b.id === 'w-qmail') { e.preventDefault(); openMail(buyerMail(false), 'quote'); return; }
+  if (b.id === 'w-hmail') { e.preventDefault(); openMail(buyerMail(true), 'quote'); return; }
   if (b.id === 'w-save') return saveWorkflow(null).catch(err => { $('w-saved').textContent = KERR(err); });
   if ((b.id === 'w-qsent' && wf.land.sentAt) || (b.id === 'w-hsent' && wf.hotelSentAt)) {
     // undo a "sent" mark: second click within 4 seconds; the status steps back only if this step had set it
@@ -3182,7 +3199,7 @@ bOn('click', e => {
   if (d.bhadd) { const s = bS(d.bhadd), h = bStayHotel(s); h.rooms.push({ type: 'SGL', qty: 1, net: 0 }); bSetStay(s, h); drawBuilder(); }
   if (d.bhx) { const [si, j] = d.bhx.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.splice(+j, 1); bSetStay(s, h); drawBuilder(); }
   if (d.bhest) { const [si, v] = d.bhest.split('|'), s = bS(si), h = bStayHotel(s); h.rooms.forEach(x => { if (!x.net) x.net = +v; }); bSetStay(s, h); drawBuilder(); }
-  if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) openMail(u); return; }
+  if (d.bhmail) { const u = bHotelMail(bStays(bLast)[+d.bhmail]); if (u) openMail(u, 'hotel'); return; }
   if (d.bpdf) { const m = $('bpdf-m'); if (m) m.hidden = !m.hidden; return; }
   if (d.bsvc) { const k = d.bsvc; bSvc.on[k] = !bSvc.on[k]; if (k === 'itin' && bSvc.on.itin) { bSvc.on.veh = bSvc.on.guide = bSvc.on.flight = false; if (bSel.noCity) { bSel.noCity = false; bSel.seoul = true; } }
     if (!SVC_LBL.some(([x]) => bSvc.on[x])) bSvc.on.hotel = true; drawBuilder(); return; }
@@ -3461,7 +3478,7 @@ $('wfinv').addEventListener('click', e => {
   if (b.id === 'i-issue') { e.preventDefault(); b.disabled = true; return issueInvoice(false).catch(err); }
   if (!v) return;
   if (b.id === 'i-pdf') return invoicePDF();
-  if (b.id === 'i-mail') { b.href = invoiceMail(v); return; }
+  if (b.id === 'i-mail') { e.preventDefault(); openMail(invoiceMail(v), 'invoice'); return; }
   if (b.id === 'i-save') return saveWorkflow(null, '인보이스 저장 완료').then(() => { $('i-msg').textContent = '저장 완료'; }).catch(err);
   if (b.id === 'i-sent') { if (v.sentAt && !invArm(b, 'sent', '한 번 더 누르면 취소')) return; v.sentAt = v.sentAt ? '' : new Date().toISOString(); return saveWorkflow(null).then(() => { $('i-msg').textContent = v.sentAt ? '인보이스 발송 기록 완료' : '발송 완료 취소됨'; }).catch(err); }
   if (b.id === 'i-rev') { if (!invArm(b, 'rev', `한 번 더 누르면 R${(v.rev || 0) + 1} 발행 (발행일 오늘로)`)) return; v.rev = (v.rev || 0) + 1; v.date = todayISO(); v.sentAt = ''; return saveWorkflow(null).then(() => { $('i-msg').textContent = `수정본 R${v.rev} 발행 · PDF 다시 저장 후 발송`; }).catch(err); }
