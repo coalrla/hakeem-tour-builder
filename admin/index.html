@@ -676,7 +676,6 @@ header h1 { font-family: var(--font-display) !important; font-weight: 400 !impor
       <button class="btn ghost" id="wk-toview" hidden>보낸 그대로 보기</button>
       <button class="btn" id="wk-edit">수정하기</button>
       <button class="btn ghost rdel" id="wk-del" hidden>삭제</button>
-      <button class="btn ghost" id="wk-tour" hidden>투어 수정</button>
     </div>
     <div id="wk-sent"></div>
     <div id="wk-todo"></div>
@@ -1590,18 +1589,13 @@ function wkSetMode(m) {
   if (m === 'view' && r.source === 'staff') m = 'edit'; // our own tours have no 'as sent' page
   wkMode = m; $('detail').dataset.mode = m;
   $('wk-edit').hidden = m === 'edit';
-  { const row = rows.find(x => x.id === r.id) || {}; $('wk-del').hidden = !canDel({ ...row, ...r, workflow: r.workflow, quotes: r.quotes }); $('wk-del').textContent = '삭제'; $('wk-del').classList.remove('armed'); } $('wk-toview').hidden = m === 'view' || r.source === 'staff'; $('wk-tour').hidden = !USE_STAFF_TOUR || !r.builderSel;
+  { const row = rows.find(x => x.id === r.id) || {}; $('wk-del').hidden = !canDel({ ...row, ...r, workflow: r.workflow, quotes: r.quotes }); $('wk-del').textContent = '삭제'; $('wk-del').classList.remove('armed'); } $('wk-toview').hidden = m === 'view' || r.source === 'staff';
   $('wk-sent').innerHTML = m === 'view' ? sentDoc(r) : '';
   $('wk-todo').innerHTML = m === 'edit' && r.source !== 'staff' ? todoStrip(r) : '';
   if (m === 'edit') wkTab(wkCur === 'req' ? 'trip' : wkCur); else { $('builder').hidden = true; }
   window.scrollTo(0, 0);
 }
 $('wk-edit').onclick = () => wkSetMode('edit');
-// tour editing lives on its own page (the buyer page's builder with staff tools): admin/tour.html?id=
-// switch for the separate staff tour builder (admin/tour.html). Off until that page is finished: the admin page works as before.
-const USE_STAFF_TOUR = false;
-function goTour(id) { location.href = 'tour.html' + (id ? '?id=' + encodeURIComponent(id) : ''); }
-$('wk-tour').onclick = () => goTour(current && current.id);
 $('wk-toview').onclick = () => wkSetMode('view');
 // mail drafts: try the mail app, and always show the draft in the page (mailto is blocked in some frames)
 function openMail(u) {
@@ -1627,7 +1621,7 @@ function wkMeta(r, live) {
   $('wk-meta').innerHTML = [esc(r.id), r.buyer ? esc(r.buyer.code) : '', o.pax ? `${o.pax}명${o.foc ? ` + FOC ${o.foc}` : ''}` : '', tr.nights ? `${tr.nights}박 ${tr.days}일` : '', tr.arrival ? `${fmt(tr.arrival)} 도착` : '도착일 미정', r.source === 'staff' ? '직원 작성' : r.revisionOf ? `재요청 (이전 ${esc(r.revisionOf)})` : ''].filter(Boolean).join(' · ');
 }
 function wkTab(k) {
-  if (k === 'trip' && (USE_STAFF_TOUR || !(current && current.builderSel))) k = 'hotel';
+  if (k === 'trip' && !(current && current.builderSel)) k = 'hotel';
   wkCur = k; $('detail').dataset.wk = k;
   document.querySelectorAll('#wk-tabs button').forEach(b => b.classList.toggle('on', b.dataset.wk === k));
   $('builder').hidden = k !== 'trip';
@@ -1638,15 +1632,15 @@ function wkTab(k) {
 async function wkEnter(r) {
   wkMeta(r);
 
-  document.querySelector('#wk-tabs [data-wk=trip]').hidden = USE_STAFF_TOUR || !r.builderSel;
-  if (!USE_STAFF_TOUR && r.builderSel) {
+  document.querySelector('#wk-tabs [data-wk=trip]').hidden = !r.builderSel;
+  if (r.builderSel) {
     if (!settings || !settings.defaults || !settings.defaults.vehicles) { try { settings = await api('/api/admin/settings'); } catch {} }
     bSel = { ...bNew(), ...JSON.parse(JSON.stringify(r.builderSel)) }; bEdits = JSON.parse(JSON.stringify(r.builderEdits || {})); for (const [k, o] of Object.entries(bSel.stopOrd || {})) { const e = (bEdits[k] ||= { rm: [], add: [] }); if (Array.isArray(o) && !(e.ord || []).length) e.ord = o.slice(); } /* buyer's own order of places (buyer page drag) */ bOrder = JSON.parse(JSON.stringify(r.builderOrder || {}));
     const bh = r.builderHotels || {}; bHotels = JSON.parse(JSON.stringify(bh.nights || [])); bArrival = bh.arrival || (r.trip && r.trip.arrival) || ''; bMarkup = bh.markup ?? 10; bSvc = r.builderSvc ? JSON.parse(JSON.stringify(r.builderSvc)) : SVC_DEF();
     bFold = {}; bAddOpen = {}; bTitle = ''; bNote = ''; bFrom = r.id; bFromReq = r; wkFromReq = true; bRatesOK = false;
     $('wk-trip').appendChild($('builder')); drawBuilder();
   }
-  wkCur = !USE_STAFF_TOUR && r.builderSel ? 'trip' : 'hotel'; wkTab(wkCur); wkSetMode('view');
+  wkCur = r.builderSel ? 'trip' : 'hotel'; wkTab(wkCur); wkSetMode('view');
 }
 // leaving the request: the builder goes back to its own tab (a blank tour when opened from the menu)
 function wkLeave(toBuilder) {
@@ -3568,7 +3562,7 @@ $('buyers').addEventListener('click', async e => {
   try { BUY = await api('/api/admin/buyers', { method: 'POST', body: JSON.stringify(body) }); buyDirty = {}; compDirty = {}; drawBuyers(); $('by-msg').textContent = '저장 완료 · 사이트에 바로 적용'; }
   catch (err) { $('by-msg').textContent = KERR(err); }
 });
-document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => b.dataset.tab === 'builder' && USE_STAFF_TOUR ? goTour('') : showTab(b.dataset.tab));
+document.querySelectorAll('#tabs .tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 $('go').onclick = () => { key = $('pw').value; load(); };
 // staff sign-in: email + 6-digit PIN; sign-up and new PIN need a code sent to the @hakeemtravel.com address
 const lgMsg = (t, ok) => { $('err').textContent = t; $('err').className = 'err' + (ok ? ' ok' : ''); };
