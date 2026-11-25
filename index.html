@@ -1762,45 +1762,6 @@ document.querySelectorAll('[data-ord]').forEach(b => b.addEventListener('click',
   [o[i], o[j]] = [o[j], o[i]]; syncButtons(); render();
   const nb = document.querySelector(`[data-ord="${b.dataset.ord}"][data-d="${b.dataset.d}"]`); if (nb && !nb.disabled) nb.focus();
 }));
-document.getElementById('addons').addEventListener('change', e => { const id = e.target.dataset.addon; if (!id) return; e.target.checked ? addonPick.add(id) : addonPick.delete(id); sel.addons = [...addonPick]; updateRequest(); });
-// ---- English calendar for the arrival date (the browser's own date picker follows the visitor's language)
-(function () {
-  const hidden = document.getElementById('f-dates'), show = document.getElementById('f-date-show'), dp = document.getElementById('dp');
-  const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const earliest = new Date(today); earliest.setDate(earliest.getDate() + 1); // any date from tomorrow
-  const soonEnd = new Date(today); soonEnd.setDate(soonEnd.getDate() + 7); // the next 7 days are shown in red (last-minute)
-  let view = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
-  const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  function draw() {
-    const y = view.getFullYear(), m = view.getMonth(), first = new Date(y, m, 1).getDay(), n = new Date(y, m + 1, 0).getDate();
-    const cur = arrival(), prevOK = new Date(y, m, 1) > new Date(earliest.getFullYear(), earliest.getMonth(), 1);
-    let h = `<div class="dp-h"><button type="button" data-nav="-1" aria-label="Previous month"${prevOK ? '' : ' disabled'}>‹</button><span>${MON[m]} ${y}</span><button type="button" data-nav="1" aria-label="Next month">›</button></div><div class="dp-g">`;
-    h += ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<span class="wd">${d}</span>`).join('');
-    h += '<span></span>'.repeat(first);
-    for (let d = 1; d <= n; d++) {
-      const dt = new Date(y, m, d), cls = [cur && +cur === +dt ? 'on' : '', +dt === +today ? 'today' : '', dt >= earliest && dt < soonEnd ? 'soon' : ''].filter(Boolean).join(' ');
-      h += `<button type="button" data-d="${iso(dt)}"${cls ? ` class="${cls}"` : ''}${dt < earliest ? ' disabled' : ''}>${d}</button>`;
-    }
-    dp.innerHTML = h + '</div>';
-  }
-  const open = () => { const a = arrival(); if (a) view = new Date(a.getFullYear(), a.getMonth(), 1); draw(); dp.hidden = false; };
-  show.addEventListener('click', e => { e.preventDefault(); dp.hidden ? open() : (dp.hidden = true); });
-  show.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } if (e.key === 'Escape') dp.hidden = true; });
-  dp.addEventListener('click', e => {
-    e.preventDefault(); e.stopPropagation();
-    const b = e.target.closest('button'); if (!b || b.disabled) return;
-    if (b.dataset.nav) { view = new Date(view.getFullYear(), view.getMonth() + +b.dataset.nav, 1); draw(); return; }
-    hidden.value = b.dataset.d; dp.hidden = true;
-    const a = arrival(); show.value = fmtDate(a);
-    const mo = a.getMonth(), s = mo >= 2 && mo <= 4 ? 'spring' : mo >= 5 && mo <= 7 ? 'summer' : mo >= 8 && mo <= 10 ? 'autumn' : 'winter';
-    if (s !== sel.season) { sel.season = s; syncButtons(); render(); return; } // match the season to the arrival month
-    render();
-  });
-  document.addEventListener('click', e => { if (!dp.hidden && !e.target.closest('.dp-wrap')) dp.hidden = true; });
-})();
-document.getElementById('f-diet-other-on').addEventListener('change', e => { const o = document.getElementById('f-diet-other'); o.hidden = !e.target.checked; if (e.target.checked) o.focus(); });
-document.getElementById('f-diet-other').addEventListener('input', () => updateRequest());
 // drag a city row to change the visiting order (the ▲▼ buttons stay for touch screens and keyboards)
 { const destEl = document.querySelector('.dest'); let dragCity = '';
   destEl.addEventListener('pointerdown', e => { const r = e.target.closest('.dest-row'); if (r) r.draggable = !e.target.closest('input, button, select'); });
@@ -2199,7 +2160,7 @@ ${s.note ? `<h2>Note from our team</h2><div class="qd-note">${e(s.note)}</div>` 
 let MY = null;
 (function () { const st = document.createElement('style'); st.textContent = QD_CSS + '.my-list{display:grid;gap:12px}.my-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center}.my-item h3{margin:0;font-size:1.05rem}.my-item .hint{display:block}.my-q{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.my-badge{display:inline-block;margin-left:6px;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:.72rem;line-height:18px;text-align:center}@media (max-width:620px){.my-item{grid-template-columns:1fr}.my-q{justify-content:flex-start}}'; document.head.appendChild(st); })();
 async function myLoad() {
-  if (window.HK_PREVIEW) return { items: [{ id: 'HKT-IND-DEM-GRP-27-04-001', createdAt: new Date().toISOString(), source: 'buyer', status: 'Received', trip: { nights: 6, days: 7, cities: 'Seoul, Jeju', arrival: '2027-04-10' }, pax: 12, price: 1180, quotes: [], revisionOf: '',
+  if (window.HK_PREVIEW) return { items: [{ id: 'HKT-IND-DEM-GRP-27-04-001', createdAt: new Date().toISOString(), source: 'buyer', status: 'Received', trip: { nights: 6, days: 7, cities: 'Seoul, Jeju', arrival: '2027-04-10' }, pax: 12, price: 1180, quotes: [{ no: 'Q1', ref: 'HKT-IND-DEM-GRP-27-04-001-Q1', sentAt: '2026-11-24T09:00:00Z', by: 'Hakeem Travel', title: '6N7D Korea · Seoul · Jeju', trip: { arrival: '2027-04-10', departure: '2027-04-16', nights: 6, days: 7, cities: 'Seoul 4N → Jeju 2N' }, group: { pax: 12, foc: 0, country: '' }, style: { tier: 'Regular', theme: 'classic', season: 'spring' }, vehicle: 'Coach bus · driver + English-speaking guide', hotels: [], itinerary: [{ day: 1, date: '2027-04-10', title: 'Arrival in Seoul', route: 'Incheon → Seoul', stops: ['Arrive at Incheon International Airport', 'Transfer to your hotel in Seoul'], adds: [], meals: [], extras: [] }, { day: 2, date: '2027-04-11', title: 'Royal Palace & Hanok Village', route: 'Seoul', stops: ['Gyeongbokgung Palace', 'Bukchon Hanok Village', 'Insadong Antique Alley'], adds: [], meals: ['Lunch'], extras: [] }, { day: 3, date: '2027-04-12', title: 'DMZ Peace Tour', route: 'Seoul → Paju → Seoul', stops: ['Imjingak Peace Nuri Park', 'The 3rd Infiltration Tunnel', 'Dorasan Observatory'], adds: [], meals: ['Lunch'], extras: [] }, { day: 4, date: '2027-04-13', title: 'Nami Island', route: 'Seoul → Gapyeong → Seoul', stops: ['Nami Island', 'Garden Of Morning Calm'], adds: [], meals: ['Lunch'], extras: [] }, { day: 5, date: '2027-04-14', title: 'Seoul to Jeju', route: 'Seoul → Jeju', stops: ['Flight to Jeju', 'Transfer to your hotel'], adds: [], meals: ['Lunch'], extras: [] }, { day: 6, date: '2027-04-15', title: 'Sunrise Peak & Lava Cave', route: 'Jeju', stops: ['Seongsan Sunrise Peak', 'Manjanggul Cave', 'Bijarim Forest'], adds: [], meals: ['Lunch'], extras: [] }, { day: 7, date: '2027-04-16', title: 'Departure', route: 'Jeju → Seoul → Incheon', stops: ['Flight to Seoul Gimpo', 'Transfer to Incheon International Airport'], adds: [], meals: [], extras: [] }], highlight: null, included: ['Private transport with English-speaking guide', 'Admission fees for the sights listed', 'Daily breakfast at hotel', 'Lunch as listed in the itinerary'], excluded: ['International flights, travel insurance and visas', 'Tips for guides and drivers', 'Personal expenses'], price: { landPerPerson: 1180, landWas: null, hotelPerPerson: null, totalPerPerson: 1180, total: 14160, pax: 12, foc: 0 }, buyer: null, note: 'Sample quotation (preview). Hotels will follow in the next version.' }], revisionOf: '',
     sent: { sel: { ...JSON.parse(JSON.stringify(sel)), pax: 12, seoul: true, jeju: true, busan: false, nSeoul: 4, nJeju: 2, meals: ['lunch'], country: 'IND', market: 'india', season: 'spring' }, arrival: '2027-04-10', hotel: ['4★'], rooms: [{ type: 'TWN', qty: 6 }], diet: ['Vegetarian'], dietOther: '', notes: 'Sample request (preview)', addons: [], dayRequests: {}, itinerary: [], meals: ['Lunch'] } }] };
   const r = await hkFetch('/api/my', 'POST', { auth: authOf() }), d = await r.json().catch(() => ({}));
   if (r.status === 401) throw Object.assign(new Error('Please log in again.'), { relog: true });
@@ -2222,7 +2183,7 @@ async function showMy() {
       <span class="hint">${esc(x.id)} · ${x.source === 'staff' ? 'Prepared by our team' : 'Requested ' + dt(x.createdAt)}${x.pax ? ` · ${x.pax} guests` : ''}${x.trip && x.trip.arrival ? ' · arriving ' + dt(x.trip.arrival) : ''} · <b>${esc(x.status)}</b></span>
       ${x.price && !(x.quotes || []).length ? `<span class="hint">Land fee shown when you requested: US$ ${Number(x.price).toLocaleString('en-US')} per person</span>` : ''}</div>
       ${x.sent ? `<div class="my-sent"><button type="button" class="linkbtn" data-mysent="${i}">View my request</button> · <button type="button" class="linkbtn" data-myedit="${i}">Edit and request again</button>${x.revisionOf ? ` <span class="hint">· updated from ${esc(x.revisionOf)}</span>` : ''}</div>` : ''}
-      <div class="my-q">${(x.quotes || []).length ? x.quotes.map((q, j) => `<button type="button" class="btn${j === x.quotes.length - 1 ? '' : ' ghost'}" data-myq="${i}|${j}">${esc(q.no)} · ${dt(q.sentAt)}</button>`).join('') : '<span class="hint">Our team is preparing your quotation.</span>'}</div></div>`).join('')}</div>`
+      <div class="my-q">${(x.quotes || []).length ? x.quotes.map((q, j) => `<button type="button" class="btn${j === x.quotes.length - 1 ? '' : ' ghost'}" data-myq="${i}|${j}" title="Quotation sent by Hakeem Travel${q.by ? ' (' + esc(q.by) + ')' : ''}">Quotation ${esc(q.no)} from Hakeem · ${dt(q.sentAt)}</button>`).join('') : '<span class="hint">Our team is preparing your quotation.</span>'}</div></div>`).join('')}</div>`
       : `<div class="card">No quotations yet. Build a tour and press <b>Request a quotation</b>, and it will appear here.</div>`}`;
 }
 function showMyQuote(i, j) {
