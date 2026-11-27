@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Tour Operations · Hakeem Travel Korea</title>
+<link rel="icon" href="../favicon.png">
+<style>
+@font-face { font-family: "SUIT Variable"; font-weight: 100 900; font-display: swap; src: url(../fonts/suit-latin.woff2) format("woff2-variations"); }
+@font-face { font-family: "Pretendard Variable"; font-weight: 45 920; font-display: swap; src: url(../fonts/pretendard-ko.woff2) format("woff2-variations"); }
+/* 투어 운영 체크: 상단 요약 → Confirmed 투어 목록(예약 현황 한눈에) → 선택한 투어의 운영 상세(예약·인보이스·가이드 비용).
+   데이터는 견적 요청 서버(admin과 같은 서버·같은 직원 로그인)에서 읽고 쓴다. */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --line:#dce3e1; --text:#14243b; --muted:#5f6b7a;
+  --accent:#5b3d91; --accent-soft:#efe9f8;
+  --prev:#a3b3c0; --ok:#1d7a4b; --ok-bg:#dff3e7; --warn:#a85a00; --warn-bg:#fdebd0; --bad:#b3261e; --bad-bg:#fbe0dd; --info:#2457a6; --info-bg:#dde8fa; --na:#6b7785; --na-bg:#e9edf1;
+  --font:"SUIT Variable","Pretendard Variable","Segoe UI","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12181e; --surface:#1a222b; --line:#2e3944; --text:#e6ecf1; --muted:#9aa8b6;
+    --accent:#b79cf0; --accent-soft:#2b2140;
+    --prev:#5f7383; --ok:#6fd09a; --ok-bg:#1b3a2a; --warn:#f0b05c; --warn-bg:#40300f; --bad:#ff9b92; --bad-bg:#44201d; --info:#8db4f2; --info-bg:#1d3150; --na:#93a1af; --na-bg:#25303b;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12181e; --surface:#1a222b; --line:#2e3944; --text:#e6ecf1; --muted:#9aa8b6;
+  --accent:#b79cf0; --accent-soft:#2b2140;
+  --prev:#5f7383; --ok:#6fd09a; --ok-bg:#1b3a2a; --warn:#f0b05c; --warn-bg:#40300f; --bad:#ff9b92; --bad-bg:#44201d; --info:#8db4f2; --info-bg:#1d3150; --na:#93a1af; --na-bg:#25303b;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:20px 16px 64px;display:flex;flex-direction:column;gap:16px}
+h1{font-size:22px;margin:0;text-wrap:balance}
+h2{font-size:15px;margin:0}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.top .sub{color:var(--muted);font-size:13px;margin-top:2px}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 14px;border-radius:8px;font-weight:500;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0b1a20}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0b1a20}}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:3px 10px;font-size:12.5px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#savemsg{font-size:12.5px;color:var(--muted)}
+#savemsg.err{color:var(--bad);font-weight:700}
+#gate{display:none}
+#gate .body{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.card>header{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.card .body{padding:14px}
+.note{color:var(--muted);font-size:12.5px}
+
+.dash{display:flex;flex-direction:column;gap:8px}
+.kpis{display:flex;flex-wrap:wrap;gap:4px 26px;align-items:baseline}
+.kpis .big{font-size:22px;font-weight:700}
+.kpis .lab{color:var(--muted);font-size:12.5px;display:block}
+.up{color:var(--ok);font-weight:700}
+.down{color:var(--bad);font-weight:700}
+table.mt th,table.mt td{font-size:12px;padding:2px 8px;text-align:right;white-space:nowrap}
+table.mt th:first-child,table.mt td:first-child{text-align:left;color:var(--muted);position:sticky;left:0;background:var(--surface)}
+.tt td{vertical-align:top;white-space:normal;min-width:150px}
+.tt tbody tr{cursor:pointer}
+.tt tbody tr:hover{background:var(--accent-soft)}
+.dd{font-weight:700;min-width:48px}
+.dd.soon{color:var(--bad)}
+.ln{display:flex;gap:6px;align-items:baseline;font-size:12.5px;line-height:1.55}
+.ln.done{color:var(--muted)}
+.mini{display:inline-block;flex:none;font-size:11px;font-weight:700;padding:0 7px;border-radius:999px}
+.row7{display:grid;grid-template-columns:1.6fr 1fr .9fr 1fr .6fr 1.1fr 1.1fr;gap:10px 12px}
+.row7 label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted);min-width:0}
+@media (max-width:1100px){.row7{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
+.cmp>header{padding:6px 14px}
+.cmp .kpis .big{font-size:18px;line-height:1.25}
+.cmp .kpis{gap:2px 22px;align-items:flex-end}
+.cmp h2{align-self:center}
+.cmp .kpis.ctr{flex:1;justify-content:center;align-items:center;gap:4px 28px}
+.kpis.ctr>span{text-align:center}
+.cmp .kpis.ctr .big{font-size:19.8px}
+.kpis.ctr .lab,.kpis.ctr .note{font-size:13.75px}
+.t110{font-size:16.5px}
+.kpis.one{flex-wrap:nowrap;align-items:baseline;gap:2px 16px}
+.kpi1{display:inline-flex;align-items:baseline;gap:5px;white-space:nowrap}
+.kpi1 .lab{display:inline;font-size:12px}
+table.mt tr.prev td{color:var(--muted)}
+.ul th,.ul td{padding:2px 12px}
+.ul td.r,.ul th.r{text-align:right}
+.ul tbody tr{cursor:pointer}
+.ul tbody tr:hover{background:var(--accent-soft)}
+.grp{font-size:17px;font-weight:700;margin:2px 0 0;padding-left:10px;border-left:4px solid var(--accent);line-height:1.3}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+@media (max-width:820px){.pair{grid-template-columns:minmax(0,1fr)}}
+.ct td:first-child{color:var(--text)}
+.ct td.open b{color:var(--warn)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th{font-size:12px;color:var(--muted);font-weight:500;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.lab{font-weight:500;white-space:nowrap}
+select.st.s-need{background:var(--bad-bg);color:var(--bad)}
+select.st.s-prog{background:var(--warn-bg);color:var(--warn)}
+select.st.s-done{background:var(--ok-bg);color:var(--ok)}
+select.st.s-cancel{background:var(--na-bg);color:var(--muted);text-decoration:line-through}
+select.st.s-na{background:var(--na-bg);color:var(--na)}
+#detail td[id^="hn-"],#detail td[id^="gd-"],#detail td[id^="gdays-"]{white-space:nowrap}
+.list tbody tr{cursor:pointer}
+.list tbody tr:hover{background:var(--accent-soft)}
+.list tbody tr.sel{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.list td{white-space:nowrap}
+.list .two{display:flex;flex-direction:column;line-height:1.35}
+.list .two small{color:var(--muted)}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.c-need,.s-need{background:var(--bad-bg);color:var(--bad)}
+.c-prog,.s-prog{background:var(--warn-bg);color:var(--warn)}
+.c-info,.s-info{background:var(--info-bg);color:var(--info)}
+.c-done,.s-done{background:var(--ok-bg);color:var(--ok)}
+.c-cancel,.s-cancel{background:var(--na-bg);color:var(--muted);text-decoration:line-through}
+.c-na,.s-na{background:var(--na-bg);color:var(--na)}
+
+input.f,select.f,textarea.f,select.st{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%;min-width:0}
+input.f:hover,select.f:hover,textarea.f:hover{border-color:var(--accent)}
+input.f[readonly],textarea.f[readonly]{background:var(--bg);color:var(--muted);cursor:default}
+input.f[readonly]:hover,textarea.f[readonly]:hover{border-color:var(--line)}
+input.f.num{text-align:right}
+select.st{width:auto;min-width:104px;border-radius:999px;font-weight:700;font-size:12.5px;padding:3px 8px;border-color:transparent;cursor:pointer}
+textarea.f{min-height:70px;resize:vertical}
+td input.f{min-width:90px}
+td input.f.date{min-width:132px}
+td input.f.w-sm{min-width:70px;width:84px}
+
+.dhead{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.dhead .id{font-size:12.5px;color:var(--muted)}
+.dhead .name{font-size:19px;font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.bar{width:150px;height:8px;border-radius:99px;background:var(--na-bg);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 12px}
+.grid label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted)}
+.grid label.wide{grid-column:1/-1}
+.strip{display:flex;flex-wrap:wrap;gap:8px}
+.strip span.item{display:flex;gap:6px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:13px}
+.sections{display:flex;flex-direction:column;gap:14px}
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.sumrow{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;margin-top:10px}
+.sumrow b{font-size:18px}
+.warn{color:var(--warn)}
+.bad{color:var(--bad)}
+.x{border:0;background:transparent;color:var(--muted);font-size:16px;line-height:1;padding:4px 8px;border-radius:6px}
+.x:hover{color:var(--bad);background:var(--bad-bg)}
+@media (max-width:600px){.two-col{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>투어 운영 체크</h1>
+      <div class="sub">Confirmed로 바꾼 견적 요청이 자동으로 들어옵니다. 예약 현황, 인보이스(USD·KRW), 가이드 비용 입력칸을 한 곳에서 봅니다. 입력한 내용은 서버에 자동 저장됩니다.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span id="savemsg" role="status" aria-live="polite"></span>
+      <button class="btn" id="btn-reload" type="button">새로고침</button>
+      <a class="btn primary" href="./index.html">견적 요청 admin</a>
+    </div>
+  </div>
+
+  <section class="card" id="gate">
+    <header><h2>직원 로그인이 필요합니다</h2></header>
+    <div class="body">
+      <div id="gate-msg" class="note"></div>
+      <a class="btn primary" href="./index.html">admin에서 로그인하기</a>
+      <div class="note">admin에서 로그인한 뒤 이 페이지로 돌아와 새로고침하면 같은 로그인이 그대로 쓰입니다.</div>
+    </div>
+  </section>
+
+  <section class="dash" id="dash" aria-label="대시보드"></section>
+
+  <section class="card" id="listcard">
+    <header>
+      <h2>Confirmed 투어 목록</h2>
+      <span class="note" id="listnote"></span>
+    </header>
+    <div class="scroll"><table class="list" id="list"></table></div>
+  </section>
+
+  <div id="detail" class="sections"></div>
+</div>
+
+<script>
+const ST=['해당 없음','예약 필요','예약 중','예약 완료','예약 취소'];
+const STCLS={'해당 없음':'na','예약 필요':'need','예약 중':'prog','예약 완료':'done','예약 취소':'cancel'};
+const CATS=[['vehicle','차량'],['hotels','숙소'],['ktx','KTX'],['guides','투어 가이드'],['flights','국내 항공']];
+const VTYPES=['공항 픽업','공항 드롭','서울역 픽업','서울역 드롭','부산역 픽업','부산역 드롭','서울 전일투어','부산 전일투어','제주도 전일투어','도시 간 이동','기타'];
+const SMBS='http://www.smbs.biz/ExRate/TodayExRate.jsp';
+const ST_MAP={todo:'예약 필요',req:'예약 중',ok:'예약 완료',na:'해당 없음'};  /* 수배 탭 상태 → 운영 체크 상태 (처음 가져올 때만) */
+const CITY_KO={seoul:'서울',jeju:'제주',busan:'부산'};
+
+/* ---------- 서버 연결 (admin과 같은 엔드포인트·같은 로그인) ---------- */
+const HK_API='https://www.hakeemtravel.com/_functions/hk';
+function hkFetch(path,method,body,key){
+  return fetch(HK_API,{method:'POST',headers:{'content-type':'text/plain;charset=utf-8'},body:JSON.stringify({path,method:method||'GET',key:key||'',body})});
+}
+function sessGet(){
+  try{const v=JSON.parse(localStorage.getItem('hk-admin')||'null');if(v&&v.k&&v.exp>Date.now())return v.k}catch(e){}
+  try{return sessionStorage.getItem('hk-admin')||''}catch(e){return ''}
+}
+let KEY=sessGet();
+async function api(path,opts={}){
+  const r=await hkFetch(path,opts.method||'GET',opts.body?JSON.parse(opts.body):undefined,KEY);
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw Object.assign(new Error(d.error||('Error '+r.status)),{status:r.status});
+  return d;
+}
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pd=iso=>{if(!iso)return null;const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d)};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(s,n)=>{const d=pd(s);if(!d)return '';d.setDate(d.getDate()+n);return iso(d)};
+const diff=(a,b)=>{const x=pd(a),y=pd(b);return x&&y?Math.round((y-x)/864e5):null};
+const today=()=>iso(new Date());
+const dday=s=>{const n=diff(today(),s);return n==null?'':(n===0?'D-day':n>0?'D-'+n:'D+'+(-n))};
+const md=s=>{const d=pd(s);return d?`${d.getMonth()+1}/${d.getDate()}`:''};
+const fmtUSD=n=>n==null?'—':'$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
+const fmtKRW=n=>n==null?'—':'₩'+Math.round(n).toLocaleString('ko-KR');
+const num=v=>{const n=parseFloat(v);return isNaN(n)?null:n};
+const getP=(o,p)=>p.split('.').reduce((a,k)=>a==null?a:a[k],o);
+const setP=(o,p,v)=>{const ks=p.split('.');const last=ks.pop();const t=ks.reduce((a,k)=>a[k],o);t[last]=v};
+const nd=s=>String(s||'').replace(/Seoul/g,'서울').replace(/Jeju/g,'제주').replace(/Busan/g,'부산').replace(/(\d+)N/g,'$1박');
+
+const fid=p=>'f-'+p.replace(/\./g,'-');
+const inp=(path,v,o={})=>`<input class="f ${o.cls||''}" id="${fid(path)}" data-path="${path}" ${o.num?'data-num="1"':''} ${o.ro?'readonly tabindex="-1"':''} type="${o.type||'text'}" ${o.step?`step="${o.step}"`:''} value="${esc(v)}" ${o.list?`list="${o.list}"`:''} placeholder="${esc(o.ph||'')}" aria-label="${esc(o.label||o.ph||path)}">`;
+const sel=(path,v,opts,label)=>`<select class="f" id="${fid(path)}" data-path="${path}" aria-label="${esc(label||path)}">${opts.map(s=>`<option ${s===v?'selected':''}>${esc(s)}</option>`).join('')}</select>`;
+const stSel=(path,v,label)=>`<select class="st s-${STCLS[v]}" id="${fid(path)}" data-path="${path}" data-st="1" aria-label="${esc(label||'예약 상태')}">${ST.map(s=>`<option ${s===v?'selected':''}>${s}</option>`).join('')}</select>`;
+const chip=(k,t)=>`<span class="chip c-${k}">${esc(t)}</span>`;
+
+function summarize(list){
+  const a=list.filter(x=>x.status!=='해당 없음');
+  if(!a.length)return{k:'na',txt:'해당 없음',need:0};
+  const c=s=>a.filter(x=>x.status===s).length;
+  const need=c('예약 필요'),prog=c('예약 중'),done=c('예약 완료'),canc=c('예약 취소'),live=a.length-canc;
+  if(need)return{k:'need',txt:`예약 필요 ${need}`,need};
+  if(prog)return{k:'prog',txt:`예약 중 ${prog}`,need:0};
+  if(done)return{k:'done',txt:live>1?`예약 완료 ${done}/${live}`:'예약 완료',need:0};
+  return{k:'cancel',txt:'예약 취소',need:0};
+}
+function progress(t){
+  let done=0,live=0;
+  CATS.forEach(([k])=>t[k].forEach(x=>{if(x.status==='해당 없음'||x.status==='예약 취소')return;live++;if(x.status==='예약 완료')done++}));
+  return live?Math.round(done/live*100):0;
+}
+
+/* ---------- 환율 (인보이스 발행일 기준 USD→KRW 매매기준율) ---------- */
+function rateFor(date){
+  if(!date)return null;
+  if(state.rates[date]!=null)return{rate:state.rates[date],exact:true,from:date};
+  const earlier=Object.keys(state.rates).filter(d=>d<date).sort().pop();
+  return earlier?{rate:state.rates[earlier],exact:false,from:earlier}:null;
+}
+function invTotal(t){return (t.invoice.items||[]).reduce((s,i)=>s+(num(i.usd)||0),0)}
+function invKRW(t){const r=num(t.invoice.rate);const tot=invTotal(t);return r&&tot?tot*r:null}
+function invCollect(t){
+  const tot=invTotal(t),got=num(t.invoice.collected)||0;
+  if(!tot)return{k:'na',txt:'미발행'};
+  if(got>=tot)return{k:'done',txt:'수금 완료'};
+  if(got>0)return{k:'prog',txt:'부분 수금'};
+  return{k:'need',txt:'미수금'};
+}
+
+/* ---------- 데이터: 서버의 Confirmed 요청 → 화면용 투어 ---------- */
+/* 처음 열 때(운영 체크를 저장한 적 없을 때)는 견적 요청의 수배·호텔 정보로 채우고, 한 번이라도 저장하면 저장된 값이 우선합니다. */
+function prefill(r){
+  const ops=r.ops||[],pax=r.pax,ms=s=>ST_MAP[s]||'예약 필요';
+  const vehicle=ops.filter(x=>x.cat==='vehicle').map(x=>({type:x.item||'차량',date:x.date||r.arrival||'',vendor:x.vendor||'',note:x.detail||'',status:ms(x.status)}));
+  const guides=ops.filter(x=>x.cat==='guide').map(x=>{const m=String(x.detail||'').match(/(\d+)일/),n=m?+m[1]:0;
+    return{name:x.vendor||'',city:x.item||'',from:x.date||'',to:x.date&&n?addDays(x.date,n-1):(x.date||''),status:ms(x.status),fee:'',feeDate:'',cash:'',memo:''}});
+  const tr=ops.filter(x=>x.cat==='transport');
+  const ktx=tr.filter(x=>/^KTX/i.test(x.item)).map(x=>({date:x.date||'',route:String(x.item).replace(/^KTX\s*/i,''),time:'',seats:pax?pax+'석':'',conf:x.ref||'',status:ms(x.status)}));
+  const flights=tr.filter(x=>!/^KTX/i.test(x.item)).map(x=>({date:x.date||'',route:x.item||'',flight:'',conf:x.ref||'',status:ms(x.status)}));
+  const hotels=(r.hotels||[]).map(h=>{const o=ops.find(x=>x.cat==='hotel'&&h.name&&String(x.item).includes(h.name));
+    return{city:CITY_KO[h.city]||h.city||'',hotel:h.name||'',checkin:h.checkIn||'',checkout:h.checkOut||'',conf:o?(o.ref||''):'',fc:'',status:o?ms(o.status):'예약 필요'}});
+  return{vehicle,hotels,ktx,flights,guides};
+}
+function fromRow(r){
+  const oc=r.opsCheck,pf=oc?null:prefill(r);
+  const co=r.company||'',nm=r.contact||'';
+  const inv=r.invoice,ic=oc&&oc.invoice?oc.invoice:{};
+  const items=[];
+  if(inv)items.push({desc:`Invoice ${inv.no}${inv.rev?' R'+inv.rev:''}`,usd:inv.usd,fixed:true});
+  (ic.extra||[]).forEach(x=>items.push({desc:x.desc,usd:x.usd}));
+  const t={id:r.id,agent:co||nm,contact:co?nm:'',country:r.country||'',nationality:r.market||'',pax:r.pax||'',start:r.arrival||'',end:r.departure||'',
+    program:[r.nights?`${r.nights}박 ${r.days}일`:'',nd(r.cities)].filter(Boolean).join(' · '),
+    special:[r.diet?'식사: '+r.diet:'',r.notes||''].filter(Boolean).join('\n'),
+    assignee:r.assignee||'',buyerCode:r.buyerCode||'',
+    vehicle:oc?oc.vehicle:pf.vehicle,hotels:oc?oc.hotels:pf.hotels,ktx:oc?oc.ktx:pf.ktx,flights:oc?oc.flights:pf.flights,guides:oc?oc.guides:pf.guides,
+    invoice:{no:inv?inv.no:'',date:inv?inv.date:'',rate:num(ic.rate),collected:ic.collected==null?'':ic.collected,collectedDate:ic.collectedDate||'',items},
+    settle:oc&&oc.settle?oc.settle:{status:'미작성',ref:''},
+    saved:!!oc,editedAt:oc?oc.editedAt:'',editedBy:oc?oc.editedBy:'',_row:r,_rateDate:ic.rateDate||''};
+  return t;
+}
+function toOps(t){
+  return{vehicle:t.vehicle,hotels:t.hotels,ktx:t.ktx,flights:t.flights,guides:t.guides,
+    invoice:{rate:t.invoice.rate,rateDate:t.invoice.date||'',collected:t.invoice.collected,collectedDate:t.invoice.collectedDate,
+      extra:t.invoice.items.filter(i=>!i.fixed).map(i=>({desc:i.desc,usd:i.usd}))},
+    settle:t.settle};
+}
+let state={tours:[],rates:{},sel:''};
+const cur=()=>state.tours.find(t=>t.id===state.sel);
+
+/* ---------- 자동 저장 ---------- */
+let saveTimer=null,saving=false;const dirty=new Set();
+const smsg=(t,err)=>{const e=document.getElementById('savemsg');e.textContent=t;e.className=err?'err':''};
+function persist(){
+  if(!state.sel)return;
+  dirty.add(state.sel);smsg('저장 대기 중…');
+  clearTimeout(saveTimer);saveTimer=setTimeout(flush,900);
+}
+async function flush(){
+  if(saving){saveTimer=setTimeout(flush,500);return}
+  const ids=[...dirty];dirty.clear();if(!ids.length)return;
+  saving=true;
+  try{
+    for(const id of ids){
+      const t=state.tours.find(x=>x.id===id);if(!t)continue;
+      const r=await api('/api/admin/opssave?id='+encodeURIComponent(id),{method:'POST',body:JSON.stringify({ops:toOps(t)})});
+      t.saved=true;if(r.opsCheck){t.editedAt=r.opsCheck.editedAt;t.editedBy=r.opsCheck.editedBy}
+    }
+    smsg('저장됨 '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
+    updateDerived();
+  }catch(e){
+    ids.forEach(i=>dirty.add(i));
+    if(e.status===401){showGate('로그인이 만료되었습니다.');smsg('저장 실패: 로그인 만료',true);}
+    else{smsg('저장 실패: '+e.message+' · 5초 뒤 다시 시도합니다',true);saveTimer=setTimeout(flush,5000)}
+  }finally{saving=false}
+}
+window.addEventListener('beforeunload',e=>{if(dirty.size||saving){e.preventDefault();e.returnValue=''}});
+
+/* ---------- 요약 / 목록 ---------- */
+function compact(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?Math.round(n/1e3)+'k':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n))}
+/* 원화 축약 표기: 1억 3백만 / 98백만 */
+function krwU(n){
+  if(!n)return '—';
+  let eok=Math.floor(n/1e8),m=Math.round((n-eok*1e8)/1e6);
+  if(m>=100){eok++;m-=100}
+  return '₩'+(eok?eok+'억':'')+(eok&&m?' ':'')+(m||!eok?m+'백만':'');
+}
+function itemLabel(k,x){
+  if(k==='vehicle')return `${x.type||'차량'}${x.date?' '+md(x.date):''}${x.vendor?' · '+x.vendor:''}`;
+  if(k==='hotels')return `${x.city||''} ${x.hotel||''}`.trim()||'숙소';
+  if(k==='ktx'||k==='flights')return `${md(x.date)} ${x.route||''}`.trim()||'예약';
+  return `${x.name||'가이드'}${x.city?' · '+x.city:''}`;
+}
+const MINI={'예약 필요':'필요','예약 중':'진행 중','예약 완료':'완료'};
+function todoCell(t,k){
+  const act=t[k].filter(x=>x.status!=='해당 없음'&&x.status!=='예약 취소');
+  if(!act.length)return '<span class="note">—</span>';
+  const ord={'예약 필요':0,'예약 중':1,'예약 완료':2};
+  return act.slice().sort((a,b)=>ord[a.status]-ord[b.status]).map(x=>`<div class="ln ${x.status==='예약 완료'?'done':''}"><span class="mini s-${STCLS[x.status]}">${MINI[x.status]}</span><span>${esc(itemLabel(k,x))}</span></div>`).join('');
+}
+function renderDash(){
+  const conf=state.tours;
+  const Y=new Date().getFullYear(),curM=new Date().getMonth();
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  /* 확정 투어: 출발 월별 전체 / 예약 완료 / 예약 미완료 (0건인 월은 제외) */
+  const byM={};
+  conf.forEach(t=>{
+    const k=t.start?t.start.slice(0,7):'미입력';
+    const o=byM[k]||(byM[k]={all:0,done:0,open:0});
+    o.all++;
+    CATS.some(([c])=>t[c].some(x=>x.status==='예약 필요'||x.status==='예약 중'))?o.open++:o.done++;
+  });
+  const mk=Object.keys(byM).sort();
+  const mlabM=k=>k==='미입력'?'일정 미입력':(+k.slice(0,4)===Y?(+k.slice(5,7))+'월':`'${k.slice(2,4)} ${+k.slice(5,7)}월`);
+  const sm=f=>sum(mk.map(k=>byM[k][f]));
+  const ctable=mk.length?`<div class="scroll"><table class="mt ct"><thead><tr><th></th>${mk.map(k=>`<th>${mlabM(k)}</th>`).join('')}<th>합계</th></tr></thead><tbody>
+    <tr><td>확정 투어 전체</td>${mk.map(k=>`<td>${byM[k].all}</td>`).join('')}<td><b>${sm('all')}</b></td></tr>
+    <tr><td>투어 예약 완료</td>${mk.map(k=>`<td>${byM[k].done}</td>`).join('')}<td><b>${sm('done')}</b></td></tr>
+    <tr><td>투어 예약 진행중</td>${mk.map(k=>`<td class="${byM[k].open?'open':''}">${byM[k].open?`<b>${byM[k].open}</b>`:0}</td>`).join('')}<td class="${sm('open')?'open':''}"><b>${sm('open')}</b></td></tr></tbody></table></div>`:'<div class="empty" style="padding:10px">확정 투어가 없습니다.</div>';
+  /* 인보이스 */
+  const rows=state.tours.filter(t=>invTotal(t)>0&&t.invoice.date).map(t=>{
+    const tot=invTotal(t),got=Math.min(tot,num(t.invoice.collected)||0),r=num(t.invoice.rate)||0;
+    return{t,y:+t.invoice.date.slice(0,4),m:+t.invoice.date.slice(5,7)-1,usd:tot,krw:tot*r,got,unp:tot-got};
+  });
+  const A={};[Y,Y-1].forEach(y=>{A[y]={usd:Array(12).fill(0),krw:Array(12).fill(0),got:Array(12).fill(0),unp:Array(12).fill(0)}});
+  rows.forEach(r=>{const a=A[r.y];if(!a)return;['usd','krw','got','unp'].forEach(k=>a[k][r.m]+=r[k])});
+  const cum=a=>{let x=0;return a.map(v=>x+=v)};
+  const cu=cum(A[Y].usd),cp=cum(A[Y-1].usd),ck=cum(A[Y].krw);
+  const ytd=cu[curM],pytd=cp[curM],ptot=cp[11],ytdK=ck[curM];
+  const pct=pytd?(ytd-pytd)/pytd*100:null;
+  const pctH=v=>v==null?'—':`<span class="${v>=0?'up':'down'}">${v>=0?'▲':'▼'} ${Math.abs(v).toFixed(1)}%</span>`;
+  const mlab=Array.from({length:12},(_,i)=>(i+1)+'월');
+  const tcell=(arr,f)=>arr.map(v=>`<td>${f(v)}</td>`).join('');
+  const yoyRow=A[Y].usd.map((v,i)=>{const p=A[Y-1].usd[i];return `<td>${p&&i<=curM?pctH((v-p)/p*100):'—'}</td>`}).join('');
+  const table=`<div class="scroll"><table class="mt"><thead><tr><th></th>${mlab.map(m=>`<th>${m}</th>`).join('')}<th>연간</th></tr></thead><tbody>
+    <tr><td>${Y} USD</td>${tcell(A[Y].usd,v=>v?fmtUSD(v):'—')}<td><b>${fmtUSD(sum(A[Y].usd))}</b></td></tr>
+    <tr class="prev"><td>${Y-1} USD</td>${tcell(A[Y-1].usd,v=>v?fmtUSD(v):'—')}<td>${fmtUSD(sum(A[Y-1].usd))}</td></tr>
+    <tr><td>${Y} KRW</td>${tcell(A[Y].krw,krwU)}<td><b>${krwU(sum(A[Y].krw))}</b></td></tr>
+    <tr><td>전년비</td>${yoyRow}<td>${pctH(sum(A[Y-1].usd)?(sum(A[Y].usd)-sum(A[Y-1].usd))/sum(A[Y-1].usd)*100:null)}</td></tr></tbody></table></div>`;
+  /* 미수금: 인보이스 합계 대비, 투어별 리스트 */
+  const iy=sum(A[Y].usd),uy=sum(A[Y].unp);
+  const upct=iy?uy/iy*100:0;
+  const older=sum(A[Y-1].unp);
+  const ulAll=rows.filter(r=>r.y===Y&&r.unp>0.005).sort((a,b)=>b.unp-a.unp);
+  const ul=ulAll.slice(0,3);
+  const ulist=ul.length?`<div class="scroll"><table class="ul"><thead><tr><th>투어</th><th>담당자</th><th class="r">인보이스 금액 (USD)</th><th class="r">미수금 금액 (USD)</th></tr></thead><tbody>${ul.map(r=>`<tr data-open="${esc(r.t.id)}" tabindex="0" title="${esc(r.t.id)}"><td><b>${esc(r.t.agent||'(업체 미입력)')}</b></td><td>${esc(r.t.contact)||'—'}</td><td class="r">${fmtUSD(r.usd)}</td><td class="r"><b class="bad">${fmtUSD(r.unp)}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:10px">미수금이 없습니다.</div>';
+  /* 지금 예약해야 할 항목 (투어별 표) */
+  const todo=conf.filter(t=>CATS.some(([k])=>t[k].some(x=>x.status==='예약 필요'))).sort((a,b)=>(a.start||'9999').localeCompare(b.start||'9999'));
+  const ttable=todo.length?`<div class="scroll"><table class="tt"><thead><tr><th>투어</th>${CATS.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${todo.map(t=>{
+    const n=diff(today(),t.start);
+    return `<tr data-open="${esc(t.id)}" tabindex="0"><td style="min-width:170px"><b>${esc(t.agent||'(업체 미입력)')}</b>${t.contact?` <span class="note">· ${esc(t.contact)}</span>`:''}<div class="note">${esc(t.id)}${t.pax?' · '+esc(t.pax)+' PAX':''}</div><div><span class="dd ${n!=null&&n<=14?'soon':''}">${dday(t.start)||'—'}</span> <span class="note">${md(t.start)} – ${md(t.end)}</span></div></td>${CATS.map(([k])=>`<td>${todoCell(t,k)}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>`:'<div class="empty">예약이 필요한 항목이 없습니다.</div>';
+
+  document.getElementById('dash').innerHTML=`
+  <h2 class="grp">투어 현황</h2>
+  <section class="card cmp"><header>
+      <h2 class="t110">인보이스 합계</h2>
+      <div class="kpis ctr">
+      <span><span class="lab">${Y}년 누적 (1~${curM+1}월)</span><span class="big">${fmtUSD(ytd)}</span> <span class="note">${krwU(ytdK)}</span></span>
+      <span><span class="lab">${Y-1}년 동기 대비</span><span class="big">${pctH(pct)}</span> <span class="note">${fmtUSD(pytd)}</span></span>
+      <span><span class="lab">${Y-1}년 연간</span><span class="big">${fmtUSD(ptot)}</span></span></div>
+      <span class="note" title="Confirmed 투어의 인보이스를 발행일 기준 월에 집계. KRW는 각 발행일 환율로 환산해 백만 단위로 반올림합니다. Confirmed가 아닌(Closed 등) 투어는 빠집니다.">발행일 기준 · Confirmed 투어</span></header>
+    <div class="body" style="padding:4px 14px 8px">${table}</div></section>
+
+  <div class="pair">
+    <section class="card cmp"><header><h2>확정 투어</h2><span class="note" title="투어 출발 월 기준. 투어에 '예약 필요' 또는 '예약 중' 항목이 하나라도 있으면 예약 진행중으로 셉니다.">출발 월 기준</span></header>
+      <div class="body" style="padding:4px 14px 8px">${ctable}</div></section>
+
+    <section class="card cmp"><header>
+        <div class="kpis one"><h2>미수금</h2>
+        <span class="kpi1"><span class="big ${uy?'bad':''}">${fmtUSD(uy)}</span><span class="lab">${Y}년 미수금</span></span>
+        <span class="kpi1"><span class="big">${iy?upct.toFixed(1)+'%':'—'}</span><span class="lab">인보이스 합계 대비</span></span>
+        <span class="kpi1"><span class="big">${fmtUSD(iy)}</span><span class="lab">인보이스 합계</span></span></div>
+        </header>
+      ${ulist}
+      <div class="note" style="text-align:right;padding:4px 14px 6px">미수금 금액 Top 3만 표시${ulAll.length>3?` (전체 ${ulAll.length}건)`:''}${older?` · ${Y-1}년 미수금 <span class="bad">${fmtUSD(older)}</span> 별도`:''}</div></section>
+  </div>
+
+  <h2 class="grp" style="margin-top:14px">투어 운영 현황</h2>
+  <section class="card"><header><h2>투어 현황</h2><span class="note">투어별 · "예약 필요"가 있는 확정 투어 · 행을 누르면 해당 투어로 이동</span></header>${ttable}</section>`;
+}
+function visible(){return state.tours.slice().sort((a,b)=>(a.start||'9999').localeCompare(b.start||'9999'))}
+function renderList(){
+  const v=visible();
+  document.getElementById('listnote').textContent=v.length?`${v.length}건`:'';
+  const head=`<thead><tr><th>요청번호</th><th>업체 (담당자)</th><th>국가</th><th>인원</th><th>일정</th><th>차량</th><th>숙소</th><th>KTX</th><th>가이드</th><th>국내 항공</th><th>인보이스 USD</th><th>인보이스 KRW</th><th>수금</th></tr></thead>`;
+  if(!v.length){document.getElementById('list').innerHTML=head+`<tbody><tr><td colspan="13" class="empty">Confirmed 상태의 견적 요청이 없습니다. 견적 요청 admin에서 요청의 Status를 Confirmed로 바꾸면 여기에 나타납니다.</td></tr></tbody>`;return}
+  document.getElementById('list').innerHTML=head+'<tbody>'+v.map(t=>{
+    const s=k=>{const r=summarize(t[k]);return chip(r.k,r.txt)};
+    const tot=invTotal(t),col=invCollect(t);
+    return `<tr data-open="${esc(t.id)}" class="${t.id===state.sel?'sel':''}" tabindex="0">
+      <td>${esc(t.id)}</td>
+      <td><div class="two"><b>${esc(t.agent||'(업체 미입력)')}</b><small>${esc(t.contact)}</small></div></td>
+      <td>${esc(t.country)}</td><td>${t.pax?esc(t.pax)+' PAX':''}</td>
+      <td><div class="two"><span>${md(t.start)} – ${md(t.end)}</span><small>${dday(t.start)}</small></div></td>
+      <td>${s('vehicle')}</td><td>${s('hotels')}</td><td>${s('ktx')}</td><td>${s('guides')}</td><td>${s('flights')}</td>
+      <td>${tot?fmtUSD(tot):'—'}</td><td>${invKRW(t)?fmtKRW(invKRW(t)):'—'}</td>
+      <td>${chip(col.k,col.txt)}</td></tr>`}).join('')+'</tbody>';
+}
+
+/* ---------- 상세 ---------- */
+const tbl=(heads,rows,empty)=>`<div class="scroll"><table><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${heads.length}" class="empty">${empty}</td></tr>`}</tbody></table></div>`;
+const secHead=(k,lab,add)=>`<header><div style="display:flex;gap:10px;align-items:center"><h2>${lab}</h2><span id="sum-${k}"></span></div>${add?`<button class="btn small" type="button" data-add="${k}">+ ${add}</button>`:''}</header>`;
+const delBtn=(k,i)=>`<button class="x" type="button" data-del="${k}.${i}" aria-label="행 삭제">×</button>`;
+const vdlHTML=`<datalist id="vtypes">${VTYPES.map(v=>`<option value="${v}"></option>`).join('')}</datalist>`;
+
+function renderDetail(){
+  const t=cur();
+  const el=document.getElementById('detail');
+  if(!t){el.innerHTML='';return}
+  const vehicle=t.vehicle.map((r,i)=>`<tr><td>${inp(`vehicle.${i}.type`,r.type,{ph:'구분 (선택 또는 입력)',list:'vtypes'})}</td><td>${inp(`vehicle.${i}.date`,r.date,{type:'date',cls:'date',label:'날짜'})}</td><td>${inp(`vehicle.${i}.vendor`,r.vendor,{ph:'업체 / 기사'})}</td><td>${inp(`vehicle.${i}.note`,r.note,{ph:'메모'})}</td><td>${stSel(`vehicle.${i}.status`,r.status,(r.type||'차량')+' 상태')}</td><td>${delBtn('vehicle',i)}</td></tr>`).join('');
+  const hotels=t.hotels.map((r,i)=>`<tr><td>${inp(`hotels.${i}.city`,r.city,{ph:'도시',cls:'w-sm'})}</td><td>${inp(`hotels.${i}.hotel`,r.hotel,{ph:'호텔명'})}</td><td>${inp(`hotels.${i}.checkin`,r.checkin,{type:'date',cls:'date',label:'체크인'})}</td><td>${inp(`hotels.${i}.checkout`,r.checkout,{type:'date',cls:'date',label:'체크아웃'})}</td><td id="hn-${i}"></td><td>${inp(`hotels.${i}.conf`,r.conf,{ph:'예약번호'})}</td><td><div style="display:flex;gap:6px;align-items:center">${inp(`hotels.${i}.fc`,r.fc,{type:'number',num:1,cls:'w-sm num',ph:'일',label:'무료 취소 며칠 전'})}<span class="note" id="hc-${i}"></span></div></td><td>${stSel(`hotels.${i}.status`,r.status,'숙소 상태')}</td><td>${delBtn('hotels',i)}</td></tr>`).join('');
+  const guides=t.guides.map((r,i)=>`<tr><td>${inp(`guides.${i}.name`,r.name,{ph:'가이드명'})}</td><td>${inp(`guides.${i}.city`,r.city,{ph:'도시 / 구분'})}</td><td>${inp(`guides.${i}.from`,r.from,{type:'date',cls:'date',label:'시작'})}</td><td>${inp(`guides.${i}.to`,r.to,{type:'date',cls:'date',label:'종료'})}</td><td id="gd-${i}"></td><td>${stSel(`guides.${i}.status`,r.status,'가이드 상태')}</td><td>${delBtn('guides',i)}</td></tr>`).join('');
+  const ktx=t.ktx.map((r,i)=>`<tr><td>${inp(`ktx.${i}.date`,r.date,{type:'date',cls:'date',label:'날짜'})}</td><td>${inp(`ktx.${i}.route`,r.route,{ph:'구간'})}</td><td>${inp(`ktx.${i}.time`,r.time,{ph:'열차 / 시간'})}</td><td>${inp(`ktx.${i}.seats`,r.seats,{ph:'좌석',cls:'w-sm'})}</td><td>${inp(`ktx.${i}.conf`,r.conf,{ph:'예약번호'})}</td><td>${stSel(`ktx.${i}.status`,r.status,'KTX 상태')}</td><td>${delBtn('ktx',i)}</td></tr>`).join('');
+  const flights=t.flights.map((r,i)=>`<tr><td>${inp(`flights.${i}.date`,r.date,{type:'date',cls:'date',label:'날짜'})}</td><td>${inp(`flights.${i}.route`,r.route,{ph:'구간'})}</td><td>${inp(`flights.${i}.flight`,r.flight,{ph:'항공편 / 시간'})}</td><td>${inp(`flights.${i}.conf`,r.conf,{ph:'예약번호(PNR)'})}</td><td>${stSel(`flights.${i}.status`,r.status,'국내 항공 상태')}</td><td>${delBtn('flights',i)}</td></tr>`).join('');
+  const items=(t.invoice.items||[]).map((r,i)=>r.fixed
+    ?`<tr><td>${esc(r.desc)} <span class="note">· 견적 요청의 Invoice 탭에서 가져옴 (수정은 그쪽에서)</span></td><td class="num" style="text-align:right">${fmtUSD(r.usd)}</td><td></td></tr>`
+    :`<tr><td>${inp(`invoice.items.${i}.desc`,r.desc,{ph:'추가 항목 (예: 추가 차량)'})}</td><td>${inp(`invoice.items.${i}.usd`,r.usd,{type:'number',num:1,step:'0.01',cls:'num',ph:'USD'})}</td><td>${delBtn('invoice.items',i)}</td></tr>`).join('');
+  const cost=t.guides.map((r,i)=>`<tr><td id="gn-${i}" class="lab"></td><td id="gdays-${i}"></td><td>${inp(`guides.${i}.fee`,r.fee,{type:'number',num:1,cls:'num',ph:'KRW',label:'일비 지급액'})}</td><td>${inp(`guides.${i}.feeDate`,r.feeDate,{type:'date',cls:'date',label:'일비 지급일'})}</td><td>${inp(`guides.${i}.cash`,r.cash,{type:'number',num:1,cls:'num',ph:'KRW',label:'현금 사용분 및 기타 지급'})}</td><td>${inp(`guides.${i}.memo`,r.memo,{ph:'내용 메모'})}</td></tr>`).join('');
+  const hasInv=!!t.invoice.no;
+
+  el.innerHTML=`${vdlHTML}
+  <section class="card">
+    <div class="body dhead">
+      <div><div class="id" id="d-id"></div><div class="name" id="d-name"></div></div>
+      <div class="meta"><span id="d-period"></span><div class="bar" title="예약 진행률"><i id="d-bar"></i></div><span class="note" id="d-pct"></span>
+        <a class="btn small" href="./index.html?open=${encodeURIComponent(t.id)}">견적 요청 열기</a>
+        <button class="btn small danger" type="button" id="btn-resync" title="수배 탭·Hotel 탭에 적힌 내용으로 아래 예약 목록을 다시 채웁니다">수배 탭에서 다시 가져오기</button></div>
+    </div>
+    <div class="body" style="padding-top:0"><div class="strip" id="d-strip"></div><div class="note" id="d-edited" style="margin-top:8px"></div></div>
+  </section>
+
+  <section class="card">
+    <header><h2>기본 정보</h2><span class="note">견적 요청에서 가져온 정보입니다. 고치려면 견적 요청 화면에서 수정하세요.</span></header>
+    <div class="body">
+      <div class="row7">
+        <label>업체${inp('agent',t.agent,{ro:1})}</label>
+        <label>담당자${inp('contact',t.contact,{ro:1})}</label>
+        <label>국가${inp('country',t.country,{ro:1})}</label>
+        <label>시장 / 국적${inp('nationality',t.nationality,{ro:1})}</label>
+        <label>인원 (PAX)${inp('pax',t.pax,{ro:1,cls:'num'})}</label>
+        <label>도착일${inp('start',t.start,{type:'date',ro:1})}</label>
+        <label>출국일${inp('end',t.end,{type:'date',ro:1})}</label>
+      </div>
+      <div class="grid" style="margin-top:12px">
+      <label class="wide">투어 프로그램<textarea class="f" id="f-program" readonly tabindex="-1" aria-label="투어 프로그램">${esc(t.program)}</textarea></label>
+      <label class="wide">식사·특별 요청 사항<textarea class="f" id="f-special" readonly tabindex="-1" aria-label="특별 요청 사항">${esc(t.special)}</textarea></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card"><header><div style="display:flex;gap:10px;align-items:center"><h2>차량 (Transportation)</h2><span id="sum-vehicle"></span></div><select class="f" id="vadd" style="width:auto" aria-label="차량 구간 추가"><option value="">+ 구간 선택해 추가</option>${VTYPES.map(v=>`<option>${v}</option>`).join('')}</select></header>${tbl(['구분','날짜','업체 / 기사','메모','상태',''],vehicle,'구간을 추가하세요. 예: 공항 픽업, 서울 전일투어, 부산 전일투어, 제주도 전일투어')}</section>
+  <section class="card">${secHead('hotels','숙소','숙소 추가')}${tbl(['도시','호텔','체크인','체크아웃','박','예약번호','무료 취소 (n일 전)','상태',''],hotels,'숙소가 없습니다.')}</section>
+  <section class="card">${secHead('ktx','KTX','KTX 추가')}${tbl(['날짜','구간','열차 / 시간','좌석','예약번호','상태',''],ktx,'KTX 예약이 없습니다.')}</section>
+  <div class="two-col">
+    <section class="card">${secHead('guides','투어 가이드','가이드 추가')}${tbl(['가이드','도시 / 구분','시작','종료','일수','상태',''],guides,'가이드가 없습니다.')}</section>
+    <section class="card">${secHead('flights','국내 항공','항공 추가')}${tbl(['날짜','구간','항공편 / 시간','예약번호','상태',''],flights,'국내 항공 예약이 없습니다.')}</section>
+  </div>
+
+  <section class="card">
+    <header><h2>인보이스</h2><span class="note">환율은 인보이스 발행일 기준 USD/KRW 매매기준율입니다. <a href="${SMBS}" target="_blank" rel="noopener">서울외국환중개 환율 조회</a></span></header>
+    <div class="body">
+      ${hasInv?`<div class="grid" style="margin-bottom:12px">
+        <label>인보이스 번호<b style="color:var(--text);font-size:14px">${esc(t.invoice.no)}</b></label>
+        <label>인보이스 발행일<b style="color:var(--text);font-size:14px">${esc(t.invoice.date)||'—'}</b></label>
+        <label>환율 (1 USD = ₩)${inp('invoice.rate',t.invoice.rate==null?'':t.invoice.rate,{type:'number',num:1,step:'0.01',cls:'num',ph:'예: 1343.90'})}<span class="note" id="rate-note"></span></label>
+        <label>수금액 (USD)${inp('invoice.collected',t.invoice.collected,{type:'number',num:1,step:'0.01',cls:'num'})}</label>
+        <label>수금일${inp('invoice.collectedDate',t.invoice.collectedDate,{type:'date'})}</label>
+      </div>
+      ${tbl(['항목','금액 (USD)',''],items,'인보이스 항목이 없습니다.')}
+      <div style="margin-top:8px"><button class="btn small" type="button" data-add="items">+ 추가 항목</button> <span class="note">인보이스 외에 따로 받는 금액이 있을 때만 추가하세요.</span></div>
+      <div class="sumrow">
+        <span>합계 <b id="inv-usd"></b></span><span>원화 환산 <b id="inv-krw"></b></span>
+        <span>미수금 <b id="inv-bal"></b> <span class="note" id="inv-bal-krw"></span></span><span id="inv-st"></span>
+      </div>`:`<div class="empty">아직 발급된 인보이스가 없습니다. 견적 요청의 Invoice 탭에서 발급하면 여기에 금액이 자동으로 들어옵니다. <a href="./index.html?open=${encodeURIComponent(t.id)}">견적 요청 열기</a></div>`}
+    </div>
+  </section>
+
+  <section class="card">
+    <header><h2>가이드 비용</h2><span class="note">입력칸만 있는 상태입니다. 추후 정산서에서 업데이트될 예정입니다.</span></header>
+    <div class="body">
+      ${tbl(['가이드','일수','일비 지급액 (KRW)','일비 지급일','현금 사용분 및 기타(차량 등) 지급 (KRW)','내용 메모'],cost,'위 "투어 가이드"에 가이드를 추가하면 비용 입력 행이 생깁니다.')}
+      <div class="grid" style="margin-top:12px;max-width:520px">
+        <label>정산서 상태${sel('settle.status',t.settle.status,['미작성','작성중','작성 완료'],'정산서 상태')}</label>
+        <label>정산서 번호 / 링크${inp('settle.ref',t.settle.ref,{ph:'정산서 연결 예정'})}</label>
+      </div>
+    </div>
+  </section>`;
+  updateDerived();
+}
+
+function updateDerived(){
+  const t=cur();if(!t)return;
+  const $=id=>document.getElementById(id);
+  const set=(id,h)=>{const e=$(id);if(e)e.innerHTML=h};
+  set('d-id',esc(t.id)+(t.buyerCode?' · '+esc(t.buyerCode):'')+(t.assignee?' · 담당 '+esc(t.assignee):''));
+  set('d-name',esc(t.agent||'(업체 미입력)')+(t.contact?` <span class="note" style="font-weight:400">(${esc(t.contact)})</span>`:''));
+  const n=diff(t.start,t.end);
+  set('d-period',t.start&&t.end&&n!=null&&n>=0?`${n}박 ${n+1}일 · ${md(t.start)} – ${md(t.end)} · <b>${dday(t.start)}</b>`:'<span class="note">일정 미입력</span>');
+  const pc=progress(t);const bar=$('d-bar');if(bar)bar.style.width=pc+'%';set('d-pct',`예약 ${pc}%`);
+  set('d-strip',CATS.map(([k,lab])=>{const r=summarize(t[k]);return `<span class="item">${lab} ${chip(r.k,r.txt)}</span>`}).join(''));
+  set('d-edited',t.saved?`마지막 저장: ${esc(t.editedBy||'')} ${t.editedAt?new Date(t.editedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):''}`:'아직 저장된 운영 입력이 없습니다. 수배 탭의 내용으로 미리 채워져 있으며, 아래에서 무엇이든 고치면 저장됩니다.');
+  CATS.forEach(([k])=>{const r=summarize(t[k]);set('sum-'+k,chip(r.k,r.txt))});
+  t.hotels.forEach((h,i)=>{
+    const nn=diff(h.checkin,h.checkout);set('hn-'+i,nn!=null&&nn>=0?nn+'박':'');
+    const fc=num(h.fc);
+    if(fc!=null&&h.checkin){const dl=addDays(h.checkin,-fc);const left=diff(today(),dl);
+      set('hc-'+i,left<0?`<span class="bad">기한 지남 (${md(dl)})</span>`:`~${md(dl)} (${dday(dl)})`)}
+    else set('hc-'+i,'');
+  });
+  t.guides.forEach((g,i)=>{
+    const dn=diff(g.from,g.to);const days=dn!=null&&dn>=0?dn+1:null;
+    set('gd-'+i,days?days+'일':'');set('gdays-'+i,days?days+'일':'');
+    set('gn-'+i,esc(g.name||'(가이드 미입력)')+(g.city?` <span class="note">${esc(g.city)}</span>`:''));
+  });
+  if(t.invoice.no){
+    const tot=invTotal(t),krw=invKRW(t),got=num(t.invoice.collected)||0,bal=Math.max(0,tot-got),r=num(t.invoice.rate);
+    set('inv-usd',fmtUSD(tot));set('inv-krw',krw?fmtKRW(krw):'—');
+    set('inv-bal',fmtUSD(bal));set('inv-bal-krw',r?fmtKRW(bal*r):'');
+    const col=invCollect(t);set('inv-st',chip(col.k,col.txt));
+    const rf=rateFor(t.invoice.date);
+    let note='';
+    if(!t.invoice.date)note='발행일이 없어 저장된 환율을 찾을 수 없습니다.';
+    else if(!rf)note='<span class="warn">이 날짜의 환율이 없습니다. 위 링크에서 확인해 입력하세요.</span>';
+    else if(rf.exact&&num(t.invoice.rate)===rf.rate)note=`${rf.from} 저장값 사용 중`;
+    else if(!rf.exact&&num(t.invoice.rate)===rf.rate)note=`<span class="warn">${rf.from} 환율을 임시 적용 중. 발행일 환율을 확인하세요.</span>`;
+    else note='입력한 값이 이 발행일의 환율로 저장됩니다.';
+    set('rate-note',note);
+  }
+}
+function refresh(){renderDash();renderList();updateDerived()}
+
+/* ---------- 이벤트 ---------- */
+const detail=document.getElementById('detail');
+function onEdit(e){
+  const el=e.target;
+  if(el.id==='vadd'){if(el.value){addRow('vehicle',el.value);el.value=''}return}
+  const path=el.dataset&&el.dataset.path;if(!path)return;
+  const t=cur();if(!t)return;
+  let v=el.value;
+  if(el.dataset.num)v=num(v);
+  if(el.dataset.st)el.className='st s-'+STCLS[v];
+  setP(t,path,v);
+  if(path==='invoice.rate'&&t.invoice.date&&num(v)!=null)state.rates[t.invoice.date]=num(v);
+  persist();refresh();
+}
+detail.addEventListener('input',onEdit);
+detail.addEventListener('change',onEdit);
+
+function addRow(k,arg){
+  const t=cur();if(!t)return;
+  if(k==='hotels'){const last=t.hotels[t.hotels.length-1];t.hotels.push({city:'',hotel:'',checkin:last?last.checkout:t.start,checkout:t.end,conf:'',fc:'',status:'예약 필요'})}
+  if(k==='vehicle')t.vehicle.push({type:arg||'',date:t.start,vendor:'',note:'',status:'예약 필요'});
+  if(k==='guides')t.guides.push({name:'',city:'',from:t.start,to:t.end,status:'예약 필요',fee:'',feeDate:'',cash:'',memo:''});
+  if(k==='ktx')t.ktx.push({date:t.start,route:'',time:'',seats:t.pax?t.pax+'석':'',conf:'',status:'예약 필요'});
+  if(k==='flights')t.flights.push({date:t.start,route:'',flight:'',conf:'',status:'예약 필요'});
+  if(k==='items')t.invoice.items.push({desc:'',usd:''});
+  persist();renderDetail();refresh();
+}
+detail.addEventListener('click',e=>{
+  const add=e.target.closest('[data-add]');if(add){addRow(add.dataset.add);return}
+  const del=e.target.closest('[data-del]');
+  if(del){
+    const t=cur();const [k,i]=[del.dataset.del.replace(/\.\d+$/,''),+del.dataset.del.match(/\d+$/)[0]];
+    getP(t,k).splice(i,1);persist();renderDetail();refresh();return;
+  }
+  if(e.target.id==='btn-resync'){
+    const b=e.target;
+    if(b.dataset.armed){
+      const t=cur(),pf=prefill(t._row);
+      ['vehicle','hotels','ktx','flights','guides'].forEach(k=>t[k]=pf[k]);
+      persist();renderDetail();refresh();return;
+    }
+    b.dataset.armed='1';b.textContent='지금 입력한 예약 내용이 덮어써집니다. 한 번 더 누르면 실행';
+    setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='수배 탭에서 다시 가져오기'}},4000);
+  }
+});
+function openTour(id){state.sel=id;renderDetail();refresh();document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'})}
+const dashEl=document.getElementById('dash');
+dashEl.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openTour(b.dataset.open)});
+dashEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=e.target.closest('[data-open]');if(b)openTour(b.dataset.open)}});
+const listEl=document.getElementById('list');
+listEl.addEventListener('click',e=>{const r=e.target.closest('tr[data-open]');if(r)openTour(r.dataset.open)});
+listEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.closest('tr[data-open]');if(r)openTour(r.dataset.open)}});
+document.getElementById('btn-reload').addEventListener('click',()=>{
+  if(dirty.size||saving){smsg('저장 중인 내용이 있어 잠시 뒤에 다시 눌러 주세요.',true);return}
+  load();
+});
+
+/* ---------- 불러오기 ---------- */
+function showGate(msg){
+  document.getElementById('gate').style.display='block';
+  document.getElementById('gate-msg').textContent=msg||'';
+  ['dash','listcard','detail'].forEach(id=>{document.getElementById(id).style.display='none'});
+}
+function hideGate(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('dash').style.display='';document.getElementById('listcard').style.display='';document.getElementById('detail').style.display='';
+}
+async function load(){
+  KEY=sessGet();
+  if(!KEY){showGate('이 브라우저에 직원 로그인 기록이 없습니다.');return}
+  smsg('불러오는 중…');
+  try{
+    const d=await api('/api/admin/ops');
+    const keep=state.sel;
+    state.tours=(d.rows||[]).map(fromRow);
+    /* 환율은 투어마다 발행일별로 저장되어 있으므로, 같은 날짜의 환율을 다른 투어에도 미리 채워 줍니다 */
+    state.rates={};
+    state.tours.forEach(t=>{if(t._rateDate&&t.invoice.rate!=null)state.rates[t._rateDate]=t.invoice.rate});
+    state.tours.forEach(t=>{if(t.invoice.date&&t.invoice.rate==null){const rf=rateFor(t.invoice.date);if(rf)t.invoice.rate=rf.rate}});
+    state.sel=state.tours.find(t=>t.id===keep)?keep:(visible()[0]||{}).id||'';
+    hideGate();renderDetail();refresh();smsg('');
+  }catch(e){
+    if(e.status===401||e.status===503)showGate(e.status===401?'로그인이 만료되었거나 비밀번호가 맞지 않습니다.':'서버에 관리자 비밀번호가 설정되어 있지 않습니다.');
+    else if(e.status===404)showGate('서버에 운영 기능이 아직 반영되지 않았습니다. (hakeem-wix-site를 push하고 Wix에서 게시해야 합니다.)');
+    else smsg('불러오기 실패: '+e.message,true);
+  }
+}
+load();
+</script>
+</body>
+</html>
