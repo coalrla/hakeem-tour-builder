@@ -208,6 +208,92 @@ const SMBS='http://www.smbs.biz/ExRate/TodayExRate.jsp';
 const ST_MAP={todo:'예약 필요',req:'예약 중',ok:'예약 완료',na:'해당 없음'};  /* 수배 탭 상태 → 운영 체크 상태 (처음 가져올 때만) */
 const CITY_KO={seoul:'서울',jeju:'제주',busan:'부산'};
 
+/* ---------- 차량: 수배 탭의 "일자별 차량 일정"을 그대로 펼쳐서 가져오기 ----------
+   수배 목록(ops)은 차량을 도시별 한 줄로만 저장하므로, 요청 상세(itinerary)에서 일자별 일정을 다시 계산합니다.
+   계산 규칙은 admin/index.html 의 vehicleSchedule 과 같습니다. */
+const CITY=CITY_KO;
+const T_KO={ICN:'인천공항',GMP:'김포공항',SEL_STN:'서울역',PUS:'김해공항',BUS_STN:'부산역',CJU:'제주공항'};
+const T_CITY={ICN:'seoul',GMP:'seoul',SEL_STN:'seoul',PUS:'busan',BUS_STN:'busan',CJU:'jeju'};
+const VEH_KO={staria:'스타리아',solati:'솔라티',bus:'대형버스'};
+const PLACE_KO={Seoul:'서울',Busan:'부산',Jeju:'제주',Gyeongju:'경주',Suwon:'수원',Gapyeong:'가평',Goyang:'고양',Hwacheon:'화천',Chuncheon:'춘천',DMZ:'DMZ',Gimpo:'김포',Yongin:'용인',Gyeonggi:'경기',Incheon:'인천',Gimhae:'김해'};
+const OLD_PLAN={drv:['staria','staria',0],sol:['solati','solati',1],mix:['solati','bus',1],bus:['bus','bus',0]};
+function planOf(r){
+  if(r.options.plan)return r.options.plan;
+  const p=r.options.pax,c=r.options.cls||(p<=4?'drv':p<=9?'sol':p<=13?'mix':'bus'),x=OLD_PLAN[c]||OLD_PLAN.bus;
+  return{pickup:x[0],tour:x[1],luggage:!!x[2]};
+}
+const isMix=r=>r.options.vehicle==='Standard'&&planOf(r).pickup!==planOf(r).tour;
+const hasLuggage=r=>planOf(r).luggage;
+const tripKo=d=>{const p=String(d.route||'').split('→').map(x=>x.trim()).filter(Boolean),mid=p.slice(1,-1).flatMap(x=>x.split('·').map(y=>y.trim()));return mid.length?' · '+mid.map(x=>PLACE_KO[x]||x).join('·'):''};
+const cityOfDay=d=>d.kind==='tour'&&d.region?d.region:/Busan|Gyeongju|Haeundae|Gamcheon|Spa Day/.test(d.title+d.route)?'busan':/Jeju|Sunrise Peak|Waterfalls|Alpacas|Markets & Café|Beaches & Volcanic/.test(d.title+d.route)?'jeju':'seoul';
+function vehicleSchedule(r){
+  const out=[],mix=isMix(r),lugOn=hasLuggage(r),last=r.itinerary.length-1;
+  const v=(i,text,type,free,city)=>out.push({day:i+1,date:r.trip.arrival?addDays(r.trip.arrival,i):'',text,type,free:!!free,city:city||(/제주/.test(text)?'jeju':/부산|김해/.test(text)?'busan':'seoul')});
+  const pl=planOf(r),tourBus=mix?` · ${VEH_KO[pl.tour]}`:'',trVeh=mix?` · ${VEH_KO[pl.pickup]}`:'';
+  r.itinerary.forEach((d,i)=>{
+    if(d.kind==='tour')return v(i,`${CITY[cityOfDay(d)]} 투어 종일${tripKo(d)}${tourBus}`,'tour',false,cityOfDay(d));
+    if(d.kind!=='transfer')return;
+    if(!Array.isArray(d.transfers))return oldTransfers(r,d,i,v,lugOn);
+    const paid=Array.isArray(d.paid)?d.paid:d.transfers,adds=d.adds||[];
+    const half=()=>{if(adds.length)v(i,`이동일 관광${d.tourCity?` (${CITY[d.tourCity]})`:''}${tourBus}`,'half',false,d.tourCity||cityOfDay(d))};
+    if(adds.length&&d.tourCity&&d.tourCity===d.from)half();
+    d.transfers.forEach((t,k)=>{
+      const c=CITY[T_CITY[t]]||'',free=!paid.includes(t);
+      let text,city=T_CITY[t];
+      if(i===0)text=`${T_KO[t]} 도착 픽업 → ${c} 호텔`;
+      else if(i===last)text=t==='ICN'&&k>0?`${T_KO[{CJU:'GMP',BUS_STN:'SEL_STN',PUS:'GMP'}[d.transfers[k-1]]]||'김포공항'} 픽업 → 인천공항 샌딩`:`${c} 호텔 → ${T_KO[t]} 샌딩`;
+      else{text=k===0?`${CITY[d.from]||c} 호텔 → ${T_KO[t]} 샌딩`:`${T_KO[t]} 픽업 → ${CITY[d.to]||c} 호텔`;city=(k===0?d.from:d.to)||city}
+      const lug=lugOn&&((i===0&&k===0)||(i===last&&k===d.transfers.length-1))?' + 짐차':'';
+      v(i,text+(free?' (이동일 관광 차량이 진행 · 별도 요금 없음)':trVeh+lug),'transfer',free,city);
+    });
+    if(adds.length&&!(d.tourCity&&d.tourCity===d.from))half();
+  });
+  return out;
+}
+function oldTransfers(r,d,i,v,lugOn){
+  const t=d.title,lug=lugOn?' + 짐차':'';
+  if((d.adds||[]).length)v(i,'이동일 관광','half',false,cityOfDay(d));
+  if(/Arrival/.test(t))v(i,`인천공항 도착 픽업 → 서울 호텔${lug}`,'transfer');
+  if(/Seoul to Jeju/.test(t)){v(i,'서울 호텔 → 김포공항 샌딩','transfer');v(i,'제주공항 픽업 → 제주 호텔','transfer')}
+  if(/Jeju to Busan/.test(t)){v(i,'제주 호텔 → 제주공항 샌딩','transfer');v(i,'김해공항 픽업 → 부산 호텔','transfer')}
+  if(/Seoul to Busan/.test(t)){v(i,'서울 호텔 → 서울역 샌딩','transfer');v(i,'부산역 픽업 → 부산 호텔','transfer')}
+  if(/Departure/.test(t)){
+    if(/Jeju/.test(d.route)){v(i,'제주 호텔 → 제주공항 샌딩','transfer');v(i,`김포공항 픽업 → 인천공항 샌딩${lug}`,'transfer')}
+    else if(/Busan/.test(d.route)){v(i,'부산 호텔 → 부산역 샌딩','transfer');v(i,`서울역 픽업 → 인천공항 샌딩${lug}`,'transfer')}
+    else v(i,`서울 호텔 → 인천공항 샌딩${lug}`,'transfer');
+  }
+}
+/* 표의 "구분" 칸에 들어갈 짧은 이름 (예: 인천공항 픽업, 서울 전일투어, 서울역 드롭) */
+function vehLabel(t,c){
+  t=String(t||'');const cn=CITY_KO[c]||'';
+  if(/투어 종일/.test(t))return cn+' 전일투어';
+  if(/이동일 관광/.test(t))return cn+' 이동일 관광';
+  let m=t.match(/^(\S+?) 도착 픽업/);if(m)return m[1]+' 픽업';
+  m=t.match(/^(\S+?) 픽업 →/);if(m)return m[1]+' 픽업';
+  m=t.match(/→ (\S+?) 샌딩/);if(m)return m[1]+' 드롭';
+  return t.length>16?t.slice(0,16)+'…':(t||'차량');
+}
+const msOf=s=>ST_MAP[s]||'예약 필요';
+/* 차량 한 줄 = 차량 1대(하루). 도시별 업체·상태는 수배 탭의 차량 줄에서 가져와 그 도시의 모든 일자에 적용합니다. */
+function vehicleRowsRaw(r,D,ms){
+  const ops=(r.ops||[]).filter(x=>x.cat==='vehicle'),arr=r.arrival||(D&&D.trip&&D.trip.arrival)||'';
+  const oldStyle=()=>ops.map(x=>({type:x.item||'차량',date:x.date||arr,vendor:x.vendor||'',note:x.detail||'',status:ms(x.status)}));
+  let sched=[];
+  if(D&&D.itinerary&&D.trip&&D.options){try{sched=vehicleSchedule(D)}catch(e){sched=[]}}
+  const cities=[...new Set([...sched.map(x=>x.city),...ops.map(o=>o.city).filter(Boolean)])];
+  if(!cities.length)return oldStyle();
+  const rows=[];
+  cities.forEach(c=>{
+    const o=ops.find(x=>x.city===c)||(ops.length===1&&!ops[0].city?ops[0]:null);
+    const lines=o&&Array.isArray(o.plan)?o.plan.map(x=>({day:x.day,date:arr?addDays(arr,x.day-1):'',text:x.text,free:false})):sched.filter(x=>x.city===c);
+    if(!lines.length&&o){rows.push({type:o.item||'차량',date:o.date||arr,vendor:o.vendor||'',note:o.detail||'',status:ms(o.status),_c:c,_d:0});return}
+    lines.forEach(x=>rows.push({type:vehLabel(x.text,c),date:x.date||'',vendor:o?(o.vendor||''):'',note:x.text,status:x.free?'해당 없음':(o?ms(o.status):'예약 필요'),_c:c,_d:x.day||0}));
+  });
+  rows.sort((a,b)=>(a.date||'9').localeCompare(b.date||'9')||(a._d||0)-(b._d||0));
+  return rows;
+}
+const vehicleRows=(r,D,ms)=>vehicleRowsRaw(r,D,ms).map(x=>{const y={...x};delete y._c;delete y._d;return y});
+
 /* ---------- 서버 연결 (admin과 같은 엔드포인트·같은 로그인) ---------- */
 const HK_API='https://www.hakeemtravel.com/_functions/hk';
 function hkFetch(path,method,body,key){
@@ -282,9 +368,9 @@ function invCollect(t){
 
 /* ---------- 데이터: 서버의 Confirmed 요청 → 화면용 투어 ---------- */
 /* 처음 열 때(운영 체크를 저장한 적 없을 때)는 견적 요청의 수배·호텔 정보로 채우고, 한 번이라도 저장하면 저장된 값이 우선합니다. */
-function prefill(r){
+function prefill(r,D){
   const ops=r.ops||[],pax=r.pax,ms=s=>ST_MAP[s]||'예약 필요';
-  const vehicle=ops.filter(x=>x.cat==='vehicle').map(x=>({type:x.item||'차량',date:x.date||r.arrival||'',vendor:x.vendor||'',note:x.detail||'',status:ms(x.status)}));
+  const vehicle=vehicleRows(r,D,ms);
   const guides=ops.filter(x=>x.cat==='guide').map(x=>{const m=String(x.detail||'').match(/(\d+)일/),n=m?+m[1]:0;
     return{name:x.vendor||'',city:x.item||'',from:x.date||'',to:x.date&&n?addDays(x.date,n-1):(x.date||''),status:ms(x.status),fee:'',feeDate:'',cash:'',memo:''}});
   const tr=ops.filter(x=>x.cat==='transport');
@@ -293,6 +379,36 @@ function prefill(r){
   const hotels=(r.hotels||[]).map(h=>{const o=ops.find(x=>x.cat==='hotel'&&h.name&&String(x.item).includes(h.name));
     return{city:CITY_KO[h.city]||h.city||'',hotel:h.name||'',checkin:h.checkIn||'',checkout:h.checkOut||'',conf:o?(o.ref||''):'',fc:'',status:o?ms(o.status):'예약 필요'}});
   return{vehicle,hotels,ktx,flights,guides};
+}
+
+/* ---------- 요청 상세(일정)를 불러와 차량을 일자별로 채우기 ---------- */
+async function fetchDetail(t){
+  if(t._detail)return t._detail;
+  try{t._detail=await api('/api/admin/get?id='+encodeURIComponent(t.id))}catch(e){t._detailErr=e.message}
+  return t._detail||null;
+}
+const OLD_VEH=/^(서울|제주|부산) 차량: /;
+async function loadDetails(){
+  const todo=state.tours.filter(t=>!t.saved||t.vehicle.some(x=>OLD_VEH.test(x.type)));
+  let changed=false;
+  await Promise.all(todo.map(async t=>{
+    const D=await fetchDetail(t);if(!D||dirty.has(t.id))return;
+    if(!t.saved){t.vehicle=prefill(t._row,D).vehicle;changed=true;return}
+    /* 이미 저장된 운영 체크: 예전 방식(도시별 한 줄)으로 가져온 차량 줄만 일자별 줄로 바꾸고, 직접 입력한 줄은 그대로 둡니다. */
+    const olds=t.vehicle.filter(x=>OLD_VEH.test(x.type)),keep=t.vehicle.filter(x=>!OLD_VEH.test(x.type));
+    const byCity={};olds.forEach(x=>{byCity[x.type.slice(0,2)]=x});
+    const nr=vehicleRowsRaw(t._row,D,msOf);
+    if(!nr.length||nr.every(x=>!x._c))return;
+    nr.forEach(x=>{const o=byCity[CITY_KO[x._c]];if(o){if(o.vendor)x.vendor=o.vendor;if(x.status!=='해당 없음')x.status=o.status}delete x._c;delete x._d});
+    t.vehicle=[...keep,...nr].sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));changed=true;
+  }));
+  if(changed){renderDetail();refresh()}
+}
+async function resync(t){
+  const D=await fetchDetail(t);
+  const pf=prefill(t._row,D);
+  ['vehicle','hotels','ktx','flights','guides'].forEach(k=>t[k]=pf[k]);
+  persist();renderDetail();refresh();
 }
 function fromRow(r){
   const oc=r.opsCheck,pf=oc?null:prefill(r);
@@ -638,9 +754,7 @@ detail.addEventListener('click',e=>{
   if(e.target.id==='btn-resync'){
     const b=e.target;
     if(b.dataset.armed){
-      const t=cur(),pf=prefill(t._row);
-      ['vehicle','hotels','ktx','flights','guides'].forEach(k=>t[k]=pf[k]);
-      persist();renderDetail();refresh();return;
+      resync(cur());return;
     }
     b.dataset.armed='1';b.textContent='지금 입력한 예약 내용이 덮어써집니다. 한 번 더 누르면 실행';
     setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='수배 탭에서 다시 가져오기'}},4000);
@@ -682,6 +796,7 @@ async function load(){
     state.tours.forEach(t=>{if(t.invoice.date&&t.invoice.rate==null){const rf=rateFor(t.invoice.date);if(rf)t.invoice.rate=rf.rate}});
     state.sel=state.tours.find(t=>t.id===keep)?keep:(visible()[0]||{}).id||'';
     hideGate();renderDetail();refresh();smsg('');
+    loadDetails();
   }catch(e){
     if(e.status===401||e.status===503)showGate(e.status===401?'로그인이 만료되었거나 비밀번호가 맞지 않습니다.':'서버에 관리자 비밀번호가 설정되어 있지 않습니다.');
     else if(e.status===404)showGate('서버에 운영 기능이 아직 반영되지 않았습니다. (hakeem-wix-site를 push하고 Wix에서 게시해야 합니다.)');
