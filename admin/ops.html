@@ -189,14 +189,6 @@ td input.f.w-sm{min-width:70px;width:84px}
 
   <section class="dash" id="dash" aria-label="대시보드"></section>
 
-  <section class="card" id="listcard">
-    <header>
-      <h2>투어 목록</h2>
-      <span class="note" id="listnote"></span>
-    </header>
-    <div class="scroll"><table class="list" id="list"></table></div>
-  </section>
-
   <div id="detail" class="sections"></div>
 </div>
 
@@ -576,6 +568,7 @@ function renderDash(){
 }
 function visible(){return state.tours.slice().sort((a,b)=>(a.start||'9999').localeCompare(b.start||'9999'))}
 function renderList(){
+  if(!document.getElementById('list'))return;
   const v=visible();
   document.getElementById('listnote').textContent=v.length?`${v.length}건`:'';
   const head=`<thead><tr><th>요청번호</th><th>업체 (담당자)</th><th>국가</th><th>인원</th><th>일정</th><th>차량</th><th>숙소</th><th>KTX</th><th>가이드</th><th>국내 항공</th></tr></thead>`;
@@ -772,9 +765,6 @@ function openTour(id){state.sel=id;renderDetail();refresh();document.getElementB
 const dashEl=document.getElementById('dash');
 dashEl.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openTour(b.dataset.open)});
 dashEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=e.target.closest('[data-open]');if(b)openTour(b.dataset.open)}});
-const listEl=document.getElementById('list');
-listEl.addEventListener('click',e=>{const r=e.target.closest('tr[data-open]');if(r)openTour(r.dataset.open)});
-listEl.addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.closest('tr[data-open]');if(r)openTour(r.dataset.open)}});
 document.getElementById('btn-reload').addEventListener('click',()=>{
   if(dirty.size||saving){smsg('저장 중인 내용이 있어 잠시 뒤에 다시 눌러 주세요.',true);return}
   load();
@@ -784,11 +774,11 @@ document.getElementById('btn-reload').addEventListener('click',()=>{
 function showGate(msg){
   document.getElementById('gate').style.display='block';
   document.getElementById('gate-msg').textContent=msg||'';
-  ['dash','listcard','detail'].forEach(id=>{document.getElementById(id).style.display='none'});
+  ['dash','detail'].forEach(id=>{document.getElementById(id).style.display='none'});
 }
 function hideGate(){
   document.getElementById('gate').style.display='none';
-  document.getElementById('dash').style.display='';document.getElementById('listcard').style.display='';document.getElementById('detail').style.display='';
+  document.getElementById('dash').style.display='';document.getElementById('detail').style.display='';
 }
 async function load(){
   KEY=sessGet();
