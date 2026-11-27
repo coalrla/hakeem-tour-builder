@@ -139,6 +139,7 @@ td input.f{min-width:90px}
 td input.f.date{min-width:132px}
 td input.f.w-sm{min-width:70px;width:84px}
 
+.dhead-card{position:sticky;top:0;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.1)}
 .dhead{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
 .dhead .id{font-size:12.5px;color:var(--muted)}
 .dhead .name{font-size:19px;font-weight:700}
@@ -190,7 +191,7 @@ td input.f.w-sm{min-width:70px;width:84px}
 
   <section class="card" id="listcard">
     <header>
-      <h2>Confirmed 투어 목록</h2>
+      <h2>투어 목록</h2>
       <span class="note" id="listnote"></span>
     </header>
     <div class="scroll"><table class="list" id="list"></table></div>
@@ -473,6 +474,12 @@ function krwU(n){
   if(m>=100){eok++;m-=100}
   return '₩'+(eok?eok+'억':'')+(eok&&m?' ':'')+(m||!eok?m+'백만':'');
 }
+function krwW(n){
+  if(!n)return '—';
+  let eok=Math.floor(n/1e8),m=Math.round((n-eok*1e8)/1e6);
+  if(m>=100){eok++;m-=100}
+  return (eok?eok+'억':'')+(eok&&m?' ':'')+(m||!eok?m+'백만':'')+'원';
+}
 function itemLabel(k,x){
   if(k==='vehicle')return `${x.type||'차량'}${x.date?' '+md(x.date):''}${x.vendor?' · '+x.vendor:''}`;
   if(k==='hotels')return `${x.city||''} ${x.hotel||''}`.trim()||'숙소';
@@ -534,9 +541,10 @@ function renderDash(){
   const ulist=ul.length?`<div class="scroll"><table class="ul"><thead><tr><th>투어</th><th>담당자</th><th class="r">인보이스 금액 (USD)</th><th class="r">미수금 금액 (USD)</th></tr></thead><tbody>${ul.map(r=>`<tr data-open="${esc(r.t.id)}" tabindex="0" title="${esc(r.t.id)}"><td><b>${esc(r.t.agent||'(업체 미입력)')}</b></td><td>${esc(r.t.contact)||'—'}</td><td class="r">${fmtUSD(r.usd)}</td><td class="r"><b class="bad">${fmtUSD(r.unp)}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:10px">미수금이 없습니다.</div>';
   /* 지금 예약해야 할 항목 (투어별 표) */
   const todo=conf.filter(t=>CATS.some(([k])=>t[k].some(x=>x.status==='예약 필요'))).sort((a,b)=>(a.start||'9999').localeCompare(b.start||'9999'));
-  const ttable=todo.length?`<div class="scroll"><table class="tt"><thead><tr><th>투어</th>${CATS.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${todo.map(t=>{
+  const ttable=todo.length?`<div class="scroll"><table class="tt"><thead><tr><th>투어</th>${CATS.map(c=>`<th>${c[1]}</th>`).join('')}<th>인보이스 · 수금</th></tr></thead><tbody>${todo.map(t=>{
     const n=diff(today(),t.start);
-    return `<tr data-open="${esc(t.id)}" tabindex="0"><td style="min-width:170px"><b>${esc(t.agent||'(업체 미입력)')}</b>${t.contact?` <span class="note">· ${esc(t.contact)}</span>`:''}<div class="note">${esc(t.id)}${t.pax?' · '+esc(t.pax)+' PAX':''}</div><div><span class="dd ${n!=null&&n<=14?'soon':''}">${dday(t.start)||'—'}</span> <span class="note">${md(t.start)} – ${md(t.end)}</span></div></td>${CATS.map(([k])=>`<td>${todoCell(t,k)}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>`:'<div class="empty">예약이 필요한 항목이 없습니다.</div>';
+    const tot=invTotal(t),col=invCollect(t),kr=invKRW(t);
+    return `<tr data-open="${esc(t.id)}" tabindex="0"><td style="min-width:170px"><b>${esc(t.agent||'(업체 미입력)')}</b>${t.contact?` <span class="note">· ${esc(t.contact)}</span>`:''}<div class="note">${esc(t.id)}${t.pax?' · '+esc(t.pax)+' PAX':''}</div><div><span class="dd ${n!=null&&n<=14?'soon':''}">${dday(t.start)||'—'}</span> <span class="note">${md(t.start)} – ${md(t.end)}</span></div></td>${CATS.map(([k])=>`<td>${todoCell(t,k)}</td>`).join('')}<td style="min-width:130px;white-space:nowrap"><div>USD ${tot?fmtUSD(tot):'—'}</div><div>KRW ${kr?krwW(kr):'—'}</div><div>수금 ${chip(col.k,col.txt)}</div></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">예약이 필요한 항목이 없습니다.</div>';
 
   document.getElementById('dash').innerHTML=`
   <h2 class="grp">투어 현황</h2>
@@ -570,19 +578,17 @@ function visible(){return state.tours.slice().sort((a,b)=>(a.start||'9999').loca
 function renderList(){
   const v=visible();
   document.getElementById('listnote').textContent=v.length?`${v.length}건`:'';
-  const head=`<thead><tr><th>요청번호</th><th>업체 (담당자)</th><th>국가</th><th>인원</th><th>일정</th><th>차량</th><th>숙소</th><th>KTX</th><th>가이드</th><th>국내 항공</th><th>인보이스 USD</th><th>인보이스 KRW</th><th>수금</th></tr></thead>`;
-  if(!v.length){document.getElementById('list').innerHTML=head+`<tbody><tr><td colspan="13" class="empty">Confirmed 상태의 견적 요청이 없습니다. 견적 요청 admin에서 요청의 Status를 Confirmed로 바꾸면 여기에 나타납니다.</td></tr></tbody>`;return}
+  const head=`<thead><tr><th>요청번호</th><th>업체 (담당자)</th><th>국가</th><th>인원</th><th>일정</th><th>차량</th><th>숙소</th><th>KTX</th><th>가이드</th><th>국내 항공</th></tr></thead>`;
+  if(!v.length){document.getElementById('list').innerHTML=head+`<tbody><tr><td colspan="10" class="empty">Confirmed 상태의 견적 요청이 없습니다. 견적 요청 admin에서 요청의 Status를 Confirmed로 바꾸면 여기에 나타납니다.</td></tr></tbody>`;return}
   document.getElementById('list').innerHTML=head+'<tbody>'+v.map(t=>{
     const s=k=>{const r=summarize(t[k]);return chip(r.k,r.txt)};
-    const tot=invTotal(t),col=invCollect(t);
     return `<tr data-open="${esc(t.id)}" class="${t.id===state.sel?'sel':''}" tabindex="0">
       <td>${esc(t.id)}</td>
       <td><div class="two"><b>${esc(t.agent||'(업체 미입력)')}</b><small>${esc(t.contact)}</small></div></td>
       <td>${esc(t.country)}</td><td>${t.pax?esc(t.pax)+' PAX':''}</td>
       <td><div class="two"><span>${md(t.start)} – ${md(t.end)}</span><small>${dday(t.start)}</small></div></td>
       <td>${s('vehicle')}</td><td>${s('hotels')}</td><td>${s('ktx')}</td><td>${s('guides')}</td><td>${s('flights')}</td>
-      <td>${tot?fmtUSD(tot):'—'}</td><td>${invKRW(t)?fmtKRW(invKRW(t)):'—'}</td>
-      <td>${chip(col.k,col.txt)}</td></tr>`}).join('')+'</tbody>';
+</tr>`}).join('')+'</tbody>';
 }
 
 /* ---------- 상세 ---------- */
@@ -607,14 +613,16 @@ function renderDetail(){
   const hasInv=!!t.invoice.no;
 
   el.innerHTML=`${vdlHTML}
-  <section class="card">
+  <section class="card dhead-card">
     <div class="body dhead">
       <div><div class="id" id="d-id"></div><div class="name" id="d-name"></div></div>
       <div class="meta"><span id="d-period"></span><div class="bar" title="예약 진행률"><i id="d-bar"></i></div><span class="note" id="d-pct"></span>
         <a class="btn small" href="./index.html?open=${encodeURIComponent(t.id)}">견적 요청 열기</a>
         <button class="btn small danger" type="button" id="btn-resync" title="수배 탭·Hotel 탭에 적힌 내용으로 아래 예약 목록을 다시 채웁니다">수배 탭에서 다시 가져오기</button></div>
     </div>
-    <div class="body" style="padding-top:0"><div class="strip" id="d-strip"></div><div class="note" id="d-edited" style="margin-top:8px"></div></div>
+  </section>
+  <section class="card">
+    <div class="body"><div class="strip" id="d-strip"></div><div class="note" id="d-edited" style="margin-top:8px"></div></div>
   </section>
 
   <section class="card">
